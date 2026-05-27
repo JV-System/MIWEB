@@ -346,6 +346,17 @@ tr:hover td{background:#fafbfd}
 .badge-open{background:#E8F5E9;color:#2E7D32}
 .badge-pending{background:#FFF3E0;color:#E65100}
 
+/* ── FILTRO ESTADO (sidebar pedidos) ── */
+.pf-wrap{padding:6px 10px 8px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.pf-chip{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);text-transform:capitalize;letter-spacing:0.3px;transition:all 0.15s;font-family:'Exo 2',sans-serif;line-height:1.4}
+.pf-chip:hover{border-color:var(--blue-light);color:var(--navy-light)}
+.pf-chip.pf-all.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.pf-chip.pf-est.active{border-color:transparent}
+.pf-chip.pf-est.active.badge-pending{background:var(--amber-light);color:var(--amber);border-color:var(--amber)}
+.pf-chip.pf-est.active.badge-open{background:#E8F5E9;color:#2E7D32;border-color:#2E7D32}
+.pf-chip.pf-est.active.badge-done{background:#f0f0f0;color:#555;border-color:#bbb}
+.pf-chip.pf-est.active.badge-enviado{background:var(--purple-light);color:var(--purple);border-color:var(--purple)}
+
 /* ── SALDO CHIP ── */
 .saldo-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700}
 .saldo-pos{background:var(--teal-light);color:var(--teal)}
@@ -756,8 +767,9 @@ tr:hover td{background:#fafbfd}
         <button class="btn btn-primary btn-sm" onclick="openNuevoPedido()">+ Nuevo</button>
       </div>
       <div class="sidebar-search">
-        <input type="text" placeholder="Buscar pedido o cliente…" oninput="filterPedidos(this.value)">
+        <input type="text" placeholder="Buscar pedido o cliente…" id="pedSearch" oninput="filterPedidos(this.value)">
       </div>
+      <div class="pf-wrap" id="pedFiltrosWrap"></div>
       <div class="list-area" id="listPedidos"></div>
     </div>
     <div class="content" id="contentPedidos">
@@ -1308,7 +1320,7 @@ function showSection(sec){
   if(el){ el.style.display = el.classList.contains('main') ? 'flex' : 'flex'; el.style.flexDirection = el.classList.contains('content') ? 'column' : ''; }
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active', t.dataset.sec===sec));
   if(sec==='dashboard') renderDashboard();
-  if(sec==='pedidos'){ renderPedidosList(); populateClienteSelects(); }
+  if(sec==='pedidos'){ renderPedidoFiltros(); renderPedidosList(); populateClienteSelects(); }
   if(sec==='clientes') renderClientes();
   if(sec==='dario'){ renderDario(); populateDarioMolienda(); }
   if(sec==='compras') renderCompras();
@@ -1431,20 +1443,41 @@ function today(){ return new Date().toISOString().slice(0,10); }
 // ════════════════════════════════════════════════
 let editingPedidoId = null;
 let pedidoFiltro = '';
+let pedidoEstadoFiltro = '';
 
 function filterPedidos(q){ pedidoFiltro=q.toLowerCase(); renderPedidosList(); }
 
+function setPedidoEstadoFiltro(estado){
+  pedidoEstadoFiltro=estado;
+  renderPedidoFiltros();
+  renderPedidosList();
+}
+
+function renderPedidoFiltros(){
+  const wrap=document.getElementById('pedFiltrosWrap'); if(!wrap) return;
+  const estados=getEstados();
+  wrap.innerHTML=`<button class="pf-chip pf-all ${!pedidoEstadoFiltro?'active':''}" onclick="setPedidoEstadoFiltro('')">Todos (${db.pedidos.length})</button>`+
+    estados.map(e=>{
+      const cnt=db.pedidos.filter(p=>p.estado===e.nombre).length;
+      return `<button class="pf-chip pf-est badge-${e.color} ${pedidoEstadoFiltro===e.nombre?'active':''}" onclick="setPedidoEstadoFiltro('${e.nombre}')">${e.emoji} ${e.nombre} ${cnt?'('+cnt+')':''}</button>`;
+    }).join('');
+}
+
 function renderPedidosList(){
-  const filtered = [...db.pedidos].sort((a,b)=>b.id-a.id)
-    .filter(p=> !pedidoFiltro || p.nombre?.toLowerCase().includes(pedidoFiltro) || String(p.numero).includes(pedidoFiltro));
-  document.getElementById('listPedidos').innerHTML = filtered.length ? filtered.map(p=>`
+  const filtered=[...db.pedidos].sort((a,b)=>b.id-a.id)
+    .filter(p=>{
+      const txt=!pedidoFiltro||p.nombre?.toLowerCase().includes(pedidoFiltro)||String(p.numero).includes(pedidoFiltro);
+      const est=!pedidoEstadoFiltro||p.estado===pedidoEstadoFiltro;
+      return txt&&est;
+    });
+  document.getElementById('listPedidos').innerHTML=filtered.length?filtered.map(p=>`
     <div class="list-item ${p._active?'active':''}" onclick="openPedidoDetail(${p.id})">
       <div class="list-item-num">Pedido #${p.numero}</div>
       <div class="list-item-title">${p.nombre||'Sin nombre'}</div>
       <div class="list-item-meta">${p.fecha||''} · ${(p.productos||[]).reduce((s,r)=>s+(Number(r.kg)||0),0)} kg</div>
       <span class="item-badge badge-${badgeClass(p.estado)}">${p.estado}</span>
     </div>`).join('')
-    : '<div class="empty-state"><p>Sin pedidos</p></div>';
+    :'<div class="empty-state"><p>Sin pedidos</p></div>';
 }
 
 function openPedidoDetail(id){
@@ -2749,6 +2782,19 @@ function loadSeedData(){
   saveDB();
 }
 loadSeedData();
+
+// ── Migración: agregar pedidos demo de mayo 2026 si no existen ──
+(function migrateMayo2026(){
+  if(!db.pedidos.length) return; // no hay datos aún
+  if(db.pedidos.find(p=>p.id===2019)) return; // ya migrado
+  db.pedidos.push(
+    {id:2019,numero:19,nombre:'Gisela Perez',dni:'31203941',tel:'1155023840',email:'gisela.p@hotmail.com',transporte:'Andremar — Capital Federal',presupuesto:83700,fecha:'2026-05-08',estado:'cobrado',ingreso:83700,obs:'',productos:[{tipo:'desp_fina',kg:20,estampilla:true},{tipo:'extra_fina',kg:10,estampilla:false}]},
+    {id:2020,numero:20,nombre:'Anahí Torres',dni:'36101020',tel:'3764201983',email:'anahi.torres@gmail.com',transporte:'Expreso Posadas',presupuesto:56700,fecha:'2026-05-15',estado:'despachado',ingreso:null,obs:'',productos:[{tipo:'trad_fina',kg:15,estampilla:false},{tipo:'extra_fina',kg:10,estampilla:false}]},
+    {id:2021,numero:21,nombre:'Yesica Ramírez',dni:'29441832',tel:'2291554320',email:'yesica.ramirez@gmail.com',transporte:'Crucero cargo — Mar del Plata',presupuesto:91800,fecha:'2026-05-22',estado:'confirmado',ingreso:null,obs:'Tercer pedido del año',productos:[{tipo:'desp_gruesa',kg:30,estampilla:true},{tipo:'barb_fina',kg:10,estampilla:false}]}
+  );
+  if((db.config.nextPedido||0)<22) db.config.nextPedido=22;
+  saveDB();
+})();
 
 // ════════════════════════════════════════════════
 //  INIT — Splash → Login → App
