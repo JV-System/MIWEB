@@ -307,7 +307,7 @@ tr:hover td{background:#fafbfd}
 
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
-  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:150;transform:translateX(-100%)}
+  .sidebar{position:fixed;left:0;top:0;bottom:60px;z-index:150;transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .nav-tab span{display:none}
   .header-brand{min-width:auto}
@@ -1198,9 +1198,18 @@ function showSection(sec){
 }
 
 function toggleSidebar(){
-  const s=document.querySelector('#sec-pedidos .sidebar, #sec-dario .sidebar');
-  if(s){ s.classList.toggle('open'); document.getElementById('overlayBg').classList.toggle('open'); return; }
-  document.getElementById('overlayBg').classList.toggle('open');
+  // Find the sidebar/chat-sidebar inside the currently visible section
+  let sidebar = null;
+  document.querySelectorAll('.main > section, .main > div.main').forEach(sec=>{
+    if(sec.style.display && sec.style.display !== 'none'){
+      const s = sec.querySelector('.sidebar, .chat-sidebar');
+      if(s) sidebar = s;
+    }
+  });
+  if(sidebar){
+    sidebar.classList.toggle('open');
+    document.getElementById('overlayBg').classList.toggle('open');
+  }
 }
 function closeSidebar(){
   document.querySelectorAll('.sidebar').forEach(s=>s.classList.remove('open'));
