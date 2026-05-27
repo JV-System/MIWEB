@@ -1360,15 +1360,32 @@ function closeSidebar(){
 // ════════════════════════════════════════════════
 //  DASHBOARD
 // ════════════════════════════════════════════════
+const MES_NOMBRES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+let _dashMes=new Date().getMonth(); let _dashAnio=new Date().getFullYear();
+function moveDashMes(dir){
+  _dashMes+=dir;
+  if(_dashMes>11){_dashMes=0;_dashAnio++;}
+  if(_dashMes<0){_dashMes=11;_dashAnio--;}
+  renderDashboard();
+}
 function renderDashboard(){
   const totalVentas = db.pedidos.reduce((s,p)=>s+(p.ingreso||0),0);
   const saldoDario = calcSaldoDario();
-  const kgMes = calcKgMes();
+  const kgMes = calcKgMes(_dashMes,_dashAnio);
   const pedPend = db.pedidos.filter(p=>p.estado==='pendiente'||p.estado==='confirmado').length;
+  const esHoy = _dashMes===new Date().getMonth()&&_dashAnio===new Date().getFullYear();
   document.getElementById('kpiGrid').innerHTML = `
     <div class="kpi-card kpi-teal"><div class="kpi-label">Ingresos Totales</div><div class="kpi-value">${fmt(totalVentas)}</div><div class="kpi-sub">${db.pedidos.filter(p=>p.ingreso).length} pedidos cobrados</div></div>
     <div class="kpi-card kpi-${saldoDario>=0?'blue':'red'}"><div class="kpi-label">Saldo c/ Darío</div><div class="kpi-value" style="color:${saldoDario>=0?'var(--teal)':'var(--red)'}">${saldoDario>=0?'+':''}${fmt(saldoDario)}</div><div class="kpi-sub">${saldoDario>=0?'A tu favor':'Debés'}</div></div>
-    <div class="kpi-card kpi-accent"><div class="kpi-label">Kg Vendidos (mes)</div><div class="kpi-value">${kgMes} kg</div><div class="kpi-sub">Mes actual</div></div>
+    <div class="kpi-card kpi-accent" style="position:relative">
+      <div class="kpi-label">Kg Vendidos</div>
+      <div class="kpi-value">${fmtNum(kgMes)} kg</div>
+      <div class="kpi-sub" style="display:flex;align-items:center;justify-content:space-between;gap:4px;margin-top:2px">
+        <button onclick="moveDashMes(-1)" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0 3px;font-size:16px;line-height:1;font-weight:700" title="Mes anterior">‹</button>
+        <span style="font-size:11px;font-weight:600;color:${esHoy?'var(--accent)':'var(--text-muted)'}">${MES_NOMBRES[_dashMes]} ${_dashAnio}</span>
+        <button onclick="moveDashMes(1)" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0 3px;font-size:16px;line-height:1;font-weight:700" title="Mes siguiente">›</button>
+      </div>
+    </div>
     <div class="kpi-card kpi-purple"><div class="kpi-label">Pedidos Activos</div><div class="kpi-value">${pedPend}</div><div class="kpi-sub">Pendientes / confirmados</div></div>
   `;
   const ultimosPed = [...db.pedidos].sort((a,b)=>b.id-a.id).slice(0,6);
@@ -1399,9 +1416,9 @@ function calcSaldoDario(){
     return s + Math.abs(t.subtotal||0);
   },0);
 }
-function calcKgMes(){
-  const now = new Date(); const m=now.getMonth(); const y=now.getFullYear();
-  return db.pedidos.filter(p=>{ const d=new Date(p.fecha); return d.getMonth()===m&&d.getFullYear()===y; })
+function calcKgMes(m,y){
+  if(m===undefined){const now=new Date();m=now.getMonth();y=now.getFullYear();}
+  return db.pedidos.filter(p=>{ const d=new Date(p.fecha+'T00:00:00'); return d.getMonth()===m&&d.getFullYear()===y; })
     .reduce((s,p)=>s+(p.productos||[]).reduce((a,r)=>a+(Number(r.kg)||0),0),0);
 }
 function fmt(n){ return '$'+Math.abs(n).toLocaleString('es-AR',{maximumFractionDigits:0}); }
