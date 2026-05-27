@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JVS System — Sistema de Gestión para Comercios</title>
+<meta name="description" content="Sistema de gestión a medida: pedidos, clientes, stock, compras y chat — todo en un solo lugar. JVS System.">
+<meta property="og:title"       content="JVS System · Gestión para comercios">
+<meta property="og:description" content="Pedidos · Clientes · Stock · Chat — todo en un solo sistema. Caso activo: Secadero Don Carlos.">
+<meta property="og:image"       content="https://jv-system.github.io/Sabores-de-misiones/jvs-logo.png">
+<meta property="og:type"        content="website">
+<meta name="theme-color"        content="#06144A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:  #06144A;
+  --navy2: #0B1F5F;
+  --blue:  #1565D8;
+  --blue2: #2979FF;
+  --blue3: #6BAEFF;
+  --ora:   #E8770A;
+  --ora2:  #F59420;
+  --w100:  rgba(255,255,255,1);
+  --w85:   rgba(255,255,255,0.85);
+  --w65:   rgba(255,255,255,0.65);
+  --w40:   rgba(255,255,255,0.40);
+  --w20:   rgba(255,255,255,0.20);
+  --w10:   rgba(255,255,255,0.10);
+  --w06:   rgba(255,255,255,0.06);
+}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  font-family:'Exo 2','Segoe UI',sans-serif;
+  background:var(--navy);color:#fff;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ══ PROGRESS ══ */
+#pbar{
+  position:fixed;top:0;left:0;height:3px;
+  background:linear-gradient(90deg,var(--ora),var(--blue2),var(--ora));
+  background-size:200% 100%;
+  animation:pbar-move 3s linear infinite;
+  z-index:200;transition:width 0.08s linear;
+  box-shadow:0 0 10px rgba(232,119,10,0.6);
+}
+@keyframes pbar-move{0%{background-position:0% 0}100%{background-position:200% 0}}
+
+/* ══ SLIDES ══ */
+#stage{position:fixed;inset:0;overflow:hidden}
+.slide{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:56px 48px 76px;
+  opacity:0;transform:translateY(16px);
+  transition:opacity 0.65s cubic-bezier(0.4,0,0.2,1),
+             transform 0.65s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none;
+}
+.slide.active{
+  opacity:1;transform:translateY(0);
+  pointer-events:auto;z-index:2;
+}
+
+/* slide backgrounds */
+.s-bg-1{background:radial-gradient(ellipse at 70% 30%,rgba(41,121,255,0.15) 0%,transparent 60%),
+         linear-gradient(145deg,#04112F 0%,#0B1F5F 55%,#081840 100%)}
+.s-bg-2{background:radial-gradient(ellipse at 30% 60%,rgba(232,119,10,0.08) 0%,transparent 55%),
+         linear-gradient(150deg,#03102A 0%,#091845 55%,#0B2060 100%)}
+.s-bg-3{background:radial-gradient(ellipse at 80% 20%,rgba(41,121,255,0.12) 0%,transparent 55%),
+         linear-gradient(135deg,#060F35 0%,#0A1A50 60%,#0B1F5F 100%)}
+.s-bg-4{background:linear-gradient(160deg,#04122E 0%,#091845 50%,#0B1F5F 100%)}
+.s-bg-5{background:radial-gradient(ellipse at 60% 40%,rgba(106,27,154,0.12) 0%,transparent 55%),
+         linear-gradient(140deg,#060F35 0%,#0B1F5F 60%,#180A3A 100%)}
+.s-bg-6{background:linear-gradient(150deg,#03102A 0%,#091845 50%,#0B2060 100%)}
+.s-bg-7{background:radial-gradient(ellipse at 20% 70%,rgba(41,121,255,0.1) 0%,transparent 50%),
+         linear-gradient(140deg,#050F2E 0%,#091745 55%,#0B1F5F 100%)}
+.s-bg-8{background:radial-gradient(ellipse at 50% 50%,rgba(41,121,255,0.1) 0%,transparent 60%),
+         linear-gradient(145deg,#04112F 0%,#0B1F5F 60%,#081840 100%)}
+.s-bg-9{background:radial-gradient(ellipse at 50% 40%,rgba(232,119,10,0.12) 0%,transparent 55%),
+         linear-gradient(155deg,#04112F 0%,#0B1F5F 55%,#08183C 100%)}
+
+/* ══ ORBS ══ */
+.orb{
+  position:absolute;border-radius:50%;pointer-events:none;
+  animation:orb-float 9s ease-in-out infinite;
+}
+@keyframes orb-float{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-18px) scale(1.04)}
+}
+
+/* ══ DOTS ══ */
+#dots{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  display:flex;gap:7px;z-index:100;
+}
+.dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--w20);border:none;cursor:pointer;
+  padding:0;transition:all 0.3s ease;
+}
+.dot.on{width:22px;border-radius:4px;background:var(--ora);box-shadow:0 0 8px rgba(232,119,10,0.7)}
+
+/* ══ ARROWS ══ */
+.arr{
+  position:fixed;top:50%;transform:translateY(-50%);
+  z-index:100;
+  width:42px;height:42px;border-radius:50%;
+  background:var(--w06);border:1px solid var(--w20);
+  color:var(--w40);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:700;
+  transition:all 0.2s;backdrop-filter:blur(8px);
+}
+.arr:hover{background:var(--w20);color:#fff;border-color:var(--w40)}
+#aprev{left:14px}
+#anext{right:14px}
+
+/* ══ COUNTER CHIP ══ */
+#ctr{
+  position:fixed;top:14px;right:14px;
+  font-size:10px;font-weight:700;
+  color:var(--w40);z-index:100;letter-spacing:1.5px;
+}
+
+/* ══ PAUSE BTN ══ */
+#pbtn{
+  position:fixed;top:10px;left:14px;z-index:100;
+  background:none;border:none;color:var(--w40);
+  font-size:12px;font-weight:700;cursor:pointer;
+  font-family:'Exo 2',sans-serif;padding:4px 8px;
+  border-radius:6px;display:flex;align-items:center;gap:5px;
+  transition:color 0.2s;letter-spacing:0.5px;
+}
+#pbtn:hover{color:var(--w85)}
+
+/* ══ LAYOUT ══ */
+.row{
+  width:100%;max-width:960px;
+  display:flex;align-items:center;gap:44px;
+}
+.col-l{flex:0 0 320px}
+.col-r{flex:1;min-width:0}
+.center{
+  width:100%;max-width:960px;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
+}
+
+/* ══ TEXT COMPONENTS ══ */
+.tag{
+  display:inline-block;
+  font-size:9px;font-weight:800;letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--ora2);
+  background:rgba(232,119,10,0.12);
+  border:1px solid rgba(232,119,10,0.3);
+  padding:4px 12px;border-radius:20px;
+  margin-bottom:14px;
+}
+.h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(26px,4vw,46px);
+  font-weight:900;line-height:1.1;
+  margin-bottom:14px;
+  background:linear-gradient(130deg,#fff 0%,#B0CCFF 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.desc{
+  font-size:13.5px;color:var(--w65);
+  line-height:1.75;margin-bottom:22px;
+}
+.checks{list-style:none;display:flex;flex-direction:column;gap:9px}
+.checks li{
+  display:flex;align-items:center;gap:10px;
+  font-size:12.5px;font-weight:500;color:var(--w85);
+}
+.ck{
+  flex-shrink:0;width:19px;height:19px;border-radius:50%;
+  background:rgba(41,121,255,0.18);border:1px solid rgba(41,121,255,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:900;color:var(--blue3);
+}
+
+/* ══ GLASS CARD ══ */
+.gc{
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(255,255,255,0.11);
+  border-radius:16px;overflow:hidden;
+  backdrop-filter:blur(12px);
+}
+.gc-bar{
+  background:rgba(0,0,0,0.18);
+  padding:9px 14px;
+  display:flex;align-items:center;gap:6px;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.gc-dot{width:7px;height:7px;border-radius:50%}
+
+/* ══ SLIDE 1 — HERO ══ */
+.hero-logo{
+  width:96px;height:96px;object-fit:contain;
+  filter:drop-shadow(0 6px 28px rgba(41,121,255,0.55));
+  margin-bottom:26px;
+  animation:logo-in 1.1s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes logo-in{from{opacity:0;transform:scale(0.4)}to{opacity:1;transform:scale(1)}}
+.hero-t{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(36px,6vw,72px);
+  font-weight:900;line-height:1.1;
+  text-align:center;margin-bottom:14px;
+  background:linear-gradient(130deg,#fff 20%,#B0CCFF 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-size:clamp(13px,1.8vw,18px);
+  color:var(--w65);text-align:center;
+  margin-bottom:30px;font-weight:400;letter-spacing:0.2px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;
+  background:rgba(232,119,10,0.12);
+  border:1.5px solid rgba(232,119,10,0.35);
+  padding:9px 22px;border-radius:40px;
+  font-size:12.5px;font-weight:700;color:var(--ora2);
+  margin-bottom:38px;
+}
+.pulse{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--ora2);flex-shrink:0;
+  box-shadow:0 0 6px var(--ora2);
+  animation:pulse-dot 2.2s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.55;transform:scale(1.35)}}
+.pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.pill{
+  background:var(--w06);border:1px solid var(--w20);
+  padding:8px 16px;border-radius:40px;
+  font-size:12px;font-weight:600;color:var(--w85);
+  backdrop-filter:blur(8px);
+}
+
+/* ══ SLIDE 2 — DASHBOARD KPIs ══ */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px}
+.kpi{
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.11);
+  border-radius:12px;padding:14px;position:relative;overflow:hidden;
+}
+.kpi::after{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:2.5px;
+}
+.kc-b::after{background:var(--blue2)}
+.kc-o::after{background:var(--ora)}
+.kc-g::after{background:#4CAF50}
+.kc-p::after{background:#9C27B0}
+.kpi-ic{font-size:18px;margin-bottom:5px}
+.kpi-v{font-size:24px;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+.kpi-l{font-size:9px;font-weight:700;color:var(--w40);text-transform:uppercase;letter-spacing:1px}
+.kpi-s{font-size:9px;color:var(--w20);margin-top:1px}
+.bars{display:flex;align-items:flex-end;gap:3px;height:44px}
+.bar-col{flex:1;border-radius:3px 3px 0 0;background:rgba(41,121,255,0.25)}
+.bar-col.hi{background:rgba(41,121,255,0.75);box-shadow:0 0 8px rgba(41,121,255,0.4)}
+.bar-lbl{font-size:7.5px;color:var(--w20);text-align:center;margin-top:3px}
+.bar-lbl.now{color:var(--w65);font-weight:700}
+
+/* ══ SLIDE 3 — PEDIDOS ══ */
+.chips{display:flex;gap:5px;flex-wrap:wrap;padding:9px 12px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.chip{
+  padding:3px 9px;border-radius:20px;
+  font-size:9.5px;font-weight:700;
+  border:1.5px solid rgba(255,255,255,0.14);color:var(--w40);
+}
+.chip-all{background:rgba(255,255,255,0.14);color:#fff;border-color:transparent}
+.chip-co{background:rgba(41,121,255,0.14);color:#90C0FF;border-color:rgba(41,121,255,0.3)}
+.chip-de{background:rgba(76,175,80,0.14);color:#A5D6A7;border-color:rgba(76,175,80,0.3)}
+.chip-cb{background:rgba(156,39,176,0.14);color:#CE93D8;border-color:rgba(156,39,176,0.3)}
+.pi{
+  display:flex;align-items:center;gap:11px;
+  padding:9px 13px;border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.pav{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+}
+.pn{font-size:11.5px;font-weight:700;color:#fff;margin-bottom:2px}
+.ps{font-size:9.5px;color:var(--w40)}
+.pr{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.bdg{
+  padding:2px 8px;border-radius:20px;
+  font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;
+}
+.b-cb{background:rgba(156,39,176,0.18);color:#CE93D8;border:1px solid rgba(156,39,176,0.3)}
+.b-de{background:rgba(76,175,80,0.18);color:#A5D6A7;border:1px solid rgba(76,175,80,0.3)}
+.b-co{background:rgba(41,121,255,0.18);color:#90C0FF;border:1px solid rgba(41,121,255,0.3)}
+.b-pe{background:rgba(232,119,10,0.18);color:#FFB74D;border:1px solid rgba(232,119,10,0.3)}
+.pkg{font-size:9px;color:var(--w20)}
+
+/* ══ SLIDE 4 — CLIENTES ══ */
+.cli-av{
+  width:50px;height:50px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--navy2),var(--blue));
+  border:2px solid rgba(41,121,255,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;font-weight:900;color:#fff;
+}
+.bal-wrap{height:7px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;margin:5px 0}
+.bal-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#43A047,#66BB6A)}
+.cs{background:rgba(255,255,255,0.055);border-radius:8px;padding:9px;text-align:center}
+.csv{font-size:17px;font-weight:800;color:#fff;margin-bottom:1px}
+.csl{font-size:8px;color:var(--w40);text-transform:uppercase;letter-spacing:0.5px}
+.mini-o{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:5px 8px;border-radius:6px;
+  background:rgba(255,255,255,0.04);margin-bottom:3px;font-size:10.5px;
+}
+
+/* ══ SLIDE 5 — CHAT ══ */
+.chav{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#6A1B9A,#9C27B0);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;color:#fff;
+}
+.msg{max-width:85%}
+.msg.out{align-self:flex-end}
+.bbl{padding:8px 11px;border-radius:12px;font-size:11px;line-height:1.5}
+.msg.in .bbl{background:rgba(255,255,255,0.09);color:var(--w85);border-radius:4px 12px 12px 12px}
+.msg.out .bbl{background:linear-gradient(135deg,rgba(21,101,216,0.55),rgba(41,121,255,0.45));color:#fff;border-radius:12px 4px 12px 12px}
+.msender{font-size:8.5px;font-weight:700;color:var(--blue3);margin-bottom:2px}
+.mmeta{font-size:8.5px;color:var(--w20);margin-top:2px;text-align:right}
+.ch-input{
+  padding:7px 11px;border-top:1px solid rgba(255,255,255,0.07);
+  display:flex;gap:7px;align-items:center;
+}
+.ch-fake{
+  flex:1;background:rgba(255,255,255,0.07);border-radius:20px;
+  padding:6px 12px;font-size:10.5px;color:var(--w20);
+}
+
+/* ══ SLIDE 6 — ROLES ══ */
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;max-width:900px}
+.rc{
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(255,255,255,0.11);
+  border-radius:16px;padding:22px 18px;text-align:center;
+}
+.rc-admin{border-color:rgba(232,119,10,0.3)}
+.rc-vend{border-color:rgba(41,121,255,0.3)}
+.rc-cli{border-color:rgba(76,175,80,0.3)}
+.rc-ico{font-size:30px;margin-bottom:10px}
+.rc-name{font-size:14px;font-weight:800;color:#fff;margin-bottom:3px}
+.rc-tag{
+  display:inline-block;font-size:8.5px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  padding:2px 8px;border-radius:20px;margin-bottom:14px;
+}
+.rc-admin .rc-tag{background:rgba(232,119,10,0.18);color:var(--ora2)}
+.rc-vend .rc-tag{background:rgba(41,121,255,0.18);color:var(--blue3)}
+.rc-cli  .rc-tag{background:rgba(76,175,80,0.18);color:#A5D6A7}
+.rp{list-style:none;text-align:left;display:flex;flex-direction:column;gap:6px}
+.rp li{font-size:11px;color:var(--w85);display:flex;align-items:center;gap:6px}
+.rp li.no{color:var(--w20)}
+.rok{color:#A5D6A7;font-size:11px}
+.rno{color:rgba(255,90,90,0.55);font-size:11px}
+
+/* ══ SLIDE 7 — DOCS ══ */
+.docs{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:720px}
+.doc{
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(255,255,255,0.11);
+  border-radius:14px;overflow:hidden;
+}
+.dh{
+  background:rgba(0,0,0,0.18);padding:9px 13px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.dt{font-size:10px;font-weight:800;color:#fff;letter-spacing:0.5px}
+.dn{font-size:9.5px;color:var(--w40)}
+.db{padding:11px 13px}
+.dr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:5.5px 0;border-bottom:1px solid rgba(255,255,255,0.05);
+  font-size:10.5px;
+}
+.dr:last-child{border:none}
+.dprod{color:var(--w85);font-weight:500}
+.dprice{color:var(--w40)}
+.dtotal{
+  background:rgba(41,121,255,0.1);
+  border:1px solid rgba(41,121,255,0.2);
+  border-radius:7px;padding:7px 11px;
+  display:flex;justify-content:space-between;
+  margin-top:7px;font-size:12.5px;font-weight:800;
+}
+.dtotal span{color:var(--blue3)}
+.dwsp{
+  margin-top:9px;width:100%;padding:6px 0;
+  background:rgba(37,211,102,0.12);
+  border:1px solid rgba(37,211,102,0.28);
+  border-radius:7px;color:#A5D6A7;
+  font-size:10.5px;font-weight:700;text-align:center;
+}
+.oc-num{
+  background:var(--navy2);color:#fff;
+  font-size:9.5px;font-weight:800;
+  padding:2px 9px;border-radius:20px;letter-spacing:0.5px;
+}
+
+/* ══ SLIDE 8 — PWA ══ */
+.phone{
+  width:175px;
+  background:linear-gradient(145deg,#14183A,#1A1F45);
+  border-radius:28px;
+  border:2.5px solid rgba(255,255,255,0.14);
+  padding:10px;
+  box-shadow:
+    0 32px 64px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(255,255,255,0.04),
+    inset 0 0 24px rgba(0,0,0,0.3);
+  transform:perspective(800px) rotateY(-10deg) rotateX(4deg);
+}
+.phone-notch{
+  width:55px;height:5px;background:rgba(255,255,255,0.14);
+  border-radius:3px;margin:0 auto 10px;
+}
+.phone-scr{
+  background:linear-gradient(145deg,#06144A,#0B1F5F);
+  border-radius:16px;padding:13px 10px;
+}
+.phone-st{
+  display:flex;justify-content:space-between;
+  font-size:7px;color:var(--w40);margin-bottom:14px;
+}
+.hgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}
+.hico{
+  aspect-ratio:1;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+.hico.app-jvs{
+  background:linear-gradient(135deg,var(--navy2),var(--blue));
+  border:1.5px solid rgba(41,121,255,0.4);
+  box-shadow:0 4px 14px rgba(21,101,216,0.45);
+  overflow:hidden;font-size:0;
+}
+.hico.app-jvs img{width:100%;height:100%;object-fit:contain;padding:3px}
+.hico.wapp{background:linear-gradient(135deg,#075E54,#25D366)}
+.hico.cam{background:linear-gradient(135deg,#1a1a1a,#333)}
+.hico.cal{background:linear-gradient(135deg,#c62828,#ef5350)}
+.hico.gm {background:linear-gradient(135deg,#1565D8,#1976D2)}
+.hico.mu {background:linear-gradient(135deg,#880E4F,#C2185B)}
+.hico.mp {background:linear-gradient(135deg,#1B5E20,#388E3C)}
+.hico.fo {background:linear-gradient(135deg,#E65100,#F57C00)}
+.hname{font-size:5.5px;color:var(--w40);text-align:center;margin-top:1.5px}
+.notif{
+  background:rgba(232,119,10,0.18);
+  border:1px solid rgba(232,119,10,0.3);
+  border-radius:7px;padding:7px 9px;
+  font-size:7.5px;color:#FFB74D;
+}
+.notif-t{font-weight:800;margin-bottom:2px}
+
+/* ══ SLIDE 9 — CTA ══ */
+.cta-logo{
+  width:86px;height:86px;object-fit:contain;
+  filter:drop-shadow(0 6px 28px rgba(41,121,255,0.5));
+  margin-bottom:20px;
+}
+.cta-jvs{
+  font-size:9.5px;font-weight:800;letter-spacing:3px;
+  text-transform:uppercase;color:var(--ora2);margin-bottom:10px;
+}
+.cta-t{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(28px,4.5vw,54px);
+  font-weight:900;line-height:1.1;text-align:center;
+  margin-bottom:12px;
+  background:linear-gradient(130deg,#fff 0%,#B0CCFF 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.cta-sub{
+  font-size:14px;color:var(--w65);text-align:center;
+  line-height:1.65;margin-bottom:34px;max-width:500px;
+}
+.cta-chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:34px}
+.cta-chip{
+  background:var(--w06);border:1px solid var(--w20);
+  padding:9px 17px;border-radius:40px;
+  font-size:11.5px;font-weight:600;color:var(--w85);
+}
+.cta-btn{
+  display:inline-flex;align-items:center;gap:9px;
+  background:linear-gradient(135deg,#1FAD5F,#25D366);
+  color:#fff;font-size:14px;font-weight:800;
+  padding:13px 34px;border-radius:40px;
+  text-decoration:none;
+  box-shadow:0 8px 24px rgba(37,211,102,0.32);
+  transition:transform 0.2s,box-shadow 0.2s;
+  margin-bottom:14px;
+}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(37,211,102,0.45)}
+.cta-note{font-size:10.5px;color:var(--w20);text-align:center}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:720px){
+  .slide{padding:46px 18px 70px}
+  .row{flex-direction:column;gap:18px;align-items:flex-start}
+  .col-l{flex:none;width:100%}
+  .roles{grid-template-columns:1fr}
+  .docs{grid-template-columns:1fr}
+  .phone{transform:none;width:150px}
+  .hero-t{font-size:32px}
+  .h1{font-size:22px}
+  #aprev,#anext{display:none}
+}
+@media(max-width:420px){
+  .roles{grid-template-columns:1fr}
+  .hero-badge{font-size:11px;padding:7px 16px}
+  .pills{gap:7px}
+  .pill{font-size:11px;padding:6px 12px}
+}
+</style>
+</head>
+<body>
+
+<!-- progress bar -->
+<div id="pbar" style="width:0%"></div>
+<!-- counter -->
+<div id="ctr">1 / 9</div>
+<!-- pause -->
+<button id="pbtn" onclick="togglePause()">⏸ Pausar</button>
+
+<!-- SLIDES -->
+<div id="stage">
+
+  <!-- ╔══════════════════════╗ -->
+  <!-- ║  SLIDE 1 — HERO      ║ -->
+  <!-- ╚══════════════════════╝ -->
+  <div class="slide s-bg-1 active" id="s1">
+    <div class="orb" style="width:380px;height:380px;top:-80px;right:-80px;background:radial-gradient(circle,rgba(41,121,255,0.14) 0%,transparent 70%);animation-delay:0s"></div>
+    <div class="orb" style="width:280px;height:280px;bottom:-60px;left:-60px;background:radial-gradient(circle,rgba(232,119,10,0.09) 0%,transparent 70%);animation-delay:4s"></div>
+    <div class="center" style="position:relative;z-index:1">
+      <img src="https://jv-system.github.io/Sabores-de-misiones/jvs-logo.png" class="hero-logo" alt="JVS System">
+      <div class="hero-t">Sistema de Gestión<br>para tu Negocio</div>
+      <div class="hero-sub">Pedidos · Clientes · Stock · Compras · Chat — todo en un solo lugar</div>
+      <div class="hero-badge">
+        <span class="pulse"></span>
+        Caso activo · Secadero Don Carlos · Misiones
+      </div>
+      <div class="pills">
+        <div class="pill">📦 Pedidos</div>
+        <div class="pill">👥 Clientes</div>
+        <div class="pill">💬 Chat interno</div>
+        <div class="pill">📊 Dashboard</div>
+        <div class="pill">📱 App instalable</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════╗ -->
+  <!-- ║  SLIDE 2 — DASHBOARD ║ -->
+  <!-- ╚══════════════════════╝ -->
+  <div class="slide s-bg-2" id="s2">
+    <div class="row">
+      <div class="col-l">
+        <div class="tag">📊 Dashboard</div>
+        <div class="h1">Información en tiempo real</div>
+        <div class="desc">Todos los números del negocio de un vistazo: KG vendidos, ingresos, pedidos y clientes. Con selector de mes para revisar cualquier período.</div>
+        <ul class="checks">
+          <li><span class="ck">✓</span> KG vendidos por mes con navegador de fechas</li>
+          <li><span class="ck">✓</span> Ingresos totales del período</li>
+          <li><span class="ck">✓</span> Pedidos activos vs cobrados</li>
+          <li><span class="ck">✓</span> Clientes con actividad reciente</li>
+        </ul>
+      </div>
+      <div class="col-r">
+        <div class="gc">
+          <div class="gc-bar">
+            <div class="gc-dot" style="background:#FF5F57"></div>
+            <div class="gc-dot" style="background:#FFBD2E;margin-left:4px"></div>
+            <div class="gc-dot" style="background:#28C840;margin-left:4px"></div>
+            <span style="margin-left:10px;font-size:9.5px;color:rgba(255,255,255,0.35);font-weight:600">Dashboard · Mayo 2026</span>
+          </div>
+          <div style="padding:14px">
+            <div class="kpi-grid">
+              <div class="kpi kc-b">
+                <div class="kpi-ic">📦</div>
+                <div class="kpi-v" id="kv-kg">0</div>
+                <div class="kpi-l">KG Vendidos</div>
+                <div class="kpi-s">Mayo 2026</div>
+              </div>
+              <div class="kpi kc-o">
+                <div class="kpi-ic">💰</div>
+                <div class="kpi-v" id="kv-in">$0</div>
+                <div class="kpi-l">Ingresos</div>
+                <div class="kpi-s">del mes</div>
+              </div>
+              <div class="kpi kc-g">
+                <div class="kpi-ic">🛒</div>
+                <div class="kpi-v" id="kv-pe">0</div>
+                <div class="kpi-l">Pedidos</div>
+                <div class="kpi-s">activos</div>
+              </div>
+              <div class="kpi kc-p">
+                <div class="kpi-ic">👥</div>
+                <div class="kpi-v" id="kv-cl">0</div>
+                <div class="kpi-l">Clientes</div>
+                <div class="kpi-s">con compras</div>
+              </div>
+            </div>
+            <div style="font-size:8.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Ventas últimos 6 meses (kg)</div>
+            <div class="bars" id="bars">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center">
+                <div class="bar-col" style="height:38%"></div>
+                <div class="bar-lbl">Dic</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center">
+                <div class="bar-col" style="height:55%"></div>
+                <div class="bar-lbl">Ene</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center">
+                <div class="bar-col" style="height:44%"></div>
+                <div class="bar-lbl">Feb</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center">
+                <div class="bar-col" style="height:70%"></div>
+                <div class="bar-lbl">Mar</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center">
+                <div class="bar-col" style="height:58%"></div>
+                <div class="bar-lbl">Abr</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center">
+                <div class="bar-col hi" style="height:92%"></div>
+                <div class="bar-lbl now">May</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════╗ -->
+  <!-- ║  SLIDE 3 — PEDIDOS   ║ -->
+  <!-- ╚══════════════════════╝ -->
+  <div class="slide s-bg-3" id="s3">
+    <div class="row">
+      <div class="col-l">
+        <div class="tag">🛒 Pedidos</div>
+        <div class="h1">Gestión de pedidos completa</div>
+        <div class="desc">Desde que el cliente pide hasta que se cobra — cada estado, cada cambio, todo registrado y visible en tiempo real.</div>
+        <ul class="checks">
+          <li><span class="ck">✓</span> Estados personalizables por negocio</li>
+          <li><span class="ck">✓</span> Filtros con conteo por estado</li>
+          <li><span class="ck">✓</span> Envío automático por WhatsApp</li>
+          <li><span class="ck">✓</span> Historial completo por cliente</li>
+          <li><span class="ck">✓</span> Numeración correlativa automática</li>
+        </ul>
+      </div>
+      <div class="col-r">
+        <div class="gc" style="overflow:hidden">
+          <div class="gc-bar">
+            <span style="font-size:9.5px;color:rgba(255,255,255,0.45);font-weight:700">📋 Pedidos</span>
+          </div>
+          <div class="chips">
+            <span class="chip chip-all">Todos (12)</span>
+            <span class="chip">⏳ Pendiente (2)</span>
+            <span class="chip chip-co">✅ Confirmado (3)</span>
+            <span class="chip chip-de">🚚 Despachado (4)</span>
+            <span class="chip chip-cb">💜 Cobrado (3)</span>
+          </div>
+          <div class="pi">
+            <div class="pav">SC</div>
+            <div>
+              <div class="pn">Secadero Don Carlos</div>
+              <div class="ps">#012 · 200 kg · 22 may</div>
+            </div>
+            <div class="pr">
+              <span class="bdg b-de">🚚 despachado</span>
+              <span class="pkg">$124.000</span>
+            </div>
+          </div>
+          <div class="pi">
+            <div class="pav" style="background:linear-gradient(135deg,#7B1FA2,#9C27B0)">AL</div>
+            <div>
+              <div class="pn">Almacén Los Colonos</div>
+              <div class="ps">#011 · 80 kg · 20 may</div>
+            </div>
+            <div class="pr">
+              <span class="bdg b-co">✅ confirmado</span>
+              <span class="pkg">$49.600</span>
+            </div>
+          </div>
+          <div class="pi">
+            <div class="pav" style="background:linear-gradient(135deg,#00695C,#00897B)">AN</div>
+            <div>
+              <div class="pn">Anahí Torres</div>
+              <div class="ps">#010 · 40 kg · 15 may</div>
+            </div>
+            <div class="pr">
+              <span class="bdg b-cb">💜 cobrado</span>
+              <span class="pkg">$24.800</span>
+            </div>
+          </div>
+          <div class="pi" style="border:none">
+            <div class="pav" style="background:linear-gradient(135deg,#E65100,#F57C00)">EP</div>
+            <div>
+              <div class="pn">El Pinar Distribuidora</div>
+              <div class="ps">#009 · 120 kg · 12 may</div>
+            </div>
+            <div class="pr">
+              <span class="bdg b-cb">💜 cobrado</span>
+              <span class="pkg">$74.400</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════╗ -->
+  <!-- ║  SLIDE 4 — CLIENTES  ║ -->
+  <!-- ╚══════════════════════╝ -->
+  <div class="slide s-bg-4" id="s4">
+    <div class="row">
+      <div class="col-l">
+        <div class="tag">👥 Clientes</div>
+        <div class="h1">Ficha completa por cliente</div>
+        <div class="desc">Cada cliente tiene su historial, su cuenta corriente y su saldo — todo automático, sin planillas ni papeles sueltos.</div>
+        <ul class="checks">
+          <li><span class="ck">✓</span> Cuenta corriente automática</li>
+          <li><span class="ck">✓</span> Balance en tiempo real</li>
+          <li><span class="ck">✓</span> Historial de todos sus pedidos</li>
+          <li><span class="ck">✓</span> KG y pesos acumulados</li>
+          <li><span class="ck">✓</span> El cliente puede ver sus propios datos</li>
+        </ul>
+      </div>
+      <div class="col-r">
+        <div class="gc" style="padding:18px">
+          <!-- Header -->
+          <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px">
+            <div class="cli-av">SC</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:2px">Secadero Don Carlos</div>
+              <div style="font-size:10px;color:var(--w40)">📞 +54 376 4XX XXXX · Posadas</div>
+            </div>
+            <span style="background:rgba(76,175,80,0.14);border:1px solid rgba(76,175,80,0.3);border-radius:20px;padding:2px 10px;font-size:9px;font-weight:700;color:#A5D6A7">activo</span>
+          </div>
+          <!-- Balance -->
+          <div style="margin-bottom:15px">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--w40);margin-bottom:5px">Saldo a favor</div>
+            <div class="bal-wrap"><div class="bal-fill" style="width:68%"></div></div>
+            <div style="font-size:13.5px;font-weight:800;color:#A5D6A7">$45.600 a favor</div>
+          </div>
+          <!-- Stats -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+            <div class="cs"><div class="csv">18</div><div class="csl">Pedidos</div></div>
+            <div class="cs"><div class="csv">2.840</div><div class="csl">KG Total</div></div>
+            <div class="cs"><div class="csv">ene 25</div><div class="csl">Desde</div></div>
+          </div>
+          <!-- Last orders -->
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--w20);margin-bottom:7px">Últimos pedidos</div>
+          <div class="mini-o"><span style="font-weight:600;color:var(--w85)">#012 · 22 may</span><span style="color:var(--w40)">200 kg · $124.000</span></div>
+          <div class="mini-o"><span style="font-weight:600;color:var(--w85)">#008 · 10 abr</span><span style="color:var(--w40)">180 kg · $111.600</span></div>
+          <div class="mini-o"><span style="font-weight:600;color:var(--w85)">#005 · 02 mar</span><span style="color:var(--w40)">160 kg · $96.000</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════╗ -->
+  <!-- ║  SLIDE 5 — CHAT      ║ -->
+  <!-- ╚══════════════════════╝ -->
+  <div class="slide s-bg-5" id="s5">
+    <div class="row">
+      <div class="col-l">
+        <div class="tag">💬 Comunicación</div>
+        <div class="h1">Chat interno del equipo</div>
+        <div class="desc">El equipo se comunica dentro del sistema. Sin mezclar el WhatsApp personal, sin perder mensajes importantes del negocio.</div>
+        <ul class="checks">
+          <li><span class="ck">✓</span> Chat entre administrador y vendedores</li>
+          <li><span class="ck">✓</span> Mensajes por cliente o pedido</li>
+          <li><span class="ck">✓</span> Confirmación de lectura</li>
+          <li><span class="ck">✓</span> Historial siempre guardado</li>
+          <li><span class="ck">✓</span> Notificaciones en tiempo real</li>
+        </ul>
+      </div>
+      <div class="col-r">
+        <div class="gc" style="overflow:hidden">
+          <div class="gc-bar">
+            <div class="chav">L</div>
+            <div style="margin-left:6px">
+              <div style="font-size:11.5px;font-weight:700;color:#fff">Lucía (vendedora)</div>
+              <div style="font-size:9px;color:#A5D6A7">● En línea</div>
+            </div>
+          </div>
+          <div style="padding:11px 13px;display:flex;flex-direction:column;gap:8px">
+            <div class="msg">
+              <div class="msender">Darío (admin)</div>
+              <div class="bbl">Confirmé el pedido #012 de Secadero Don Carlos, 200 kg para despachar mañana 🟢</div>
+              <div class="mmeta">10:24 · leído ✓✓</div>
+            </div>
+            <div class="msg out">
+              <div class="bbl">Perfecto, lo mando con el flete de la mañana y cargo el comprobante en el sistema 👍</div>
+              <div class="mmeta">10:26 · leído ✓✓</div>
+            </div>
+            <div class="msg">
+              <div class="msender">Darío (admin)</div>
+              <div class="bbl">Dale, y recordá que Don Carlos tiene saldo pendiente de $28.000 del mes pasado 💰</div>
+              <div class="mmeta">10:28 · leído ✓✓</div>
+            </div>
+            <div class="msg out">
+              <div class="bbl">Anotado, le aviso cuando despache 📦</div>
+              <div class="mmeta">10:29 · leído ✓✓</div>
+            </div>
+          </div>
+          <div class="ch-input">
+            <div class="ch-fake">Escribir mensaje...</div>
+            <div style="width:28px;height:28px;background:rgba(41,121,255,0.28);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">➤</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════╗ -->
+  <!-- ║  SLIDE 6 — ROLES     ║ -->
+  <!-- ╚══════════════════════╝ -->
+  <div class="slide s-bg-6" id="s6">
+    <div style="width:100%;max-width:960px;display:flex;flex-direction:column;align-items:center;gap:28px">
+      <div style="text-align:center">
+        <div class="tag">🔐 Accesos</div>
+        <div class="h1">Cada usuario ve lo que necesita</div>
+        <div class="desc" style="max-width:480px">Roles diferenciados: cada persona accede solo a lo que le corresponde, sin mezclar información sensible del negocio.</div>
+      </div>
+      <div class="roles">
+        <div class="rc rc-admin">
+          <div class="rc-ico">👑</div>
+          <div class="rc-name">Administrador</div>
+          <div class="rc-tag">Control total</div>
+          <ul class="rp">
+            <li><span class="rok">✓</span> Dashboard y KPIs</li>
+            <li><span class="rok">✓</span> Todos los pedidos</li>
+            <li><span class="rok">✓</span> Gestión de clientes</li>
+            <li><span class="rok">✓</span> Compras y precios</li>
+            <li><span class="rok">✓</span> Configuración del sistema</li>
+            <li><span class="rok">✓</span> Gestión de usuarios</li>
+          </ul>
+        </div>
+        <div class="rc rc-vend">
+          <div class="rc-ico">🧑‍💼</div>
+          <div class="rc-name">Vendedor</div>
+          <div class="rc-tag">Operativo</div>
+          <ul class="rp">
+            <li><span class="rok">✓</span> Pedidos asignados</li>
+            <li><span class="rok">✓</span> Clientes activos</li>
+            <li><span class="rok">✓</span> Chat interno</li>
+            <li><span class="rok">✓</span> Presupuestos</li>
+            <li class="no"><span class="rno">✗</span> Precios de compra</li>
+            <li class="no"><span class="rno">✗</span> Configuración del sistema</li>
+          </ul>
+        </div>
+        <div class="rc rc-cli">
+          <div class="rc-ico">👤</div>
+          <div class="rc-name">Cliente</div>
+          <div class="rc-tag">Solo lo suyo</div>
+          <ul class="rp">
+            <li><span class="rok">✓</span> Sus propios pedidos</li>
+            <li><span class="rok">✓</span> Estado en tiempo real</li>
+            <li><span class="rok">✓</span> Su cuenta corriente</li>
+            <li class="no"><span class="rno">✗</span> Datos de otros clientes</li>
+            <li class="no"><span class="rno">✗</span> Precios ni compras</li>
+            <li class="no"><span class="rno">✗</span> Panel administrativo</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════╗ -->
+  <!-- ║  SLIDE 7 — DOCS      ║ -->
+  <!-- ╚══════════════════════╝ -->
+  <div class="slide s-bg-7" id="s7">
+    <div style="width:100%;max-width:960px;display:flex;flex-direction:column;align-items:center;gap:22px">
+      <div style="text-align:center">
+        <div class="tag">📄 Documentos</div>
+        <div class="h1">Presupuestos y Órdenes de Compra</div>
+        <div class="desc" style="max-width:480px">Cotizá para tus clientes y controlá tus compras — todo desde el mismo sistema, sin exportar a Excel ni papeles aparte.</div>
+      </div>
+      <div class="docs">
+        <!-- Presupuesto -->
+        <div class="doc">
+          <div class="dh">
+            <span class="dt">📋 PRESUPUESTO</span>
+            <span class="dn">#003 · Sec. Don Carlos</span>
+          </div>
+          <div class="db">
+            <div class="dr"><span class="dprod">YM 1 kg × 30 u.</span><span class="dprice">$42.000</span></div>
+            <div class="dr"><span class="dprod">YM 500g × 20 u.</span><span class="dprice">$18.000</span></div>
+            <div class="dr"><span class="dprod">YM Detox 250g × 10</span><span class="dprice">$12.000</span></div>
+            <div class="dtotal"><span style="color:var(--w40)">Total</span><span>$72.000</span></div>
+            <div class="dwsp">📲 Enviar por WhatsApp</div>
+          </div>
+        </div>
+        <!-- OC -->
+        <div class="doc">
+          <div class="dh">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="oc-num">OC-004</span>
+              <span class="dt">ORDEN DE COMPRA</span>
+            </div>
+          </div>
+          <div class="db">
+            <div class="dr" style="margin-bottom:4px">
+              <div>
+                <div style="font-size:11px;color:var(--w85);font-weight:600">Yerba Madre S.A.</div>
+                <div style="font-size:9px;color:var(--w20)">22 may 2026</div>
+              </div>
+            </div>
+            <div class="dr"><span class="dprod">YM 1 kg × 100 u.</span><span class="dprice">$98.000</span></div>
+            <div class="dr"><span class="dprod">YM 500g × 60 u.</span><span class="dprice">$41.400</span></div>
+            <div class="dr"><span class="dprod">YM 250g × 40 u.</span><span class="dprice">$17.200</span></div>
+            <div class="dtotal"><span style="color:var(--w40)">Total OC</span><span>$156.600</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════╗ -->
+  <!-- ║  SLIDE 8 — PWA       ║ -->
+  <!-- ╚══════════════════════╝ -->
+  <div class="slide s-bg-8" id="s8">
+    <div class="row" style="justify-content:center">
+      <div class="col-l">
+        <div class="tag">📱 App instalable</div>
+        <div class="h1">Se instala como app en el celular</div>
+        <div class="desc">Sin pasar por la App Store ni el Play Store. El cliente o el equipo instalan desde el navegador con un solo toque.</div>
+        <ul class="checks">
+          <li><span class="ck">✓</span> Funciona en iPhone y Android</li>
+          <li><span class="ck">✓</span> También desde computadora</li>
+          <li><span class="ck">✓</span> Disponible sin conexión</li>
+          <li><span class="ck">✓</span> Se actualiza sola, sin versiones</li>
+          <li><span class="ck">✓</span> Sin cuotas de tienda de apps</li>
+        </ul>
+      </div>
+      <div style="display:flex;justify-content:center;align-items:center;flex:1">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-scr">
+            <div class="phone-st"><span>9:41</span><span>●●● 📶 🔋</span></div>
+            <div class="hgrid">
+              <div>
+                <div class="hico app-jvs"><img src="https://jv-system.github.io/Sabores-de-misiones/jvs-logo.png" alt="JVS"></div>
+                <div class="hname">JVS</div>
+              </div>
+              <div><div class="hico wapp">💬</div><div class="hname">WhatsApp</div></div>
+              <div><div class="hico cam">📷</div><div class="hname">Cámara</div></div>
+              <div><div class="hico cal">📅</div><div class="hname">Calendario</div></div>
+              <div><div class="hico gm">📧</div><div class="hname">Gmail</div></div>
+              <div><div class="hico mu">🎵</div><div class="hname">Música</div></div>
+              <div><div class="hico mp">🗺️</div><div class="hname">Maps</div></div>
+              <div><div class="hico fo">📸</div><div class="hname">Fotos</div></div>
+            </div>
+            <div class="notif">
+              <div class="notif-t">🔔 JVS Sistema</div>
+              <div style="opacity:0.8">Pedido #012 despachado ✅</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════╗ -->
+  <!-- ║  SLIDE 9 — CTA       ║ -->
+  <!-- ╚══════════════════════╝ -->
+  <div class="slide s-bg-9" id="s9">
+    <div class="orb" style="width:500px;height:500px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(41,121,255,0.1) 0%,transparent 65%);animation-duration:11s"></div>
+    <div class="center" style="position:relative;z-index:1">
+      <img src="https://jv-system.github.io/Sabores-de-misiones/jvs-logo.png" class="cta-logo" alt="JVS">
+      <div class="cta-jvs">JVS System</div>
+      <div class="cta-t">¿Tu negocio necesita<br>un sistema así?</div>
+      <div class="cta-sub">Desarrollamos sistemas a medida para pequeños y medianos comercios.<br>Tu marca · Tus datos · Tu sistema — sin cuotas mensuales.</div>
+      <div class="cta-chips">
+        <div class="cta-chip">✅ Sistema propio</div>
+        <div class="cta-chip">🔐 Tus datos, tuyos</div>
+        <div class="cta-chip">📱 Instalable</div>
+        <div class="cta-chip">⚙️ A tu medida</div>
+        <div class="cta-chip">🚀 Entrega rápida</div>
+      </div>
+      <a href="https://wa.me/5493764000000?text=Hola%20JVS%2C%20vi%20la%20presentacion%20del%20sistema%20y%20quiero%20mas%20informacion" class="cta-btn" target="_blank">
+        <span style="font-size:18px">💬</span> Contactar por WhatsApp
+      </a>
+      <div class="cta-note">JVS System · Desarrollo de software a medida · Misiones, Argentina</div>
+    </div>
+  </div>
+
+</div><!-- /stage -->
+
+<!-- navigation -->
+<div id="dots"></div>
+<button class="arr" id="aprev" onclick="prev()">‹</button>
+<button class="arr" id="anext" onclick="next()">›</button>
+
+<script>
+/* ═══════════════════════════════════════
+   SLIDESHOW ENGINE
+═══════════════════════════════════════ */
+const TOTAL    = 9;
+const SLIDE_MS = 6500; // ms por slide
+
+let cur      = 0;
+let paused   = false;
+let prafId   = null;
+let pStart   = null;
+let kCountDone = false;
+
+// ── Dots ──
+const dotsEl = document.getElementById('dots');
+for(let i = 0; i < TOTAL; i++){
+  const d = document.createElement('button');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  d.setAttribute('aria-label', 'Ir a slide ' + (i+1));
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+}
+
+// ── goTo ──
+function goTo(n) {
+  document.getElementById('s' + (cur+1)).classList.remove('active');
+  cur = ((n % TOTAL) + TOTAL) % TOTAL;
+  document.getElementById('s' + (cur+1)).classList.add('active');
+
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('on', i === cur));
+  document.getElementById('ctr').textContent = (cur+1) + ' / ' + TOTAL;
+
+  // animate KPI counters on slide 2 (index 1)
+  if(cur === 1 && !kCountDone) {
+    kCountDone = true;
+    setTimeout(runCounters, 300);
+  }
+
+  resetPbar();
+}
+
+function next() { goTo(cur + 1); }
+function prev() { goTo(cur - 1); }
+
+// ── Progress bar ──
+function resetPbar() {
+  cancelAnimationFrame(prafId);
+  if(!paused) startPbar();
+}
+
+function startPbar() {
+  pStart = performance.now();
+  const bar = document.getElementById('pbar');
+  function step(now) {
+    const pct = Math.min(100, ((now - pStart) / SLIDE_MS) * 100);
+    bar.style.width = pct + '%';
+    if(pct < 100) {
+      prafId = requestAnimationFrame(step);
+    } else {
+      next();
+    }
+  }
+  prafId = requestAnimationFrame(step);
+}
+
+// ── Pause ──
+function togglePause() {
+  paused = !paused;
+  const btn = document.getElementById('pbtn');
+  if(paused) {
+    cancelAnimationFrame(prafId);
+    document.getElementById('pbar').style.width = '0%';
+    btn.textContent = '▶ Reanudar';
+  } else {
+    btn.textContent = '⏸ Pausar';
+    startPbar();
+  }
+}
+
+// ── Keyboard ──
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+  if(e.key === 'ArrowLeft')  { e.preventDefault(); prev(); }
+  if(e.key === 'Escape')     togglePause();
+});
+
+// ── Touch swipe ──
+let tx0 = null;
+document.addEventListener('touchstart', e => { tx0 = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if(tx0 === null) return;
+  const dx = e.changedTouches[0].clientX - tx0;
+  if(Math.abs(dx) > 48) { dx < 0 ? next() : prev(); }
+  tx0 = null;
+});
+
+// ── KPI Counters ──
+function runCounters() {
+  const items = [
+    { id:'kv-kg', end:2840, dur:1300, fmt: v => v.toLocaleString('es-AR') + ' kg' },
+    { id:'kv-in', end:847200, dur:1500, fmt: v => '$' + v.toLocaleString('es-AR') },
+    { id:'kv-pe', end:12, dur:700, fmt: v => String(v) },
+    { id:'kv-cl', end:8, dur:600, fmt: v => String(v) },
+  ];
+  items.forEach(item => {
+    const el = document.getElementById(item.id);
+    if(!el) return;
+    const t0 = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - t0) / item.dur);
+      const ease = 1 - Math.pow(1 - p, 3); // ease-out-cubic
+      el.textContent = item.fmt(Math.round(ease * item.end));
+      if(p < 1) requestAnimationFrame(step);
+    })(t0);
+  });
+}
+
+// ── Start ──
+startPbar();
+</script>
+</body>
+</html>
