@@ -1225,9 +1225,9 @@ function showSection(sec){
       const sidebar = s ? s.querySelector('.sidebar') : null;
       if(sidebar){
         sidebar.classList.add('open');
-        document.getElementById('overlayBg').classList.add('open');
+        // NO abrimos overlayBg — interfiere con los clicks en la lista
         const fab = document.getElementById('fabBtn');
-        if(fab) fab.style.display = 'none'; // ocultar FAB mientras el sidebar está abierto
+        if(fab) fab.style.display = 'none';
       }
     }
   } else {
@@ -2655,9 +2655,45 @@ function openMiPerfil(){
         <input class="form-input" id="perfil_pass2" type="password" placeholder="Repetir nueva contraseña">
       </div>
     </div>
-    ${pedidosHtml}`;
+    ${pedidosHtml}
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <div class="form-label" style="font-weight:700;margin-bottom:10px">📲 Instalar como App</div>
+      <div id="installZone"></div>
+    </div>`;
   document.getElementById('modalMiPerfil').style.display = 'flex';
+  renderInstallZone();
 }
+
+function renderInstallZone(){
+  const z = document.getElementById('installZone');
+  if(!z) return;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  if(isStandalone){
+    z.innerHTML = '<div style="color:var(--teal);font-size:13px;font-weight:600">✅ La app ya está instalada en este dispositivo</div>';
+    return;
+  }
+  if(_pwaPrompt){
+    z.innerHTML = `<button class="btn btn-primary" onclick="installPWA();closeModal('modalMiPerfil')" style="width:100%;justify-content:center;gap:8px">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Instalar App en este dispositivo
+    </button>`;
+    return;
+  }
+  if(isIOS){
+    z.innerHTML = `<div style="background:var(--bg);border-radius:var(--radius-lg);padding:14px;font-size:13px;line-height:1.6;color:var(--text)">
+      <strong>En iPhone/iPad:</strong><br>
+      1. Tocá el botón <strong>Compartir</strong> (□↑) en Safari<br>
+      2. Elegí <strong>"Agregar a pantalla de inicio"</strong><br>
+      3. Tocá <strong>Agregar</strong>
+    </div>`;
+    return;
+  }
+  z.innerHTML = `<div style="background:var(--bg);border-radius:var(--radius-lg);padding:14px;font-size:13px;line-height:1.6;color:var(--text)">
+    <strong>En Android Chrome:</strong><br>
+    Tocá el menú <strong>⋮</strong> (tres puntos) arriba a la derecha<br>
+    y elegí <strong>"Agregar a pantalla de inicio"</strong> o <strong>"Instalar app"</strong>
+  </div>`;
 
 function guardarMiPerfil(){
   const nombre = document.getElementById('perfil_nombre').value.trim();
