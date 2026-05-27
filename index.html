@@ -896,6 +896,16 @@ tr:hover td{background:#fafbfd}
       <button class="btn btn-primary btn-sm" onclick="openModalUsuario()">+ Nuevo Usuario</button>
     </div>
     <div class="content-body">
+      <!-- Card Estados -->
+      <div class="config-card">
+        <div class="config-card-head">
+          <div class="config-card-title">🏷️ Estados de Pedidos</div>
+          <button class="btn btn-primary btn-sm" onclick="openAddEstado()">+ Nuevo estado</button>
+        </div>
+        <div style="padding:16px 20px" id="estadosConfigBody"></div>
+      </div>
+
+      <!-- Card Usuarios -->
       <div class="config-card">
         <div class="config-card-head">
           <div class="config-card-title">
@@ -1358,7 +1368,7 @@ function calcKgMes(){
 }
 function fmt(n){ return '$'+Math.abs(n).toLocaleString('es-AR',{maximumFractionDigits:0}); }
 function fmtNum(n){ return (n||0).toLocaleString('es-AR',{maximumFractionDigits:0}); }
-function badgeClass(e){ return {pendiente:'pending',confirmado:'open',despachado:'enviado',cobrado:'done'}[e]||'pending'; }
+function badgeClass(e){ const est=getEstados().find(x=>x.nombre===e); return est?est.color:'pending'; }
 function today(){ return new Date().toISOString().slice(0,10); }
 
 // ════════════════════════════════════════════════
@@ -2209,6 +2219,19 @@ function applyRoleTabs(){
 }
 
 // ════════════════════════════════════════════════
+//  ESTADOS DE PEDIDOS (configurables)
+// ════════════════════════════════════════════════
+const DEFAULT_ESTADOS = [
+  {id:1, nombre:'pendiente',  emoji:'⏳', color:'pending'},
+  {id:2, nombre:'confirmado', emoji:'✅', color:'open'},
+  {id:3, nombre:'despachado', emoji:'🚚', color:'enviado'},
+  {id:4, nombre:'cobrado',    emoji:'💰', color:'done'},
+];
+if(!db.estados) db.estados = JSON.parse(JSON.stringify(DEFAULT_ESTADOS));
+
+function getEstados(){ return db.estados && db.estados.length ? db.estados : DEFAULT_ESTADOS; }
+
+// ════════════════════════════════════════════════
 //  MENSAJES / CHAT
 // ════════════════════════════════════════════════
 if(!db.mensajes) db.mensajes=[];
@@ -2323,10 +2346,7 @@ function renderChatMain(p){
       </div>
       ${currentUser.rol!=='cliente'?`
       <select class="chat-estado-select s-${badgeClass(p.estado)}" onchange="changeChatEstado(${p.id},this.value)" title="Cambiar estado">
-        <option value="pendiente"  ${p.estado==='pendiente' ?'selected':''}>⏳ Pendiente</option>
-        <option value="confirmado" ${p.estado==='confirmado'?'selected':''}>✅ Confirmado</option>
-        <option value="despachado" ${p.estado==='despachado'?'selected':''}>🚚 Despachado</option>
-        <option value="cobrado"    ${p.estado==='cobrado'   ?'selected':''}>💰 Cobrado</option>
+        ${getEstados().map(e=>`<option value="${e.nombre}" ${p.estado===e.nombre?'selected':''}>${e.emoji} ${e.nombre.charAt(0).toUpperCase()+e.nombre.slice(1)}</option>`).join('')}
       </select>`:''}
     </div>
     <div class="chat-messages" id="chatMessages">
@@ -2375,7 +2395,7 @@ function changeChatEstado(pedidoId, nuevoEstado){
   const anterior = p.estado;
   p.estado = nuevoEstado;
   // Mensaje de sistema en el chat
-  const estadoEmoji = {pendiente:'⏳',confirmado:'✅',despachado:'🚚',cobrado:'💰'};
+  const estadoEmoji = Object.fromEntries(getEstados().map(e=>[e.nombre,e.emoji]));
   db.mensajes.push({
     id: Date.now(), pedidoId,
     autor:'sistema', tipo:'sistema',
@@ -2574,7 +2594,104 @@ if(savedUser){
 // ════════════════════════════════════════════════
 //  CONFIGURACIÓN — Gestión de Usuarios
 // ════════════════════════════════════════════════
+const ESTADO_COLORS = [
+  {key:'pending', label:'Amarillo (Pendiente)', css:'background:#FFF3CD;color:#856404'},
+  {key:'open',    label:'Celeste (Confirmado)', css:'background:#D1ECF1;color:#0C5460'},
+  {key:'enviado', label:'Azul (Despachado)',    css:'background:#CCE5FF;color:#004085'},
+  {key:'done',    label:'Verde (Cobrado)',      css:'background:#D4EDDA;color:#155724'},
+  {key:'danger',  label:'Rojo',                css:'background:#F8D7DA;color:#721C24'},
+  {key:'gray',    label:'Gris',                css:'background:#E2E3E5;color:#383D41'},
+];
+
+function renderEstadosConfig(){
+  const body = document.getElementById('estadosConfigBody'); if(!body) return;
+  const estados = getEstados();
+  body.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${estados.map((e,i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+          <span style="font-size:20px;width:28px;text-align:center">${e.emoji}</span>
+          <span style="flex:1;font-weight:600;font-size:13px;text-transform:capitalize">${e.nombre}</span>
+          <span style="font-size:11px;padding:3px 10px;border-radius:12px;${ESTADO_COLORS.find(c=>c.key===e.color)?.css||''}">${ESTADO_COLORS.find(c=>c.key===e.color)?.label||e.color}</span>
+          <button class="btn btn-ghost btn-sm" onclick="openEditEstado(${e.id})">✏️</button>
+          ${estados.length>1?`<button class="btn btn-danger btn-sm" onclick="deleteEstado(${e.id})">🗑️</button>`:''}
+          ${i>0?`<button class="btn btn-ghost btn-sm" onclick="moveEstado(${e.id},-1)" title="Subir">↑</button>`:''}
+          ${i<estados.length-1?`<button class="btn btn-ghost btn-sm" onclick="moveEstado(${e.id},1)" title="Bajar">↓</button>`:''}
+        </div>`).join('')}
+    </div>`;
+}
+
+let _editEstadoId = null;
+function openAddEstado(){ _editEstadoId=null; renderEstadoForm(null); }
+function openEditEstado(id){ _editEstadoId=id; renderEstadoForm(getEstados().find(e=>e.id===id)); }
+
+function renderEstadoForm(e){
+  const colorOpts = ESTADO_COLORS.map(c=>`<option value="${c.key}" ${e&&e.color===c.key?'selected':''}>${c.label}</option>`).join('');
+  const div = document.createElement('div');
+  div.id='estadoFormOverlay';
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px';
+  div.innerHTML=`
+    <div style="background:#fff;border-radius:14px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+      <div class="modal-header">
+        <span class="modal-title">${e?'Editar estado':'Nuevo estado'}</span>
+        <button class="modal-close" onclick="document.getElementById('estadoFormOverlay').remove()">×</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+        <div class="form-group">
+          <label class="form-label">Emoji</label>
+          <input class="form-input" id="efEmoji" value="${e?e.emoji:'🔵'}" placeholder="🔵" style="font-size:20px;text-align:center;max-width:80px">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre del estado</label>
+          <input class="form-input" id="efNombre" value="${e?e.nombre:''}" placeholder="ej: en preparación">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Color de la etiqueta</label>
+          <select class="form-input" id="efColor">${colorOpts}</select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="document.getElementById('estadoFormOverlay').remove()">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveEstado()">Guardar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(div);
+}
+
+function saveEstado(){
+  const emoji  = document.getElementById('efEmoji').value.trim()||'🔵';
+  const nombre = document.getElementById('efNombre').value.trim().toLowerCase();
+  const color  = document.getElementById('efColor').value;
+  if(!nombre){ showToast('Ingresá un nombre','error'); return; }
+  if(_editEstadoId){
+    const e = db.estados.find(x=>x.id===_editEstadoId);
+    if(e){ e.emoji=emoji; e.nombre=nombre; e.color=color; }
+  } else {
+    db.estados.push({id:Date.now(), nombre, emoji, color});
+  }
+  saveDB();
+  document.getElementById('estadoFormOverlay').remove();
+  renderEstadosConfig();
+  showToast('Estado guardado ✓','success');
+}
+
+function deleteEstado(id){
+  if(!confirm('¿Eliminar este estado?')) return;
+  db.estados = db.estados.filter(e=>e.id!==id);
+  saveDB(); renderEstadosConfig(); showToast('Estado eliminado','success');
+}
+
+function moveEstado(id, dir){
+  const arr = db.estados;
+  const i = arr.findIndex(e=>e.id===id);
+  const ni = i+dir;
+  if(ni<0||ni>=arr.length) return;
+  [arr[i],arr[ni]]=[arr[ni],arr[i]];
+  saveDB(); renderEstadosConfig();
+}
+
 function renderConfigSection(){
+  renderEstadosConfig();
   const tbody = document.getElementById('usersTbody');
   if(!tbody) return;
   const rolColors = {admin:'role-admin',dario:'role-dario',lucia:'role-lucia',cliente:'role-cliente'};
