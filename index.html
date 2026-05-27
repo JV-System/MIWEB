@@ -3088,40 +3088,73 @@ function renderInstallZone(){
   if(!z) return;
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+  // Ya instalada
   if(isStandalone){
-    z.innerHTML = '<div style="color:var(--teal);font-size:13px;font-weight:600">✅ La app ya está instalada en este dispositivo</div>';
+    z.innerHTML = `<div style="display:flex;align-items:center;gap:10px;background:#E8F5E9;border-radius:10px;padding:14px 16px;color:#1B5E20;font-size:13px;font-weight:600">
+      <span style="font-size:22px">✅</span> La app ya está instalada en este dispositivo
+    </div>`;
     return;
   }
+
+  // Chrome/Edge/Android — prompt nativo disponible: botón directo
   if(_pwaPrompt){
-    z.innerHTML = `<button class="btn btn-primary" onclick="installPWA();closeModal('modalMiPerfil')" style="width:100%;justify-content:center;gap:8px">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Instalar App en este dispositivo
+    z.innerHTML = `<button class="btn btn-primary" onclick="installPWA();closeModal('modalMiPerfil')" style="width:100%;justify-content:center;gap:10px;padding:14px;font-size:14px">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Instalar app en este dispositivo
     </button>`;
     return;
   }
+
+  // iOS Safari
   if(isIOS){
-    z.innerHTML = `<div style="background:var(--bg);border-radius:var(--radius-lg);padding:14px;font-size:13px;line-height:1.6;color:var(--text)">
-      <strong>En iPhone/iPad:</strong><br>
-      1. Tocá el botón <strong>Compartir</strong> (□↑) en Safari<br>
-      2. Elegí <strong>"Agregar a pantalla de inicio"</strong><br>
-      3. Tocá <strong>Agregar</strong>
+    z.innerHTML = `<div style="background:var(--bg);border-radius:10px;padding:16px;font-size:13px;color:var(--text)">
+      <div style="font-weight:700;margin-bottom:12px;color:var(--navy)">📱 Cómo instalar en iPhone / iPad</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="background:var(--navy);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0">1</span>
+          <span>Abrí esta página en <strong>Safari</strong></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="background:var(--navy);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0">2</span>
+          <span>Tocá el botón <strong style="font-size:16px">⎙</strong> Compartir en la barra inferior</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="background:var(--navy);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0">3</span>
+          <span>Elegí <strong>"Agregar a pantalla de inicio"</strong></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="background:var(--navy);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0">4</span>
+          <span>Tocá <strong>Agregar</strong> ✓</span>
+        </div>
+      </div>
     </div>`;
     return;
   }
-  // Desktop o Android sin prompt nativo aún
-  const isDesktop = window.innerWidth > 768;
-  if(isDesktop){
-    z.innerHTML = `<div style="background:var(--bg);border-radius:var(--radius-lg);padding:14px;font-size:13px;line-height:1.8;color:var(--text)">
-      <strong>En Chrome/Edge (escritorio):</strong><br>
-      Hacé clic en el ícono <strong>⊕</strong> que aparece en la barra de dirección<br>
-      o abrí el menú (<strong>⋮</strong>) → <strong>"Instalar Sabores de Misiones…"</strong><br><br>
-      <strong>En Firefox:</strong> menú (<strong>☰</strong>) → <strong>"Instalar"</strong>
+
+  // Desktop o Android sin prompt capturado aún
+  const isMob = window.innerWidth <= 768;
+  if(isMob){
+    // Android sin prompt — intentar igual + instrucción
+    z.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-primary" onclick="clickInstall()" style="width:100%;justify-content:center;gap:10px;padding:14px;font-size:14px">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Instalar app
+      </button>
+      <div style="background:var(--bg);border-radius:10px;padding:14px;font-size:12px;color:var(--text-muted);line-height:1.7">
+        Si el botón no funciona: abrí el menú <strong>⋮</strong> (tres puntos arriba a la derecha) y elegí <strong>"Agregar a pantalla de inicio"</strong> o <strong>"Instalar app"</strong>
+      </div>
     </div>`;
   } else {
-    z.innerHTML = `<div style="background:var(--bg);border-radius:var(--radius-lg);padding:14px;font-size:13px;line-height:1.8;color:var(--text)">
-      <strong>En Android Chrome:</strong><br>
-      Tocá el menú <strong>⋮</strong> (tres puntos) arriba a la derecha<br>
-      y elegí <strong>"Agregar a pantalla de inicio"</strong> o <strong>"Instalar app"</strong>
+    // Desktop — la instalación queda en la barra del navegador
+    z.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-primary" onclick="clickInstall()" style="width:100%;justify-content:center;gap:10px;padding:14px;font-size:14px">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Instalar app
+      </button>
+      <div style="background:var(--bg);border-radius:10px;padding:14px;font-size:12px;color:var(--text-muted);line-height:1.8">
+        Si el botón no funciona, buscá el ícono <strong style="font-size:14px">⊕</strong> en la barra de dirección del navegador y hacé click ahí para instalar.
+      </div>
     </div>`;
   }
 }
