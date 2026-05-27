@@ -483,6 +483,11 @@ tr:hover td{background:#fafbfd}
 .chat-header-info{flex:1}
 .chat-header-title{font-size:14px;font-weight:700;color:var(--navy-light)}
 .chat-header-sub{font-size:11px;color:var(--text-muted)}
+.chat-estado-select{border:none;border-radius:20px;padding:5px 10px;font-size:10px;font-weight:700;font-family:'Exo 2',sans-serif;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;outline:none;flex-shrink:0;transition:all 0.2s}
+.chat-estado-select.s-pending{background:#FFF3CD;color:#856404}
+.chat-estado-select.s-open{background:#D1ECF1;color:#0C5460}
+.chat-estado-select.s-enviado{background:#CCE5FF;color:#004085}
+.chat-estado-select.s-done{background:#D4EDDA;color:#155724}
 .chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
 .chat-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--text-muted);gap:10px;opacity:0.6}
 
@@ -2314,8 +2319,15 @@ function renderChatMain(p){
       </button>
       <div style="flex:1;min-width:0">
         <div class="chat-header-title">Pedido #${p.numero} — ${p.nombre}</div>
-        <div class="chat-header-sub">${totalKg} kg · ${p.transporte||'Sin transporte'} · <span class="badge-${badgeClass(p.estado)}" style="font-size:9px;font-weight:700;text-transform:uppercase">${p.estado}</span></div>
+        <div class="chat-header-sub">${totalKg} kg · ${p.transporte||'Sin transporte'}</div>
       </div>
+      ${currentUser.rol!=='cliente'?`
+      <select class="chat-estado-select s-${badgeClass(p.estado)}" onchange="changeChatEstado(${p.id},this.value)" title="Cambiar estado">
+        <option value="pendiente"  ${p.estado==='pendiente' ?'selected':''}>⏳ Pendiente</option>
+        <option value="confirmado" ${p.estado==='confirmado'?'selected':''}>✅ Confirmado</option>
+        <option value="despachado" ${p.estado==='despachado'?'selected':''}>🚚 Despachado</option>
+        <option value="cobrado"    ${p.estado==='cobrado'   ?'selected':''}>💰 Cobrado</option>
+      </select>`:''}
     </div>
     <div class="chat-messages" id="chatMessages">
       ${msgs.length ? msgs.map(renderMsg).join('') : '<div class="chat-empty"><p style="font-size:13px">Aún no hay mensajes en este pedido</p></div>'}
@@ -2351,11 +2363,30 @@ function sendMsg(pedidoId){
   const msg={id:Date.now(), pedidoId, autor:currentUser.id, texto:txt, tipo:'mensaje', ts:Date.now(), visto:[currentUser.id]};
   db.mensajes.push(msg); saveDB();
   input.value='';
-  // Re-render chat messages area only
   const p=db.pedidos.find(x=>x.id===pedidoId);
   if(p) renderChatMain(p);
   renderChatList();
   updateChatBadge();
+}
+
+function changeChatEstado(pedidoId, nuevoEstado){
+  const p = db.pedidos.find(x=>x.id===pedidoId);
+  if(!p || p.estado===nuevoEstado) return;
+  const anterior = p.estado;
+  p.estado = nuevoEstado;
+  // Mensaje de sistema en el chat
+  const estadoEmoji = {pendiente:'⏳',confirmado:'✅',despachado:'🚚',cobrado:'💰'};
+  db.mensajes.push({
+    id: Date.now(), pedidoId,
+    autor:'sistema', tipo:'sistema',
+    texto:`Estado cambiado de ${estadoEmoji[anterior]||''} ${anterior} → ${estadoEmoji[nuevoEstado]||''} ${nuevoEstado}`,
+    ts: Date.now(), visto:[]
+  });
+  saveDB();
+  renderChatMain(p);
+  renderChatList();
+  renderPedidosList();
+  showToast(`Estado: ${nuevoEstado} ✓`,'success');
 }
 
 function fmtTime(ts){
@@ -2712,7 +2743,7 @@ function openMiPerfil(){
       <div class="form-label" style="font-weight:700;margin-bottom:10px">📲 Instalar como App</div>
       <div id="installZone"></div>
     </div>`;
-  document.getElementById('modalMiPerfil').style.display = 'flex';
+  openModal('modalMiPerfil');
   renderInstallZone();
 }
 
