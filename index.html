@@ -545,6 +545,9 @@ tr:hover td{background:#fafbfd}
         <div class="user-role" id="userRoleLabel">—</div>
       </div>
     </div>
+    <button class="btn-icon" onclick="clickInstall()" id="btnInstall" title="Instalar app" style="display:none">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </button>
     <button class="btn-icon" onclick="openSearch()" id="btnSearch" title="Buscar (Ctrl+K)" style="display:none">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
@@ -2883,7 +2886,7 @@ function renderBottomNav(){
 
 (function(){
   const yaVisto = sessionStorage.getItem('splashDone');
-  const delay = yaVisto ? 400 : 3600;
+  const delay = yaVisto ? 300 : 2000;
   function hideSplash(){
     const s = document.getElementById('splash');
     if(!s) return;
@@ -2909,71 +2912,97 @@ if('serviceWorker' in navigator){
   });
 }
 
-// ── PWA: botón instalar ──
+// ════════════════════════════════════════════════
+//  PWA — INSTALACIÓN
+// ════════════════════════════════════════════════
 let _pwaPrompt = null;
-window.addEventListener('beforeinstallprompt', e=>{
+const _isStandalone = () => window.navigator.standalone || window.matchMedia('(display-mode:standalone)').matches;
+const _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+// Capturar el evento lo antes posible
+window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _pwaPrompt = e;
-  // Mostrar banner de instalación
-  showInstallBanner();
-});
-window.addEventListener('appinstalled', ()=>{
-  const b = document.getElementById('installBanner');
-  if(b) b.remove();
-  _pwaPrompt = null;
+  showInstallUI();
 });
 
-function showInstallBanner(){
+window.addEventListener('appinstalled', () => {
+  _pwaPrompt = null;
+  hideInstallUI();
+  showToast('App instalada correctamente ✓', 'success');
+});
+
+function showInstallUI() {
+  // Botón en el header
+  const btn = document.getElementById('btnInstall');
+  if(btn && !_isStandalone()) btn.style.display = 'flex';
+  // Banner flotante (solo si no fue descartado recientemente)
+  if(localStorage.getItem('installDismissed')) return;
   if(document.getElementById('installBanner')) return;
+  const isMob = window.innerWidth <= 768;
   const banner = document.createElement('div');
   banner.id = 'installBanner';
   banner.innerHTML = `
-    <div style="display:flex;align-items:center;gap:12px;flex:1">
-      <img src="jvs-icon.png" style="width:32px;height:32px;border-radius:8px" onerror="this.style.display='none'">
-      <div>
-        <div style="font-weight:700;font-size:13px;color:#fff">Instalar Sabores de Misiones</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.6)">Agregar a la pantalla de inicio</div>
-      </div>
+    <img src="jvs-icon.png" style="width:36px;height:36px;border-radius:10px;flex-shrink:0" onerror="this.style.display='none'">
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:700;font-size:13px;color:#fff">Instalar Sabores de Misiones</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:1px">${isMob?'Agregar a pantalla de inicio':'Instalar como aplicación de escritorio'}</div>
     </div>
-    <button onclick="installPWA()" style="background:#E8770A;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Exo 2',sans-serif">Instalar</button>
-    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;padding:0 4px;line-height:1">×</button>
-  `;
-  banner.style.cssText = 'position:fixed;bottom:66px;left:0;right:0;background:linear-gradient(135deg,#0D3B0D,#071F07);border-top:1px solid rgba(78,160,78,0.4);padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:190;box-shadow:0 -4px 20px rgba(0,0,0,0.3)';
+    <button onclick="clickInstall()" style="background:#E8770A;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Exo 2',sans-serif;white-space:nowrap">⬇ Instalar</button>
+    <button onclick="localStorage.setItem('installDismissed','1');this.closest('#installBanner').remove()" style="background:none;border:none;color:rgba(255,255,255,0.45);font-size:22px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0">×</button>`;
+  const bottom = isMob ? '66px' : '0';
+  banner.style.cssText = `position:fixed;bottom:${bottom};left:0;right:0;background:linear-gradient(135deg,#0D4A1A,#071F07);border-top:2px solid rgba(78,160,78,0.5);padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:300;box-shadow:0 -4px 24px rgba(0,0,0,0.4)`;
   document.body.appendChild(banner);
 }
 
-function installPWA(){
-  if(!_pwaPrompt) return;
-  _pwaPrompt.prompt();
-  _pwaPrompt.userChoice.then(r=>{
-    if(r.outcome==='accepted'){
-      const b = document.getElementById('installBanner');
-      if(b) b.remove();
-    }
-    _pwaPrompt = null;
-  });
+function hideInstallUI() {
+  const b = document.getElementById('installBanner');
+  if(b) b.remove();
+  const btn = document.getElementById('btnInstall');
+  if(btn) btn.style.display = 'none';
 }
 
-// iOS: detectar Safari y mostrar instrucción
-(function(){
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone;
-  if(isIOS && !isStandalone && !localStorage.getItem('iosTipDismissed')){
-    setTimeout(()=>{
-      if(document.getElementById('installBanner')) return;
-      const tip = document.createElement('div');
-      tip.id = 'installBanner';
-      tip.innerHTML = `
-        <div style="flex:1;font-size:12px;color:#fff">
-          <strong>Instalar en iPhone:</strong> tocá <strong>Compartir</strong> (□↑) y luego <em>"Agregar a inicio"</em>
-        </div>
-        <button onclick="localStorage.setItem('iosTipDismissed','1');this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer">×</button>
-      `;
-      tip.style.cssText = 'position:fixed;bottom:66px;left:0;right:0;background:linear-gradient(135deg,#0D3B0D,#071F07);border-top:1px solid rgba(78,160,78,0.4);padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:190';
-      document.body.appendChild(tip);
-    }, 4000);
+function clickInstall() {
+  if(_pwaPrompt){
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(r => {
+      if(r.outcome === 'accepted') hideInstallUI();
+      _pwaPrompt = null;
+    });
+  } else {
+    // Sin prompt nativo: abrir Mi Perfil en sección instalar
+    openMiPerfil();
+    hideInstallUI();
   }
-})();
+}
+
+// Mostrar botón en header si no está instalado (tras cargar)
+window.addEventListener('load', () => {
+  if(!_isStandalone()){
+    // iOS Safari: mostrar instrucciones automáticamente
+    if(_isIOS && !localStorage.getItem('iosTipDismissed')){
+      setTimeout(()=>{
+        if(document.getElementById('installBanner')) return;
+        const tip = document.createElement('div');
+        tip.id = 'installBanner';
+        tip.innerHTML = `
+          <div style="flex:1;font-size:12px;color:#fff;line-height:1.5">
+            <strong>Instalar en iPhone:</strong> tocá <strong>Compartir</strong> (□↑) → <em>"Agregar a inicio"</em>
+          </div>
+          <button onclick="localStorage.setItem('iosTipDismissed','1');this.closest('#installBanner').remove()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:22px;cursor:pointer;flex-shrink:0">×</button>`;
+        tip.style.cssText = 'position:fixed;bottom:66px;left:0;right:0;background:linear-gradient(135deg,#0D4A1A,#071F07);border-top:2px solid rgba(78,160,78,0.5);padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:300';
+        document.body.appendChild(tip);
+      }, 3000);
+    }
+    // Mostrar botón en header siempre (se mostrará cuando haya prompt disponible)
+    setTimeout(()=>{
+      if(_pwaPrompt){
+        const btn = document.getElementById('btnInstall');
+        if(btn) btn.style.display = 'flex';
+      }
+    }, 1500);
+  }
+});
 </script>
 
 <!-- ══════════ FAB MOBILE ══════════ -->
