@@ -102,7 +102,7 @@ body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 
 /* ── CONTENT ── */
 .content{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
-.content-toolbar{padding:12px 20px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.content-toolbar{padding:12px 20px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;position:sticky;top:0;z-index:10}
 .toolbar-title{font-size:14px;font-weight:700;color:var(--navy);flex:1}
 .content-body{flex:1;overflow-y:auto;padding:20px}
 
@@ -1198,6 +1198,10 @@ function openPedidoDetail(id){
           <h2 style="font-size:18px;font-weight:800;flex:1">Pedido #${p.numero}</h2>
           <span class="item-badge badge-${badgeClass(p.estado)}" style="font-size:11px">${p.estado}</span>
           <button class="btn btn-primary btn-sm" onclick="openEditPedido(${id})">Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick="printPedido(${id})" title="Descargar PDF">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            PDF
+          </button>
           <button class="btn btn-danger btn-sm" onclick="deletePedido(${id})">Eliminar</button>
         </div>
         <div class="card">
@@ -1274,6 +1278,110 @@ function copyWsp(){
 }
 function markMsgSent(id){ const p=db.pedidos.find(x=>x.id===id); if(p){ p.msgEnviado=true; saveDB(); toast('Marcado como enviado','success'); } }
 function deletePedido(id){ if(!confirm('¿Eliminar este pedido?')) return; db.pedidos=db.pedidos.filter(p=>p.id!==id); saveDB(); renderPedidosList(); document.getElementById('contentPedidos').innerHTML='<div class="empty-state"><p>Seleccioná un pedido</p></div>'; toast('Pedido eliminado'); }
+
+function printPedido(id){
+  const p = db.pedidos.find(x=>x.id===id); if(!p) return;
+  const productos = (p.productos||[]).filter(r=>r.tipo&&Number(r.kg)>0);
+  const totalKg = productos.reduce((s,r)=>s+(Number(r.kg)||0),0);
+  const totalVal = productos.reduce((s,r)=>s+(getPrice(r.tipo,p.lista||1)*Number(r.kg)||0),0);
+  const filas = productos.map(r=>{
+    const precio = getPrice(r.tipo, p.lista||1);
+    const sub = precio * Number(r.kg);
+    return `<tr>
+      <td>${prodLabel(r.tipo)}</td>
+      <td style="text-align:center">${r.kg} kg</td>
+      <td style="text-align:center">${r.estampilla?'Sí':'No'}</td>
+      <td style="text-align:right">$${precio.toLocaleString('es-AR')}</td>
+      <td style="text-align:right"><b>$${sub.toLocaleString('es-AR')}</b></td>
+    </tr>`;
+  }).join('');
+  const estadoBadge = {abierto:'#1B8A5A',pendiente:'#8B4513',enviado:'#7B5EA7',cerrado:'#555'}[p.estado]||'#555';
+  const win = window.open('','_blank','width=800,height:900');
+  win.document.write(`<!DOCTYPE html><html lang="es"><head>
+  <meta charset="UTF-8">
+  <title>Pedido N°${p.numero} — Sabores de Misiones</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;font-size:13px;color:#1a1a1a;background:#fff;padding:32px 40px}
+    .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:3px solid #1B5E20;padding-bottom:16px;margin-bottom:20px}
+    .brand-col{display:flex;align-items:center;gap:14px}
+    .brand-img{width:60px;height:60px;object-fit:contain}
+    .brand-name{font-size:22px;font-weight:900;color:#1B5E20;line-height:1.1}
+    .brand-sub{font-size:11px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+    .comp-title{text-align:right}
+    .comp-num{font-size:20px;font-weight:900;color:#1B5E20}
+    .comp-fecha{font-size:11px;color:#888;margin-top:4px}
+    .estado-badge{display:inline-block;padding:3px 12px;border-radius:12px;font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.5px;background:${estadoBadge};margin-top:6px}
+    .section{margin-bottom:18px}
+    .section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#888;border-bottom:1px solid #e0e0e0;padding-bottom:4px;margin-bottom:10px}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px}
+    .info-item label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.8px;display:block}
+    .info-item span{font-size:13px;font-weight:600;color:#1a1a1a}
+    table{width:100%;border-collapse:collapse;margin-top:4px}
+    th{background:#f4f8f2;color:#444;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:8px 10px;text-align:left;border-bottom:2px solid #d0e8c0}
+    td{padding:7px 10px;border-bottom:1px solid #eef4ea;vertical-align:middle}
+    tfoot td{font-weight:700;background:#f9fdf7;border-top:2px solid #d0e8c0}
+    .totales-box{background:#f4f8f2;border:1px solid #d0e8c0;border-radius:8px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+    .tot-item label{font-size:10px;color:#888;text-transform:uppercase;display:block;margin-bottom:2px}
+    .tot-item .val{font-size:16px;font-weight:900;color:#1B5E20}
+    .tot-item .val-cobrado{color:#1B8A5A}
+    .obs-box{background:#fffbf0;border-left:3px solid #E8770A;padding:10px 14px;border-radius:0 6px 6px 0;font-size:12px;margin-top:10px}
+    .footer{border-top:1px solid #e0e0e0;padding-top:14px;margin-top:28px;display:flex;justify-content:space-between;align-items:center}
+    .footer-brand{font-size:10px;color:#aaa}
+    .footer-brand strong{color:#1B5E20}
+    .footer-jvs{font-size:9px;color:#bbb;text-align:right}
+    @media print{body{padding:16px 20px} @page{margin:15mm}}
+  </style></head><body>
+  <div class="header">
+    <div class="brand-col">
+      <img class="brand-img" src="yerba.jpeg" onerror="this.src='yerba.png'" alt="Logo">
+      <div>
+        <div class="brand-name">Sabores de<br>MISIONES</div>
+        <div class="brand-sub">Yerba Mate</div>
+      </div>
+    </div>
+    <div class="comp-title">
+      <div class="comp-num">Pedido N° ${String(p.numero).padStart(4,'0')}</div>
+      <div class="comp-fecha">Fecha: ${p.fecha||'—'}</div>
+      <div><span class="estado-badge">${p.estado||'—'}</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Datos del Cliente</div>
+    <div class="info-grid">
+      <div class="info-item"><label>Nombre</label><span>${p.nombre||'—'}</span></div>
+      <div class="info-item"><label>DNI</label><span>${p.dni||'—'}</span></div>
+      <div class="info-item"><label>Teléfono</label><span>${p.tel||'—'}</span></div>
+      <div class="info-item"><label>Email</label><span>${p.email||'—'}</span></div>
+      <div class="info-item" style="grid-column:1/-1"><label>Transporte / Dirección</label><span>${p.transporte||'—'}</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Detalle del Pedido</div>
+    <table>
+      <thead><tr><th>Producto</th><th style="text-align:center">Cantidad</th><th style="text-align:center">Estampilla</th><th style="text-align:right">Precio/kg</th><th style="text-align:right">Subtotal</th></tr></thead>
+      <tbody>${filas||'<tr><td colspan="5" style="text-align:center;color:#aaa;padding:20px">Sin productos</td></tr>'}</tbody>
+      <tfoot><tr><td><b>TOTAL</b></td><td style="text-align:center"><b>${totalKg} kg</b></td><td></td><td></td><td style="text-align:right"><b>$${totalVal.toLocaleString('es-AR')}</b></td></tr></tfoot>
+    </table>
+    <div class="totales-box">
+      <div class="tot-item"><label>Presupuesto enviado</label><div class="val">$${p.presupuesto?p.presupuesto.toLocaleString('es-AR'):'—'}</div></div>
+      <div class="tot-item"><label>Ingreso cobrado</label><div class="val val-cobrado">$${p.ingreso?p.ingreso.toLocaleString('es-AR'):'—'}</div></div>
+      <div class="tot-item"><label>Lista de precios</label><div class="val" style="font-size:14px">Lista ${p.lista||1}</div></div>
+    </div>
+    ${p.obs?`<div class="obs-box"><b>Observaciones:</b> ${p.obs}</div>`:''}
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand"><strong>Sabores de Misiones</strong> — Gestión interna</div>
+    <div class="footer-jvs">Sistema desarrollado por Juan Villanueva · JV Systems</div>
+  </div>
+
+  <script>window.onload=()=>{ window.print(); }<\/script>
+  </body></html>`);
+  win.document.close();
+}
 
 function openNuevoPedido(){
   editingPedidoId=null;
@@ -1422,27 +1530,39 @@ function renderDarioProductoRow(){
   const tipo=document.getElementById('darioTipo').value;
   document.getElementById('darioProductoWrap').style.display=tipo==='molienda'?'block':'none';
 }
+const DARIO_TIPO_LABEL = {
+  molienda:'Molienda', transferencia:'Transferencia', extraccion:'Extracción', canchada:'Yerba Canchada'
+};
 function renderDario(){
   const saldo=calcSaldoDario();
+  const esDeuda = saldo < 0; // saldo negativo = debemos a Darío
   document.getElementById('balanceDario').innerHTML=`
-    <div><div class="lbl">Saldo con Darío</div><div class="val">${saldo>=0?'+':''}${fmt(saldo)}</div></div>
-    <div style="text-align:right"><div class="lbl">${saldo>=0?'Darío te debe':'Vos le debés'}</div><div style="font-size:13px;color:rgba(255,255,255,0.6)">${db.dario.length} movimientos</div></div>`;
+    <div>
+      <div class="lbl">Saldo cuenta Darío</div>
+      <div class="val">${saldo>=0?'+':''}${fmt(saldo)}</div>
+    </div>
+    <div style="text-align:right">
+      <div class="lbl" style="color:${esDeuda?'#ffb3b3':'#b3ffda'}">${esDeuda?'⚠️ Saldo a pagar a Darío':'✅ Saldo a favor nuestro'}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-top:2px">${db.dario.length} movimiento${db.dario.length!==1?'s':''} registrado${db.dario.length!==1?'s':''}</div>
+    </div>`;
   let runSaldo=0;
   const rows=[...db.dario].sort((a,b)=>new Date(a.fecha)-new Date(b.fecha));
   document.getElementById('tablaDario').innerHTML=rows.length?rows.map(t=>{
     const sign=t.tipo==='molienda'?-1:1;
     runSaldo+=sign*Math.abs(t.subtotal||0);
     const cls=sign<0?'tx-row-neg':'tx-row-pos';
+    const tipoLabel = DARIO_TIPO_LABEL[t.tipo]||t.tipo;
+    const tipoColor = t.tipo==='molienda'?'badge-pending':'badge-open';
     return `<tr class="${cls}">
       <td>${t.fecha||'—'}</td>
-      <td><span class="item-badge badge-${t.tipo==='molienda'?'pending':'open'}">${t.tipo}</span></td>
-      <td>${t.molienda?prodLabel(t.molienda):'—'} ${t.obs?'<small style="color:var(--text-muted)">'+t.obs+'</small>':''}</td>
+      <td><span class="item-badge ${tipoColor}">${tipoLabel}</span></td>
+      <td>${t.molienda?prodLabel(t.molienda):'—'}${t.obs?' <small style="color:var(--text-muted)">'+t.obs+'</small>':''}</td>
       <td class="td-num">${t.kg||'—'}</td>
       <td class="td-num td-right">${sign<0?'−':'+'}${fmt(t.subtotal||0)}</td>
       <td class="td-num td-right" style="font-weight:700;color:${runSaldo>=0?'var(--teal)':'var(--red)'}">${runSaldo>=0?'+':''}${fmt(runSaldo)}</td>
       <td><button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteDario(${t.id})">✕</button></td>
     </tr>`}).join('')
-    :'<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted)">Sin movimientos</td></tr>';
+    :'<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted)">Sin movimientos registrados</td></tr>';
 }
 function openDarioModal(){
   document.getElementById('darioFecha').value=today();
