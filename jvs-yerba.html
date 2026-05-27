@@ -33,7 +33,7 @@ body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 .app-header{background:linear-gradient(135deg,#040F04 0%,#071F07 45%,#0D3B0D 100%);display:flex;align-items:stretch;border-bottom:2px solid #2E7D32;position:relative;flex-shrink:0;z-index:100}
 .app-header::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:linear-gradient(90deg,#2E7D32,#E8770A,#4CAF50,#E8770A,#2E7D32)}
 .header-brand{display:flex;align-items:center;padding:0 18px;border-right:1px solid rgba(78,160,78,0.35);gap:12px;min-width:220px}
-.brand-logo{width:48px;height:48px;flex-shrink:0}
+.brand-logo{width:48px;height:48px;flex-shrink:0;object-fit:contain;border-radius:8px;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.5))}
 .brand-text{display:flex;flex-direction:column;gap:0px}
 .brand-name{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;letter-spacing:0.3px;line-height:1.2}
 .brand-name span{color:var(--accent-light);font-size:9px;font-family:'Exo 2',sans-serif;font-weight:500;letter-spacing:2px;text-transform:uppercase;display:block}
@@ -46,6 +46,10 @@ body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 .header-right{display:flex;align-items:center;gap:8px;padding:0 16px;margin-left:auto;flex-shrink:0}
 .btn-icon{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);width:34px;height:34px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
 .btn-icon:hover{background:rgba(255,255,255,0.15);color:#fff}
+
+/* ── WATERMARK ── */
+.watermark{pointer-events:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:420px;height:420px;object-fit:contain;opacity:0.045;filter:blur(3px) grayscale(20%);z-index:0;user-select:none}
+.main{position:relative;z-index:1}
 
 /* ── LAYOUT ── */
 .main{display:flex;flex:1;min-height:0;overflow:hidden}
@@ -224,43 +228,7 @@ tr:hover td{background:#fafbfd}
     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <div class="header-brand">
-    <!-- Mate gourd SVG logo -->
-    <svg class="brand-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="gourdGrad" x1="10" y1="16" x2="38" y2="48" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#E65100"/>
-          <stop offset="50%" stop-color="#BF360C"/>
-          <stop offset="100%" stop-color="#8B2500"/>
-        </linearGradient>
-        <linearGradient id="leafGrad" x1="0" y1="0" x2="20" y2="20" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#66BB6A"/>
-          <stop offset="100%" stop-color="#1B5E20"/>
-        </linearGradient>
-        <linearGradient id="bombGrad" x1="30" y1="4" x2="38" y2="20" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#E0E0E0"/>
-          <stop offset="100%" stop-color="#9E9E9E"/>
-        </linearGradient>
-      </defs>
-      <!-- gourd body -->
-      <ellipse cx="22" cy="34" rx="13" ry="12" fill="url(#gourdGrad)"/>
-      <!-- gourd neck -->
-      <rect x="17" y="20" width="10" height="8" rx="3" fill="#A0320A"/>
-      <!-- gourd rim -->
-      <ellipse cx="22" cy="20" rx="6" ry="2.5" fill="#C94010"/>
-      <!-- yerba fill -->
-      <ellipse cx="22" cy="20" rx="5" ry="1.8" fill="#4CAF50" opacity="0.85"/>
-      <!-- bombilla straw -->
-      <rect x="27" y="6" width="3.5" height="22" rx="1.75" transform="rotate(18 27 6)" fill="url(#bombGrad)"/>
-      <!-- bombilla tip filter -->
-      <ellipse cx="31" cy="23" rx="2.2" ry="2.2" fill="#BDBDBD" transform="rotate(18 31 23)"/>
-      <!-- gourd shine -->
-      <ellipse cx="16" cy="30" rx="3" ry="5" fill="rgba(255,255,255,0.12)" transform="rotate(-10 16 30)"/>
-      <!-- leaves left -->
-      <path d="M8 22 Q2 16 6 10 Q10 18 8 22Z" fill="url(#leafGrad)"/>
-      <path d="M10 26 Q3 22 5 15 Q11 20 10 26Z" fill="#2E7D32" opacity="0.8"/>
-      <!-- orange accent stripe -->
-      <path d="M11 38 Q22 46 33 38" stroke="#F59420" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-    </svg>
+    <img src="yerba.jpeg" class="brand-logo" alt="Sabores de Misiones">
     <div class="brand-text">
       <div class="brand-name">Sabores de <span>yerba mate</span></div>
       <div class="brand-misiones">MISIONES</div>
@@ -303,6 +271,7 @@ tr:hover td{background:#fafbfd}
   </div>
 </header>
 
+<img src="yerba.jpeg" class="watermark" alt="">
 <div class="overlay-bg" id="overlayBg" onclick="closeSidebar()"></div>
 
 <div class="main" id="mainArea">
@@ -1394,6 +1363,92 @@ function exportData(){
 
 // Close modal on overlay click
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){ if(e.target===this) this.classList.remove('open'); }));
+
+// ════════════════════════════════════════════════
+//  DATOS DE PRUEBA (solo si la DB está vacía)
+// ════════════════════════════════════════════════
+function loadSeedData(){
+  if(db.pedidos.length>0) return; // ya tiene datos
+
+  db.clientes = [
+    {id:1001,nombre:'Yesica Ramírez',dni:'29441832',tel:'2291554320',email:'yesica.ramirez@gmail.com',transporte:'Crucero cargo — Mar del Plata, Bs As',ciudad:'Mar del Plata',lista:'1',notas:'Cliente frecuente'},
+    {id:1002,nombre:'Gisela Perez',dni:'31203941',tel:'1155023840',email:'gisela.p@hotmail.com',transporte:'Andremar — Capital Federal',ciudad:'CABA',lista:'2',notas:'Compra cada 2 semanas'},
+    {id:1003,nombre:'Abril Soto',dni:'40113029',tel:'3516622910',email:'abril.soto@gmail.com',transporte:'El Rápido — Córdoba',ciudad:'Córdoba',lista:'1',notas:''},
+    {id:1004,nombre:'Juan José Villalba',dni:'26880421',tel:'3814402291',email:'jjvillalba@yahoo.com',transporte:'Flecha Bus — Tucumán',ciudad:'Tucumán',lista:'3',notas:'Descuento acordado'},
+    {id:1005,nombre:'Mariano Godoy',dni:'33991020',tel:'2994418820',email:'',transporte:'Retira en persona',ciudad:'Misiones',lista:'1',notas:''},
+    {id:1006,nombre:'Nadia Fernández',dni:'37201933',tel:'1164203312',email:'nadia.fern@gmail.com',transporte:'Vía Bariloche — La Plata',ciudad:'La Plata',lista:'2',notas:''},
+    {id:1007,nombre:'Sebastián López',dni:'28803214',tel:'2215531009',email:'seblopez@gmail.com',transporte:'Cóndor — Bahía Blanca',ciudad:'Bahía Blanca',lista:'1',notas:''},
+    {id:1008,nombre:'Anahí Torres',dni:'36101020',tel:'3764201983',email:'anahi.torres@gmail.com',transporte:'Expreso Posadas — Posadas',ciudad:'Posadas',lista:'1',notas:'Vecina de Darío'},
+    {id:1009,nombre:'Micaela Ruiz',dni:'41202933',tel:'1155601023',email:'micky.ruiz@outlook.com',transporte:'Plusmar — Buenos Aires',ciudad:'CABA',lista:'2',notas:''},
+    {id:1010,nombre:'Facundo Sotelo Colos',dni:'38790493',tel:'2931421379',email:'colossotelo@gmail.com',transporte:'Crucero cargo sucursal La Plata, Pcia Bs As',ciudad:'La Plata',lista:'2',notas:'Presupuesto pasado 24800'},
+  ];
+
+  db.pedidos = [
+    {id:2001,numero:1,nombre:'Yesica Ramírez',dni:'29441832',tel:'2291554320',email:'yesica.ramirez@gmail.com',transporte:'Crucero cargo — Mar del Plata',presupuesto:59000,fecha:'2026-01-03',estado:'cobrado',ingreso:70000,obs:'',productos:[{tipo:'especial',kg:10,estampilla:false}]},
+    {id:2002,numero:2,nombre:'Gisela Perez',dni:'31203941',tel:'1155023840',email:'gisela.p@hotmail.com',transporte:'Andremar — Capital Federal',presupuesto:95500,fecha:'2026-01-04',estado:'cobrado',ingreso:150000,obs:'Con estampillas',productos:[{tipo:'trad_fina',kg:10,estampilla:true},{tipo:'trad_gruesa',kg:10,estampilla:true},{tipo:'gsp',kg:10,estampilla:true},{tipo:'barb_canch',kg:10,estampilla:false}]},
+    {id:2003,numero:3,nombre:'Abril Soto',dni:'40113029',tel:'3516622910',email:'abril.soto@gmail.com',transporte:'El Rápido — Córdoba',presupuesto:31000,fecha:'2026-01-04',estado:'cobrado',ingreso:45000,obs:'',productos:[{tipo:'desp_gruesa',kg:10,estampilla:false}]},
+    {id:2004,numero:4,nombre:'Juan José Villalba',dni:'26880421',tel:'3814402291',email:'jjvillalba@yahoo.com',transporte:'Flecha Bus — Tucumán',presupuesto:32500,fecha:'2026-01-05',estado:'cobrado',ingreso:120000,obs:'',productos:[{tipo:'desp_gruesa',kg:10,estampilla:false}]},
+    {id:2005,numero:5,nombre:'Sebastián López',dni:'28803214',tel:'2215531009',email:'seblopez@gmail.com',transporte:'Cóndor — Bahía Blanca',presupuesto:45500,fecha:'2026-01-06',estado:'despachado',ingreso:null,obs:'Espera pago',productos:[{tipo:'trad_fina',kg:20,estampilla:false},{tipo:'canchada',kg:15,estampilla:false}]},
+    {id:2006,numero:6,nombre:'Anahí Torres',dni:'36101020',tel:'3764201983',email:'anahi.torres@gmail.com',transporte:'Expreso Posadas',presupuesto:13000,fecha:'2026-01-06',estado:'cobrado',ingreso:13000,obs:'',productos:[{tipo:'barb_fina',kg:10,estampilla:false}]},
+    {id:2007,numero:7,nombre:'Micaela Ruiz',dni:'41202933',tel:'1155601023',email:'micky.ruiz@outlook.com',transporte:'Plusmar — Buenos Aires',presupuesto:64800,fecha:'2026-01-08',estado:'confirmado',ingreso:null,obs:'Confirmar transporte',productos:[{tipo:'desp_fina',kg:10,estampilla:true},{tipo:'extra_fina',kg:10,estampilla:true},{tipo:'gsp',kg:10,estampilla:false}]},
+    {id:2008,numero:8,nombre:'Nadia Fernández',dni:'37201933',tel:'1164203312',email:'nadia.fern@gmail.com',transporte:'Vía Bariloche — La Plata',presupuesto:35700,fecha:'2026-01-09',estado:'cobrado',ingreso:35700,obs:'',productos:[{tipo:'trad_fina',kg:10,estampilla:false}]},
+    {id:2009,numero:9,nombre:'Mariano Godoy',dni:'33991020',tel:'2994418820',email:'',transporte:'Retira en persona',presupuesto:42000,fecha:'2026-01-10',estado:'cobrado',ingreso:42000,obs:'Paga en mano',productos:[{tipo:'canchada',kg:20,estampilla:false},{tipo:'extra_fina',kg:10,estampilla:false}]},
+    {id:2010,numero:10,nombre:'Yesica Ramírez',dni:'29441832',tel:'2291554320',email:'yesica.ramirez@gmail.com',transporte:'Crucero cargo — Mar del Plata',presupuesto:118000,fecha:'2026-01-12',estado:'confirmado',ingreso:null,obs:'Segundo pedido del mes',productos:[{tipo:'extra_fina',kg:10,estampilla:true},{tipo:'desp_gruesa',kg:20,estampilla:true},{tipo:'barb_fina',kg:10,estampilla:false}]},
+    {id:2011,numero:11,nombre:'Gisela Perez',dni:'31203941',tel:'1155023840',email:'gisela.p@hotmail.com',transporte:'Andremar — Capital Federal',presupuesto:83200,fecha:'2026-01-15',estado:'pendiente',ingreso:null,obs:'',productos:[{tipo:'desp_gruesa',kg:20,estampilla:false}]},
+    {id:2012,numero:12,nombre:'Juan José Villalba',dni:'26880421',tel:'3814402291',email:'jjvillalba@yahoo.com',transporte:'Flecha Bus — Tucumán',presupuesto:97500,fecha:'2026-01-17',estado:'despachado',ingreso:null,obs:'En tránsito',productos:[{tipo:'trad_gruesa',kg:15,estampilla:true},{tipo:'especial',kg:10,estampilla:false}]},
+    {id:2013,numero:13,nombre:'Sebastián López',dni:'28803214',tel:'2215531009',email:'seblopez@gmail.com',transporte:'Cóndor — Bahía Blanca',presupuesto:71400,fecha:'2026-01-20',estado:'cobrado',ingreso:71400,obs:'',productos:[{tipo:'trad_fina',kg:20,estampilla:false}]},
+    {id:2014,numero:14,nombre:'Micaela Ruiz',dni:'41202933',tel:'1155601023',email:'micky.ruiz@outlook.com',transporte:'Plusmar — Buenos Aires',presupuesto:54000,fecha:'2026-01-22',estado:'pendiente',ingreso:null,obs:'Aguarda confirmación',productos:[{tipo:'cpch',kg:10,estampilla:false},{tipo:'barb_canch',kg:10,estampilla:false}]},
+    {id:2015,numero:15,nombre:'Abril Soto',dni:'40113029',tel:'3516622910',email:'abril.soto@gmail.com',transporte:'El Rápido — Córdoba',presupuesto:43200,fecha:'2026-01-24',estado:'cobrado',ingreso:43200,obs:'',productos:[{tipo:'desp_fina',kg:10,estampilla:false},{tipo:'barb_fina',kg:5,estampilla:false}]},
+    {id:2016,numero:16,nombre:'Nadia Fernández',dni:'37201933',tel:'1164203312',email:'nadia.fern@gmail.com',transporte:'Vía Bariloche — La Plata',presupuesto:67400,fecha:'2026-01-27',estado:'cobrado',ingreso:67400,obs:'',productos:[{tipo:'extra_fina',kg:10,estampilla:true},{tipo:'trad_fina',kg:10,estampilla:false}]},
+    {id:2017,numero:17,nombre:'Mariano Godoy',dni:'33991020',tel:'2994418820',email:'',transporte:'Retira en persona',presupuesto:28000,fecha:'2026-02-02',estado:'cobrado',ingreso:28000,obs:'',productos:[{tipo:'barb_fina',kg:10,estampilla:false}]},
+    {id:2018,numero:18,nombre:'Facundo Sotelo Colos',dni:'38790493',tel:'2931421379',email:'colossotelo@gmail.com',transporte:'Crucero cargo sucursal La Plata, Pcia Bs As',presupuesto:24800,fecha:'2026-02-05',estado:'confirmado',ingreso:null,obs:'',productos:[{tipo:'desp_gruesa',kg:30,estampilla:false},{tipo:'desp_fina',kg:20,estampilla:false}]},
+  ];
+  db.config.nextPedido = 19;
+
+  db.dario = [
+    {id:3001,fecha:'2026-01-01',tipo:'molienda',molienda:'especial',kg:10,subtotal:59000,obs:'Pedido 1 Yesica'},
+    {id:3002,fecha:'2026-01-04',tipo:'molienda',molienda:'trad_fina',kg:40,subtotal:95500,obs:'Pedido 2 Gisela'},
+    {id:3003,fecha:'2026-01-04',tipo:'molienda',molienda:'desp_gruesa',kg:10,subtotal:31000,obs:'Pedido 3 Abril'},
+    {id:3004,fecha:'2026-01-05',tipo:'transferencia',molienda:'',kg:null,subtotal:50000,obs:'Transferencia bancaria'},
+    {id:3005,fecha:'2026-01-05',tipo:'molienda',molienda:'desp_gruesa',kg:10,subtotal:32500,obs:'Pedido 4 Juan José'},
+    {id:3006,fecha:'2026-01-07',tipo:'extraccion',molienda:'',kg:null,subtotal:60000,obs:'Extracción en efectivo'},
+    {id:3007,fecha:'2026-01-08',tipo:'molienda',molienda:'barb_fina',kg:120,subtotal:192000,obs:'Barbacúa fina batch grande'},
+    {id:3008,fecha:'2026-01-10',tipo:'canchada',molienda:'canchada',kg:100,subtotal:175000,obs:'100kg canchada como pago'},
+    {id:3009,fecha:'2026-01-15',tipo:'molienda',molienda:'desp_gruesa',kg:20,subtotal:83200,obs:'Pedido 11 Gisela'},
+    {id:3010,fecha:'2026-01-17',tipo:'molienda',molienda:'trad_gruesa',kg:25,subtotal:97500,obs:'Pedido 12 Juan José'},
+    {id:3011,fecha:'2026-01-20',tipo:'transferencia',molienda:'',kg:null,subtotal:80000,obs:'Transferencia enero'},
+    {id:3012,fecha:'2026-01-22',tipo:'molienda',molienda:'cpch',kg:20,subtotal:54000,obs:'Pedido 14 Micaela'},
+    {id:3013,fecha:'2026-01-24',tipo:'molienda',molienda:'desp_fina',kg:15,subtotal:43200,obs:'Pedido 15 Abril'},
+    {id:3014,fecha:'2026-02-01',tipo:'extraccion',molienda:'',kg:null,subtotal:40000,obs:'Extracción inicio febrero'},
+    {id:3015,fecha:'2026-02-05',tipo:'molienda',molienda:'desp_gruesa',kg:50,subtotal:207000,obs:'Pedido 18 Facundo'},
+  ];
+
+  db.compras = [
+    {id:4001,fecha:'2026-01-05',proveedor:'Secadero San Ignacio',items:[{concepto:'Canchada',cantidad:100,precio:1750},{concepto:'Palito Molido',cantidad:57,precio:400},{concepto:'Estampillas',cantidad:50,precio:437.5}]},
+    {id:4002,fecha:'2026-01-07',proveedor:'Secadero San Ignacio',items:[{concepto:'Canchada',cantidad:430,precio:1750},{concepto:'Fina',cantidad:70,precio:2135},{concepto:'Estampillas',cantidad:200,precio:437.5}]},
+    {id:4003,fecha:'2026-01-09',proveedor:'Secadero Don Ramón',items:[{concepto:'Canchada',cantidad:550,precio:1750},{concepto:'Fina',cantidad:70,precio:2135},{concepto:'Estampillas',cantidad:150,precio:437.5}]},
+    {id:4004,fecha:'2026-01-20',proveedor:'Secadero San Ignacio',items:[{concepto:'Canchada',cantidad:300,precio:1800},{concepto:'Fina',cantidad:50,precio:2200}]},
+    {id:4005,fecha:'2026-02-03',proveedor:'Secadero Don Ramón',items:[{concepto:'Canchada',cantidad:400,precio:1800},{concepto:'Estampillas',cantidad:100,precio:437.5},{concepto:'Azúcar Mascabo',cantidad:30,precio:1200}]},
+  ];
+
+  db.despachos = [
+    {id:5001,fecha:'2026-01-05',pedidoId:'2001',pedidoNum:'1',cliente:'Yesica Ramírez',kg:30,precio:180,subtotal:5400,tipo:'embalaje_flete',obs:''},
+    {id:5002,fecha:'2026-01-05',pedidoId:'2002',pedidoNum:'2',cliente:'Gisela Perez',kg:100,precio:180,subtotal:18000,tipo:'embalaje_flete',obs:''},
+    {id:5003,fecha:'2026-01-05',pedidoId:'2003',pedidoNum:'3',cliente:'Abril Soto',kg:30,precio:180,subtotal:5400,tipo:'embalaje_flete',obs:''},
+    {id:5004,fecha:'2026-01-05',pedidoId:'2004',pedidoNum:'4',cliente:'Juan José Villalba',kg:30,precio:180,subtotal:5400,tipo:'embalaje_flete',obs:''},
+    {id:5005,fecha:'2026-01-06',pedidoId:'2005',pedidoNum:'5',cliente:'Sebastián López',kg:35,precio:130,subtotal:4550,tipo:'solo_flete',obs:'Ya embalado'},
+    {id:5006,fecha:'2026-01-06',pedidoId:'2006',pedidoNum:'6',cliente:'Anahí Torres',kg:10,precio:130,subtotal:1300,tipo:'solo_flete',obs:''},
+    {id:5007,fecha:'2026-01-08',pedidoId:'2007',pedidoNum:'7',cliente:'Micaela Ruiz',kg:60,precio:180,subtotal:10800,tipo:'embalaje_flete',obs:''},
+    {id:5008,fecha:'2026-01-10',pedidoId:'2009',pedidoNum:'9',cliente:'Mariano Godoy',kg:30,precio:60,subtotal:1800,tipo:'solo_flete',obs:'Retira local'},
+    {id:5009,fecha:'2026-01-15',pedidoId:'2010',pedidoNum:'10',cliente:'Yesica Ramírez',kg:40,precio:180,subtotal:7200,tipo:'embalaje_flete',obs:''},
+    {id:5010,fecha:'2026-01-20',pedidoId:'2012',pedidoNum:'12',cliente:'Juan José Villalba',kg:25,precio:180,subtotal:4500,tipo:'embalaje_flete',obs:''},
+    {id:5011,fecha:'2026-01-22',pedidoId:'2013',pedidoNum:'13',cliente:'Sebastián López',kg:20,precio:180,subtotal:3600,tipo:'embalaje_flete',obs:''},
+    {id:5012,fecha:'2026-01-27',pedidoId:'2016',pedidoNum:'16',cliente:'Nadia Fernández',kg:20,precio:180,subtotal:3600,tipo:'embalaje_flete',obs:''},
+  ];
+
+  saveDB();
+}
+loadSeedData();
 
 // ════════════════════════════════════════════════
 //  INIT
