@@ -64,6 +64,24 @@ body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 .footer-dev{font-family:'Exo 2',sans-serif;font-size:11px;color:rgba(255,255,255,0.45)}
 .footer-dev strong{color:var(--accent-light);font-weight:600}
 
+/* ── CLIENTE PERFIL ── */
+.cli-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px}
+.cli-avatar-big{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--navy-light),var(--blue));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0}
+.cli-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.cli-stat{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;text-align:center}
+.cli-stat-val{font-size:20px;font-weight:800;color:var(--navy-light);line-height:1.1}
+.cli-stat-lbl{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.7px;margin-top:3px}
+.cli-stat.destacado{background:linear-gradient(135deg,#EBF5E8,#fff);border-color:var(--blue-light)}
+.prods-habituales{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.prod-chip{background:#f0f4ec;border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--navy-light)}
+.prod-chip.top{background:linear-gradient(135deg,#d8f5db,#f0faf0);border-color:var(--blue-light);color:var(--navy-light)}
+.hist-row{display:grid;grid-template-columns:90px 1fr auto auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid #f0f4ec;font-size:12px}
+.hist-row:last-child{border-bottom:none}
+.hist-fecha{color:var(--text-muted);font-size:11px}
+.hist-prods{color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-total{font-weight:700;color:var(--teal);white-space:nowrap}
+@media(max-width:768px){.cli-stats-grid{grid-template-columns:1fr 1fr}}
+
 /* ── CONFIG / USUARIOS ── */
 .config-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px}
 .config-card-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafcf8}
@@ -561,22 +579,23 @@ tr:hover td{background:#fafbfd}
   </section>
 
   <!-- ══════════════════════════ CLIENTES ══════════════════════════ -->
-  <section id="sec-clientes" class="content" style="display:none">
-    <div class="content-toolbar">
-      <span class="toolbar-title">Directorio de Clientes</span>
-      <button class="btn btn-primary btn-sm" onclick="openClienteModal()">+ Nuevo Cliente</button>
+  <section id="sec-clientes" class="main" style="display:none">
+    <!-- Panel izquierdo: lista de clientes -->
+    <div class="sidebar" id="sidebarClientes">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Clientes</span>
+        <button class="btn btn-primary btn-sm" onclick="openClienteModal()" style="padding:4px 10px;font-size:11px">+ Nuevo</button>
+      </div>
+      <div class="sidebar-search">
+        <input placeholder="Buscar nombre, ciudad…" oninput="filterClientes(this.value)">
+      </div>
+      <div class="list-area" id="listClientes"></div>
     </div>
-    <div class="content-body">
-      <div class="card" style="padding:0">
-        <div style="padding:12px 16px;border-bottom:1px solid var(--border)">
-          <input type="text" class="form-control" placeholder="Buscar por nombre, teléfono, ciudad…" oninput="filterClientes(this.value)" style="max-width:320px">
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Nombre</th><th>Tel</th><th>Email</th><th>Transporte</th><th>Ciudad</th><th>Lista</th><th></th></tr></thead>
-            <tbody id="tablaClientes"></tbody>
-          </table>
-        </div>
+    <!-- Panel derecho: perfil del cliente -->
+    <div class="content" id="contentClientes" style="flex-direction:column">
+      <div class="empty-state" style="flex:1">
+        <svg width="52" height="52" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        <p>Seleccioná un cliente para ver su historial y estadísticas</p>
       </div>
     </div>
   </section>
@@ -1474,21 +1493,135 @@ function savePedido(){
 // ════════════════════════════════════════════════
 //  CLIENTES
 // ════════════════════════════════════════════════
-let editingClienteId=null; let clienteFiltro='';
+let editingClienteId=null; let clienteFiltro=''; let activeClienteId=null;
+
 function filterClientes(q){ clienteFiltro=q.toLowerCase(); renderClientes(); }
+
 function renderClientes(){
   const filtered=db.clientes.filter(c=>!clienteFiltro||c.nombre?.toLowerCase().includes(clienteFiltro)||c.tel?.includes(clienteFiltro)||c.ciudad?.toLowerCase().includes(clienteFiltro));
-  document.getElementById('tablaClientes').innerHTML=filtered.length?filtered.map(c=>`
-    <tr>
-      <td>${c.id}</td><td style="font-weight:600">${c.nombre}</td><td>${c.tel||'—'}</td>
-      <td style="font-size:11px">${c.email||'—'}</td><td style="font-size:11px">${c.transporte||'—'}</td>
-      <td>${c.ciudad||'—'}</td><td><span class="item-badge badge-open">Lista ${c.lista||1}</span></td>
-      <td><div style="display:flex;gap:6px">
-        <button class="btn btn-ghost btn-sm" onclick="openClienteModal(${c.id})">Editar</button>
-        <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteCliente(${c.id})">✕</button>
-      </div></td>
-    </tr>`).join('')
-    :'<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-muted)">Sin clientes registrados</td></tr>';
+  const listEl=document.getElementById('listClientes');
+  if(!listEl) return;
+  if(!filtered.length){ listEl.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12px">Sin clientes</div>'; return; }
+  listEl.innerHTML=filtered.map(c=>{
+    const peds=db.pedidos.filter(p=>p.nombre===c.nombre);
+    const ultima=peds.length?[...peds].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].fecha:null;
+    return `<div class="list-item ${c.id===activeClienteId?'active':''}" onclick="openClienteProfile(${c.id})">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--navy-light),var(--blue));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">${(c.nombre||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}</div>
+        <div style="min-width:0;flex:1">
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nombre}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${c.ciudad||c.tel||'—'} · ${peds.length} pedido${peds.length!==1?'s':''}</div>
+        </div>
+      </div>
+      ${ultima?`<div style="font-size:10px;color:var(--text-muted);margin-top:4px;padding-left:44px">Última compra: ${ultima}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function openClienteProfile(id){
+  activeClienteId=id;
+  renderClientes();
+  const c=db.clientes.find(x=>x.id===id); if(!c) return;
+  const peds=[...db.pedidos.filter(p=>p.nombre===c.nombre)].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+  const totalPeds=peds.length;
+  const ultimaFecha=totalPeds?peds[0].fecha:'—';
+  const totalGastado=peds.reduce((s,p)=>s+(Number(p.ingreso)||Number(p.presupuesto)||0),0);
+  // Frecuencia promedio
+  let frecuenciaStr='—';
+  if(totalPeds>=2){
+    const fechas=[...peds].map(p=>new Date(p.fecha)).sort((a,b)=>a-b);
+    let sumDias=0;
+    for(let i=1;i<fechas.length;i++) sumDias+=(fechas[i]-fechas[i-1])/(1000*60*60*24);
+    const avg=Math.round(sumDias/(fechas.length-1));
+    frecuenciaStr=avg<=7?'Semanal':avg<=15?'Quincenal':avg<=35?'Mensual':avg<=70?'Bimestral':`Cada ~${avg} días`;
+  } else if(totalPeds===1){ frecuenciaStr='1ª compra'; }
+  // Productos más pedidos
+  const prodCount={};
+  peds.forEach(p=>(p.productos||[]).forEach(r=>{ if(r.tipo&&r.kg>0) prodCount[r.tipo]=(prodCount[r.tipo]||0)+Number(r.kg); }));
+  const topProds=Object.entries(prodCount).sort((a,b)=>b[1]-a[1]);
+  const avatar=(c.nombre||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const content=document.getElementById('contentClientes');
+  content.style.flexDirection='column';
+  content.innerHTML=`
+    <div class="content-toolbar">
+      <span class="toolbar-title">Perfil del Cliente</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="openClienteModal(${id})">✏️ Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCliente(${id})">🗑️</button>
+      </div>
+    </div>
+    <div class="content-body">
+      <div class="cli-header">
+        <div class="cli-avatar-big">${avatar}</div>
+        <div style="flex:1">
+          <div style="font-size:18px;font-weight:800;color:var(--navy-light)">${c.nombre}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;display:flex;gap:14px;flex-wrap:wrap">
+            ${c.tel?`<span>📞 ${c.tel}</span>`:''}
+            ${c.email?`<span>✉️ ${c.email}</span>`:''}
+            ${c.ciudad?`<span>📍 ${c.ciudad}</span>`:''}
+          </div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="item-badge badge-open">Lista ${c.lista||1}</span>
+            ${c.transporte?`<span style="font-size:11px;color:var(--text-muted);background:var(--bg);padding:2px 8px;border-radius:10px;border:1px solid var(--border)">${c.transporte}</span>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="cli-stats-grid">
+        <div class="cli-stat destacado">
+          <div class="cli-stat-val">${totalPeds}</div>
+          <div class="cli-stat-lbl">Pedidos totales</div>
+        </div>
+        <div class="cli-stat">
+          <div class="cli-stat-val" style="font-size:13px">${ultimaFecha}</div>
+          <div class="cli-stat-lbl">Última compra</div>
+        </div>
+        <div class="cli-stat">
+          <div class="cli-stat-val" style="font-size:14px;color:${totalPeds>=2?'var(--teal)':'var(--text-muted)'}">${frecuenciaStr}</div>
+          <div class="cli-stat-lbl">Frecuencia</div>
+        </div>
+        <div class="cli-stat destacado">
+          <div class="cli-stat-val" style="font-size:${totalGastado>999999?'13px':totalGastado>0?'15px':'20px'}">${totalGastado>0?fmt(totalGastado):'—'}</div>
+          <div class="cli-stat-lbl">Total comprado</div>
+        </div>
+      </div>
+      ${topProds.length?`<div class="card" style="padding:14px 16px;margin-bottom:14px">
+        <div class="card-title" style="margin-bottom:10px">🧉 Productos habituales</div>
+        <div class="prods-habituales">${topProds.map(([tid,kg],i)=>`<div class="prod-chip ${i===0?'top':''}">${prodLabel(tid)} <b>${kg} kg</b></div>`).join('')}</div>
+      </div>`:''}
+      ${c.notas?`<div class="card" style="padding:12px 16px;margin-bottom:14px;border-left:3px solid var(--accent)">
+        <div class="card-title" style="margin-bottom:4px">📝 Notas</div><div style="font-size:13px">${c.notas}</div>
+      </div>`:''}
+      <div class="card" style="padding:0">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <div class="card-title" style="margin:0">📋 Historial de pedidos</div>
+          <button class="btn btn-ghost btn-sm" onclick="showSection('pedidos');openNuevoPedido()">+ Nuevo pedido</button>
+        </div>
+        <div style="padding:0 16px">
+          ${peds.length?peds.map(p=>{
+            const prodsTxt=(p.productos||[]).filter(r=>r.tipo&&r.kg>0).map(r=>`${r.kg}kg ${prodLabel(r.tipo)}`).join(' · ')||'—';
+            const val=Number(p.ingreso)||Number(p.presupuesto)||0;
+            return `<div class="hist-row">
+              <div class="hist-fecha">${p.fecha||'—'}</div>
+              <div class="hist-prods" title="${prodsTxt}">${prodsTxt}</div>
+              <div><span class="item-badge badge-${badgeClass(p.estado)}" style="font-size:9px">${p.estado}</span></div>
+              <div class="hist-total">${val?fmt(val):'—'}</div>
+            </div>`;
+          }).join(''):'<div style="padding:24px;text-align:center;color:var(--text-muted)">Sin pedidos registrados para este cliente</div>'}
+        </div>
+      </div>
+    </div>`;
+}
+
+function openNuevoPedidoCliente(clienteId){
+  const c=db.clientes.find(x=>x.id===clienteId); if(!c) return;
+  showSection('pedidos');
+  openNuevoPedido();
+  setTimeout(()=>{
+    if(document.getElementById('pedNombre')) document.getElementById('pedNombre').value=c.nombre||'';
+    if(document.getElementById('pedTel')) document.getElementById('pedTel').value=c.tel||'';
+    if(document.getElementById('pedEmail')) document.getElementById('pedEmail').value=c.email||'';
+    if(document.getElementById('pedTransporte')) document.getElementById('pedTransporte').value=c.transporte||'';
+  },100);
 }
 function openClienteModal(id=null){
   editingClienteId=id;
@@ -1515,7 +1648,9 @@ function saveCliente(){
   const data={nombre, dni:document.getElementById('cliDni').value, tel:document.getElementById('cliTel').value, email:document.getElementById('cliEmail').value, transporte:document.getElementById('cliTransporte').value, ciudad:document.getElementById('cliCiudad').value, lista:document.getElementById('cliLista').value, notas:document.getElementById('cliNotas').value};
   if(editingClienteId){ const c=db.clientes.find(x=>x.id===editingClienteId); Object.assign(c,data); }
   else { data.id=Date.now(); db.clientes.push(data); }
-  saveDB(); closeModal('modalCliente'); renderClientes(); populateClienteSelects(); toast('Cliente guardado ✓','success');
+  saveDB(); closeModal('modalCliente'); renderClientes(); populateClienteSelects();
+  if(activeClienteId) openClienteProfile(activeClienteId);
+  toast('Cliente guardado ✓','success');
 }
 function deleteCliente(id){ if(!confirm('¿Eliminar cliente?')) return; db.clientes=db.clientes.filter(c=>c.id!==id); saveDB(); renderClientes(); toast('Cliente eliminado'); }
 
