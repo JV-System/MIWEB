@@ -1,4 +1,4 @@
-const CACHE = 'sabores-v3';
+const CACHE = 'sabores-v4';
 const ASSETS = [
   '/Sabores-de-misiones/',
   '/Sabores-de-misiones/index.html',
