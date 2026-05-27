@@ -277,6 +277,32 @@ tr:hover td{background:#fafbfd}
 .prod-row{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #f5f5f5}
 .prod-row:last-child{border-bottom:none}
 
+/* ── OC CARDS (Compras) ── */
+.oc-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden;transition:box-shadow 0.2s}
+.oc-card:hover{box-shadow:0 4px 18px rgba(0,0,0,0.09)}
+.oc-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;gap:10px}
+.oc-num{background:var(--navy);color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:0.5px;flex-shrink:0;white-space:nowrap}
+.oc-prov{font-size:14px;font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oc-date{font-size:12px;color:var(--text-muted);flex-shrink:0;white-space:nowrap}
+.oc-total{font-size:13px;font-weight:700;color:var(--navy-light);flex-shrink:0;white-space:nowrap}
+.oc-chevron{transition:transform 0.25s;color:var(--text-muted);flex-shrink:0}
+.oc-card.open .oc-chevron{transform:rotate(180deg)}
+.oc-body{display:none;padding:0 16px 16px;animation:fadeUp 0.18s ease}
+.oc-card.open .oc-body{display:block}
+.oc-items-table{width:100%;border-collapse:collapse;font-size:13px}
+.oc-items-table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);padding:6px 8px;border-bottom:2px solid var(--border);text-align:left}
+.oc-items-table td{padding:9px 8px;border-bottom:1px solid var(--border);color:var(--text)}
+.oc-items-table tr:last-child td{border-bottom:none}
+.oc-items-table .td-num{text-align:right;font-variant-numeric:tabular-nums}
+.oc-item-subtotal{font-weight:700;color:var(--navy-light)}
+.oc-footer-row td{padding:10px 8px;font-weight:700;border-top:2px solid var(--border)!important}
+[data-theme="dark"] .oc-num{background:var(--navy-light)}
+@media(max-width:600px){
+  .oc-prov{font-size:13px}
+  .oc-date{display:none}
+  .oc-header{gap:8px;padding:12px 14px}
+}
+
 /* ── MODAL ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}
@@ -780,14 +806,7 @@ tr:hover td{background:#fafbfd}
     </div>
     <div class="content-body">
       <div class="kpi-grid" id="kpiCompras"></div>
-      <div class="card" style="padding:0">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Concepto</th><th>Cantidad (kg)</th><th>Precio Unitario</th><th>Subtotal</th><th></th></tr></thead>
-            <tbody id="tablaCompras"></tbody>
-          </table>
-        </div>
-      </div>
+      <div id="listaOC"></div>
     </div>
   </section>
 
@@ -1229,7 +1248,7 @@ tr:hover td{background:#fafbfd}
 const DB_KEY = 'jvs_yerba_v1';
 let db = {
   pedidos: [], clientes: [], dario: [], compras: [], despachos: [],
-  config: { nextPedido: 1 }
+  config: { nextPedido: 1, nextCompra: 1 }
 };
 function loadDB(){ try{ const s=localStorage.getItem(DB_KEY); if(s) db=JSON.parse(s); } catch(e){} }
 function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
@@ -1916,24 +1935,70 @@ function deleteDario(id){ if(!confirm('¿Eliminar movimiento?')) return; db.dari
 // ════════════════════════════════════════════════
 const CONCEPTOS_COMPRA=['Canchada','Fina','Extra Fina','Palito Molido','Estampillas','Azúcar Mascabo','Otro'];
 function renderCompras(){
+  // Migrar compras existentes sin numero
+  if(!db.config) db.config={nextPedido:1,nextCompra:1};
+  if(!db.config.nextCompra) db.config.nextCompra=1;
+  let migrated=false;
+  db.compras.forEach(c=>{ if(!c.numero){ c.numero='OC-'+String(db.config.nextCompra++).padStart(3,'0'); migrated=true; }});
+  if(migrated) saveDB();
+
   const totalKg=db.compras.reduce((s,c)=>s+c.items.filter(i=>i.concepto!=='Estampillas').reduce((a,i)=>a+(Number(i.cantidad)||0),0),0);
   const totalPesos=db.compras.reduce((s,c)=>s+c.items.reduce((a,i)=>a+(Number(i.cantidad)||0)*(Number(i.precio)||0),0),0);
   document.getElementById('kpiCompras').innerHTML=`
     <div class="kpi-card kpi-accent"><div class="kpi-label">Total kg Comprados</div><div class="kpi-value">${fmtNum(totalKg)} kg</div></div>
     <div class="kpi-card kpi-red"><div class="kpi-label">Total Invertido</div><div class="kpi-value">${fmt(totalPesos)}</div></div>
     <div class="kpi-card kpi-blue"><div class="kpi-label">Órdenes de Compra</div><div class="kpi-value">${db.compras.length}</div></div>`;
-  const rows=[];
-  db.compras.forEach(c=>c.items.forEach(i=>rows.push({fecha:c.fecha,proveedor:c.proveedor,...i,cid:c.id})));
-  rows.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
-  document.getElementById('tablaCompras').innerHTML=rows.length?rows.map(r=>`
-    <tr>
-      <td>${r.fecha||'—'}</td><td style="font-weight:600">${r.concepto}</td>
-      <td class="td-num">${fmtNum(r.cantidad)} ${r.concepto==='Estampillas'?'u':'kg'}</td>
-      <td class="td-num">${fmt(r.precio)}</td>
-      <td class="td-num" style="font-weight:700">${fmt((r.cantidad||0)*(r.precio||0))}</td>
-      <td><button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteCompra(${r.cid})">✕</button></td>
-    </tr>`).join('')
-    :'<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)">Sin compras registradas</td></tr>';
+
+  const sorted=[...db.compras].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+  if(!sorted.length){
+    document.getElementById('listaOC').innerHTML='<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg><p>Sin órdenes de compra registradas</p></div>';
+    return;
+  }
+  document.getElementById('listaOC').innerHTML=sorted.map(c=>{
+    const subtotal=c.items.reduce((s,i)=>s+(Number(i.cantidad)||0)*(Number(i.precio)||0),0);
+    return `
+    <div class="oc-card" id="oc-${c.id}">
+      <div class="oc-header" onclick="toggleOC(${c.id})">
+        <span class="oc-num">${c.numero||'OC-???'}</span>
+        <span class="oc-prov">${c.proveedor||'Sin proveedor'}</span>
+        <span class="oc-date">${c.fecha||'—'}</span>
+        <span class="oc-total">${fmt(subtotal)}</span>
+        <svg class="oc-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="oc-body">
+        <table class="oc-items-table">
+          <thead><tr>
+            <th>Concepto</th>
+            <th class="td-num">Cantidad</th>
+            <th class="td-num">Precio u.</th>
+            <th class="td-num">Subtotal</th>
+          </tr></thead>
+          <tbody>
+            ${c.items.map(i=>`
+            <tr>
+              <td>${i.concepto}</td>
+              <td class="td-num">${fmtNum(i.cantidad)} ${i.concepto==='Estampillas'?'u':'kg'}</td>
+              <td class="td-num">${fmt(i.precio)}</td>
+              <td class="td-num oc-item-subtotal">${fmt((Number(i.cantidad)||0)*(Number(i.precio)||0))}</td>
+            </tr>`).join('')}
+          </tbody>
+          <tfoot>
+            <tr class="oc-footer-row">
+              <td colspan="3" style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted)">Total OC</td>
+              <td class="td-num oc-item-subtotal" style="font-size:15px">${fmt(subtotal)}</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div style="display:flex;justify-content:flex-end;margin-top:12px">
+          <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteCompra(${c.id})">🗑 Eliminar OC</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleOC(id){
+  const card=document.getElementById('oc-'+id);
+  if(card) card.classList.toggle('open');
 }
 function openCompraModal(){
   document.getElementById('compFecha').value=today();
@@ -1969,8 +2034,11 @@ function saveCompra(){
     if(cantidad>0) items.push({concepto,cantidad,precio}); i++;
   }
   if(!items.length){ toast('Agregá al menos un ítem','error'); return; }
-  db.compras.push({id:Date.now(), fecha:document.getElementById('compFecha').value, proveedor:document.getElementById('compProveedor').value, items});
-  saveDB(); closeModal('modalCompra'); renderCompras(); toast('Compra registrada ✓','success');
+  if(!db.config) db.config={nextPedido:1,nextCompra:1};
+  if(!db.config.nextCompra) db.config.nextCompra=1;
+  const numero='OC-'+String(db.config.nextCompra++).padStart(3,'0');
+  db.compras.push({id:Date.now(), numero, fecha:document.getElementById('compFecha').value, proveedor:document.getElementById('compProveedor').value, items});
+  saveDB(); closeModal('modalCompra'); renderCompras(); toast(`Compra ${numero} registrada ✓`,'success');
 }
 function deleteCompra(id){ if(!confirm('¿Eliminar?')) return; db.compras=db.compras.filter(c=>c.id!==id); saveDB(); renderCompras(); }
 
@@ -2528,12 +2596,13 @@ function loadSeedData(){
   ];
 
   db.compras = [
-    {id:4001,fecha:'2026-01-05',proveedor:'Secadero San Ignacio',items:[{concepto:'Canchada',cantidad:100,precio:1750},{concepto:'Palito Molido',cantidad:57,precio:400},{concepto:'Estampillas',cantidad:50,precio:437.5}]},
-    {id:4002,fecha:'2026-01-07',proveedor:'Secadero San Ignacio',items:[{concepto:'Canchada',cantidad:430,precio:1750},{concepto:'Fina',cantidad:70,precio:2135},{concepto:'Estampillas',cantidad:200,precio:437.5}]},
-    {id:4003,fecha:'2026-01-09',proveedor:'Secadero Don Ramón',items:[{concepto:'Canchada',cantidad:550,precio:1750},{concepto:'Fina',cantidad:70,precio:2135},{concepto:'Estampillas',cantidad:150,precio:437.5}]},
-    {id:4004,fecha:'2026-01-20',proveedor:'Secadero San Ignacio',items:[{concepto:'Canchada',cantidad:300,precio:1800},{concepto:'Fina',cantidad:50,precio:2200}]},
-    {id:4005,fecha:'2026-02-03',proveedor:'Secadero Don Ramón',items:[{concepto:'Canchada',cantidad:400,precio:1800},{concepto:'Estampillas',cantidad:100,precio:437.5},{concepto:'Azúcar Mascabo',cantidad:30,precio:1200}]},
+    {id:4001,numero:'OC-001',fecha:'2026-01-05',proveedor:'Secadero San Ignacio',items:[{concepto:'Canchada',cantidad:100,precio:1750},{concepto:'Palito Molido',cantidad:57,precio:400},{concepto:'Estampillas',cantidad:50,precio:437.5}]},
+    {id:4002,numero:'OC-002',fecha:'2026-01-07',proveedor:'Secadero San Ignacio',items:[{concepto:'Canchada',cantidad:430,precio:1750},{concepto:'Fina',cantidad:70,precio:2135},{concepto:'Estampillas',cantidad:200,precio:437.5}]},
+    {id:4003,numero:'OC-003',fecha:'2026-01-09',proveedor:'Secadero Don Ramón',items:[{concepto:'Canchada',cantidad:550,precio:1750},{concepto:'Fina',cantidad:70,precio:2135},{concepto:'Estampillas',cantidad:150,precio:437.5}]},
+    {id:4004,numero:'OC-004',fecha:'2026-01-20',proveedor:'Secadero San Ignacio',items:[{concepto:'Canchada',cantidad:300,precio:1800},{concepto:'Fina',cantidad:50,precio:2200}]},
+    {id:4005,numero:'OC-005',fecha:'2026-02-03',proveedor:'Secadero Don Ramón',items:[{concepto:'Canchada',cantidad:400,precio:1800},{concepto:'Estampillas',cantidad:100,precio:437.5},{concepto:'Azúcar Mascabo',cantidad:30,precio:1200}]},
   ];
+  db.config.nextCompra=6;
 
   db.despachos = [
     {id:5001,fecha:'2026-01-05',pedidoId:'2001',pedidoNum:'1',cliente:'Yesica Ramírez',kg:30,precio:180,subtotal:5400,tipo:'embalaje_flete',obs:''},
