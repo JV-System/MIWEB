@@ -100,6 +100,7 @@
   .chat-order-panel{display:none!important}
   .modal{margin:12px;max-height:85vh;width:calc(100vw - 24px)!important}
   .inner-tabs{overflow-x:auto;flex-wrap:nowrap}
+  .list-area{padding-bottom:16px}
   .wsp-box{font-size:12px}
   .btn{font-size:12px;padding:7px 12px}
   .content-toolbar{flex-wrap:wrap;gap:8px}
@@ -411,7 +412,8 @@ tr:hover td{background:#fafbfd}
 /* ══════════════════════════════════════
    TOPBAR USER INFO
 ══════════════════════════════════════ */
-.user-chip{display:flex;align-items:center;gap:8px;padding:0 14px;border-left:1px solid rgba(78,160,78,0.3)}
+.user-chip{display:flex;align-items:center;gap:8px;padding:0 14px;border-left:1px solid rgba(78,160,78,0.3);cursor:pointer;border-radius:8px;transition:background 0.15s}
+.user-chip:hover{background:rgba(255,255,255,0.08)}
 .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
 .user-name{font-size:11px;font-weight:600;color:rgba(255,255,255,0.85)}
 .user-role{font-size:9px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.8px}
@@ -536,7 +538,7 @@ tr:hover td{background:#fafbfd}
   <div class="header-right">
     <!-- JVS brand logo top-right -->
     <img src="jvs-icon.png" class="header-jvs-logo" alt="Juan Villanueva Software" title="Juan Villanueva Software" onerror="this.style.display='none'">
-    <div class="user-chip" id="userChip" style="display:none">
+    <div class="user-chip" id="userChip" style="display:none" onclick="openMiPerfil()" title="Mi perfil" role="button">
       <div class="user-avatar" id="userAvatar">?</div>
       <div>
         <div class="user-name" id="userName">—</div>
@@ -2605,6 +2607,78 @@ function quickLogin(userId){
 }
 
 // ════════════════════════════════════════════════
+//  MI PERFIL
+// ════════════════════════════════════════════════
+const ROLE_LABELS_FULL = {admin:'Administrador', dario:'Darío', lucia:'Lucía', cliente:'Cliente'};
+
+function openMiPerfil(){
+  if(!currentUser) return;
+  const u = USUARIOS.find(x=>x.id===currentUser.id) || currentUser;
+  const isCliente = u.rol === 'cliente';
+  // Pedidos del cliente (si aplica)
+  let pedidosHtml = '';
+  if(isCliente && u.clienteId){
+    const cli = db.clientes.find(c=>c.id===u.clienteId);
+    const peds = cli ? db.pedidos.filter(p=>p.nombre===cli.nombre).sort((a,b)=>b.id-a.id).slice(0,5) : [];
+    pedidosHtml = peds.length ? `
+      <div style="margin-top:20px">
+        <div class="form-label" style="font-weight:700;margin-bottom:10px">📦 Mis Pedidos Recientes</div>
+        ${peds.map(p=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;background:var(--bg)">
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px">Pedido #${p.numero}</div>
+              <div style="font-size:11px;color:var(--text-muted)">${p.fecha||''} · ${(p.productos||[]).reduce((s,r)=>s+(Number(r.kg)||0),0)} kg</div>
+            </div>
+            <span class="badge-${badgeClass(p.estado)}" style="font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:10px">${p.estado}</span>
+          </div>`).join('')}
+      </div>` : '';
+  }
+  document.getElementById('miPerfilBody').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:var(--bg);border-radius:var(--radius-lg)">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--navy-light),var(--blue));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0">${u.avatar||u.id.substring(0,2).toUpperCase()}</div>
+      <div>
+        <div style="font-size:16px;font-weight:800;color:var(--text)">${u.nombre}</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${ROLE_LABELS_FULL[u.rol]||u.rol} · @${u.id}</div>
+      </div>
+    </div>
+    <div class="form-grid" style="gap:14px">
+      <div class="form-group form-full">
+        <label class="form-label">Nombre completo</label>
+        <input class="form-input" id="perfil_nombre" value="${u.nombre}" placeholder="Tu nombre">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nueva contraseña</label>
+        <input class="form-input" id="perfil_pass" type="password" placeholder="Dejar vacío para no cambiar">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmar contraseña</label>
+        <input class="form-input" id="perfil_pass2" type="password" placeholder="Repetir nueva contraseña">
+      </div>
+    </div>
+    ${pedidosHtml}`;
+  document.getElementById('modalMiPerfil').style.display = 'flex';
+}
+
+function guardarMiPerfil(){
+  const nombre = document.getElementById('perfil_nombre').value.trim();
+  const pass   = document.getElementById('perfil_pass').value;
+  const pass2  = document.getElementById('perfil_pass2').value;
+  if(!nombre){ showToast('El nombre no puede estar vacío','error'); return; }
+  if(pass && pass !== pass2){ showToast('Las contraseñas no coinciden','error'); return; }
+  const idx = USUARIOS.findIndex(x=>x.id===currentUser.id);
+  if(idx === -1) return;
+  USUARIOS[idx].nombre = nombre;
+  if(pass) USUARIOS[idx].pass = pass;
+  saveUsuarios();
+  // Actualizar sesión
+  currentUser.nombre = nombre;
+  sessionStorage.setItem('jvs_user', JSON.stringify(currentUser));
+  document.getElementById('userName').textContent = nombre;
+  showToast('Perfil actualizado ✓','success');
+  closeModal('modalMiPerfil');
+}
+
+// ════════════════════════════════════════════════
 //  FAB MOBILE
 // ════════════════════════════════════════════════
 const FAB_SECTIONS = {
@@ -2868,6 +2942,21 @@ function installPWA(){
 
 <!-- ══════════ FAB MOBILE ══════════ -->
 <button class="fab" id="fabBtn" onclick="fabAction()" title="Nuevo">+</button>
+
+<!-- ══════════ MODAL MI PERFIL ══════════ -->
+<div class="modal-overlay" id="modalMiPerfil">
+  <div class="modal" style="max-width:460px;width:100%">
+    <div class="modal-header">
+      <span class="modal-title">👤 Mi Perfil</span>
+      <button class="modal-close" onclick="closeModal('modalMiPerfil')">×</button>
+    </div>
+    <div class="modal-body" id="miPerfilBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('modalMiPerfil')">Cerrar</button>
+      <button class="btn btn-primary btn-sm" onclick="guardarMiPerfil()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════ BÚSQUEDA GLOBAL ══════════ -->
 <div id="searchOverlay" class="search-overlay" style="display:none" onclick="if(event.target===this)closeSearch()">
