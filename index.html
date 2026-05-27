@@ -2692,11 +2692,23 @@ function renderInstallZone(){
     </div>`;
     return;
   }
-  z.innerHTML = `<div style="background:var(--bg);border-radius:var(--radius-lg);padding:14px;font-size:13px;line-height:1.6;color:var(--text)">
-    <strong>En Android Chrome:</strong><br>
-    Tocá el menú <strong>⋮</strong> (tres puntos) arriba a la derecha<br>
-    y elegí <strong>"Agregar a pantalla de inicio"</strong> o <strong>"Instalar app"</strong>
-  </div>`;
+  // Desktop o Android sin prompt nativo aún
+  const isDesktop = window.innerWidth > 768;
+  if(isDesktop){
+    z.innerHTML = `<div style="background:var(--bg);border-radius:var(--radius-lg);padding:14px;font-size:13px;line-height:1.8;color:var(--text)">
+      <strong>En Chrome/Edge (escritorio):</strong><br>
+      Hacé clic en el ícono <strong>⊕</strong> que aparece en la barra de dirección<br>
+      o abrí el menú (<strong>⋮</strong>) → <strong>"Instalar Sabores de Misiones…"</strong><br><br>
+      <strong>En Firefox:</strong> menú (<strong>☰</strong>) → <strong>"Instalar"</strong>
+    </div>`;
+  } else {
+    z.innerHTML = `<div style="background:var(--bg);border-radius:var(--radius-lg);padding:14px;font-size:13px;line-height:1.8;color:var(--text)">
+      <strong>En Android Chrome:</strong><br>
+      Tocá el menú <strong>⋮</strong> (tres puntos) arriba a la derecha<br>
+      y elegí <strong>"Agregar a pantalla de inicio"</strong> o <strong>"Instalar app"</strong>
+    </div>`;
+  }
+}
 
 function guardarMiPerfil(){
   const nombre = document.getElementById('perfil_nombre').value.trim();
@@ -2886,7 +2898,8 @@ function renderBottomNav(){
 
 (function(){
   const yaVisto = sessionStorage.getItem('splashDone');
-  const delay = yaVisto ? 300 : 2000;
+  const isInstalled = window.navigator.standalone || window.matchMedia('(display-mode:standalone)').matches;
+  const delay = isInstalled ? 800 : (yaVisto ? 200 : 1800);
   function hideSplash(){
     const s = document.getElementById('splash');
     if(!s) return;
@@ -2899,7 +2912,7 @@ function renderBottomNav(){
         document.getElementById('loginScreen').style.display='flex';
         setTimeout(()=>document.getElementById('loginUser').focus(),100);
       }
-    }, 750);
+    }, 400);
   }
   sessionStorage.setItem('splashDone','1');
   setTimeout(hideSplash, delay);
@@ -2919,10 +2932,13 @@ let _pwaPrompt = null;
 const _isStandalone = () => window.navigator.standalone || window.matchMedia('(display-mode:standalone)').matches;
 const _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
-// Capturar el evento lo antes posible
+// Capturar evento nativo (Chrome/Android/Edge desktop)
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _pwaPrompt = e;
+  // Redibujar banner con botón de instalación directa
+  const b = document.getElementById('installBanner');
+  if(b) b.remove();
   showInstallUI();
 });
 
@@ -2933,23 +2949,34 @@ window.addEventListener('appinstalled', () => {
 });
 
 function showInstallUI() {
-  // Botón en el header
+  if(_isStandalone()) return;
+  // Botón en el header: siempre visible cuando no instalado
   const btn = document.getElementById('btnInstall');
-  if(btn && !_isStandalone()) btn.style.display = 'flex';
-  // Banner flotante (solo si no fue descartado recientemente)
+  if(btn) btn.style.display = 'flex';
+  // Banner flotante
   if(localStorage.getItem('installDismissed')) return;
   if(document.getElementById('installBanner')) return;
   const isMob = window.innerWidth <= 768;
   const banner = document.createElement('div');
   banner.id = 'installBanner';
-  banner.innerHTML = `
-    <img src="jvs-icon.png" style="width:36px;height:36px;border-radius:10px;flex-shrink:0" onerror="this.style.display='none'">
-    <div style="flex:1;min-width:0">
-      <div style="font-weight:700;font-size:13px;color:#fff">Instalar Sabores de Misiones</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:1px">${isMob?'Agregar a pantalla de inicio':'Instalar como aplicación de escritorio'}</div>
-    </div>
-    <button onclick="clickInstall()" style="background:#E8770A;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Exo 2',sans-serif;white-space:nowrap">⬇ Instalar</button>
-    <button onclick="localStorage.setItem('installDismissed','1');this.closest('#installBanner').remove()" style="background:none;border:none;color:rgba(255,255,255,0.45);font-size:22px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0">×</button>`;
+  if(_isIOS) {
+    banner.innerHTML = `
+      <img src="jvs-icon.png" style="width:36px;height:36px;border-radius:10px;flex-shrink:0" onerror="this.style.display='none'">
+      <div style="flex:1;min-width:0;font-size:12px;color:#fff;line-height:1.6">
+        <strong style="font-size:13px">Instalar en iPhone/iPad:</strong><br>
+        Tocá <strong>Compartir</strong> (□↑) → <em>"Agregar a inicio"</em>
+      </div>
+      <button onclick="localStorage.setItem('installDismissed','1');this.closest('#installBanner').remove()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:24px;cursor:pointer;flex-shrink:0;padding:0 4px;line-height:1">×</button>`;
+  } else {
+    banner.innerHTML = `
+      <img src="jvs-icon.png" style="width:36px;height:36px;border-radius:10px;flex-shrink:0" onerror="this.style.display='none'">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:13px;color:#fff">Instalar Sabores de Misiones</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">${isMob?'Agregar a pantalla de inicio':'Instalar como aplicación de escritorio'}</div>
+      </div>
+      <button onclick="clickInstall()" style="background:#E8770A;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Exo 2',sans-serif;white-space:nowrap;flex-shrink:0">⬇ Instalar</button>
+      <button onclick="localStorage.setItem('installDismissed','1');this.closest('#installBanner').remove()" style="background:none;border:none;color:rgba(255,255,255,0.45);font-size:24px;cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0">×</button>`;
+  }
   const bottom = isMob ? '66px' : '0';
   banner.style.cssText = `position:fixed;bottom:${bottom};left:0;right:0;background:linear-gradient(135deg,#0D4A1A,#071F07);border-top:2px solid rgba(78,160,78,0.5);padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:300;box-shadow:0 -4px 24px rgba(0,0,0,0.4)`;
   document.body.appendChild(banner);
@@ -2970,37 +2997,22 @@ function clickInstall() {
       _pwaPrompt = null;
     });
   } else {
-    // Sin prompt nativo: abrir Mi Perfil en sección instalar
+    // Sin prompt nativo: abrir Mi Perfil con instrucciones manuales
     openMiPerfil();
-    hideInstallUI();
   }
 }
+// Alias usado desde renderInstallZone
+function installPWA(){ clickInstall(); }
 
-// Mostrar botón en header si no está instalado (tras cargar)
+// Siempre mostrar UI de instalación al cargar si no está instalado
 window.addEventListener('load', () => {
-  if(!_isStandalone()){
-    // iOS Safari: mostrar instrucciones automáticamente
-    if(_isIOS && !localStorage.getItem('iosTipDismissed')){
-      setTimeout(()=>{
-        if(document.getElementById('installBanner')) return;
-        const tip = document.createElement('div');
-        tip.id = 'installBanner';
-        tip.innerHTML = `
-          <div style="flex:1;font-size:12px;color:#fff;line-height:1.5">
-            <strong>Instalar en iPhone:</strong> tocá <strong>Compartir</strong> (□↑) → <em>"Agregar a inicio"</em>
-          </div>
-          <button onclick="localStorage.setItem('iosTipDismissed','1');this.closest('#installBanner').remove()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:22px;cursor:pointer;flex-shrink:0">×</button>`;
-        tip.style.cssText = 'position:fixed;bottom:66px;left:0;right:0;background:linear-gradient(135deg,#0D4A1A,#071F07);border-top:2px solid rgba(78,160,78,0.5);padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:300';
-        document.body.appendChild(tip);
-      }, 3000);
-    }
-    // Mostrar botón en header siempre (se mostrará cuando haya prompt disponible)
-    setTimeout(()=>{
-      if(_pwaPrompt){
-        const btn = document.getElementById('btnInstall');
-        if(btn) btn.style.display = 'flex';
-      }
-    }, 1500);
+  if(_isStandalone()) return;
+  // Botón header siempre visible
+  const btn = document.getElementById('btnInstall');
+  if(btn) btn.style.display = 'flex';
+  // Banner tras breve pausa (no molestar si ya fue descartado)
+  if(!localStorage.getItem('installDismissed')){
+    setTimeout(() => showInstallUI(), 2000);
   }
 });
 </script>
