@@ -385,12 +385,42 @@ tr:hover td{background:#fafbfd}
    LOGIN SCREEN
 ══════════════════════════════════════ */
 .login-overlay{position:fixed;inset:0;background:linear-gradient(145deg,#020814 0%,#060E1F 45%,#0A1628 75%,#0D2044 100%);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;gap:60px}
-.login-jvs-brand{display:none;flex-direction:column;align-items:center;gap:16px}
+/* ── Login brand panel ── */
+.login-jvs-brand{display:none;flex-direction:column;align-items:center;gap:28px}
 @media(min-width:800px){.login-jvs-brand{display:flex}}
-.login-jvs-logo{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 0 24px rgba(30,144,255,0.5))}
-.login-jvs-name{font-family:'Exo 2',sans-serif;font-size:28px;font-weight:800;color:#fff;letter-spacing:3px}
-.login-jvs-sub{font-size:11px;color:#1E90FF;letter-spacing:2px;text-transform:uppercase;margin-top:-8px}
-.login-jvs-tagline{font-size:13px;color:#fff;letter-spacing:0.8px;margin-top:32px;text-align:center;max-width:200px;line-height:1.7;font-weight:500;text-shadow:0 1px 8px rgba(0,0,0,0.5)}
+/* Scene container */
+.jvs-logo-scene{position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center}
+/* Logo */
+.login-jvs-logo{width:150px;height:150px;object-fit:contain;position:relative;z-index:3;animation:jvs-float 4s ease-in-out infinite,jvs-glow-logo 4s ease-in-out infinite;transition:filter 0.6s}
+/* Glow backdrop */
+.jvs-glow-bg{position:absolute;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(30,144,255,0.35) 0%,transparent 70%);animation:jvs-glow-bg-pulse 4s ease-in-out infinite;z-index:1;transition:background 0.6s}
+/* Rings */
+.jvs-ring{position:absolute;border-radius:50%;border:1.5px solid rgba(30,144,255,0.22);transition:border-color 0.6s}
+.jvs-ring-1{width:168px;height:168px;animation:jvs-ring-pulse 3.5s ease-in-out infinite}
+.jvs-ring-2{width:196px;height:196px;animation:jvs-ring-pulse 3.5s ease-in-out infinite 0.6s;opacity:0.55}
+/* Orbit wrappers */
+.jvs-orbit{position:absolute;border-radius:50%;display:flex;align-items:flex-start;justify-content:center}
+.jvs-orbit-1{width:168px;height:168px;animation:jvs-orbit 6s linear infinite}
+.jvs-orbit-2{width:196px;height:196px;animation:jvs-orbit 10s linear infinite reverse}
+.jvs-orbit span{display:block;width:10px;height:10px;border-radius:50%;margin-top:-5px;transition:background 0.6s,box-shadow 0.6s}
+.jvs-orbit-1 span{background:#1E90FF;box-shadow:0 0 10px #1E90FF,0 0 22px rgba(30,144,255,0.55)}
+.jvs-orbit-2 span{width:7px;height:7px;background:#7ED4FF;box-shadow:0 0 8px #7ED4FF,0 0 16px rgba(126,212,255,0.5)}
+/* Tagline */
+.login-jvs-tagline{font-size:13px;color:rgba(255,255,255,0.9);letter-spacing:0.5px;text-align:center;max-width:220px;line-height:1.8;font-weight:400;text-shadow:0 1px 8px rgba(0,0,0,0.5)}
+.login-jvs-tagline strong{color:#fff;font-size:14px;font-weight:700;letter-spacing:1px;display:block;margin-top:2px}
+/* Keyframes */
+@keyframes jvs-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
+@keyframes jvs-glow-logo{0%,100%{filter:drop-shadow(0 0 18px rgba(30,144,255,0.65)) drop-shadow(0 0 36px rgba(30,144,255,0.25))}50%{filter:drop-shadow(0 0 30px rgba(30,144,255,1)) drop-shadow(0 0 60px rgba(30,144,255,0.5))}}
+@keyframes jvs-glow-bg-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.18);opacity:1}}
+@keyframes jvs-ring-pulse{0%,100%{transform:scale(1);opacity:.22}50%{transform:scale(1.06);opacity:.5}}
+@keyframes jvs-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+/* ── Estado TYPING (color verde mientras escribe) ── */
+.login-jvs-brand.typing .login-jvs-logo{animation:jvs-float 4s ease-in-out infinite,jvs-glow-logo-active 2s ease-in-out infinite}
+.login-jvs-brand.typing .jvs-glow-bg{background:radial-gradient(circle,rgba(78,180,78,0.45) 0%,transparent 70%)}
+.login-jvs-brand.typing .jvs-ring{border-color:rgba(78,180,78,0.35)}
+.login-jvs-brand.typing .jvs-orbit-1 span{background:#4ADE80;box-shadow:0 0 12px #4ADE80,0 0 28px rgba(74,222,128,0.55)}
+.login-jvs-brand.typing .jvs-orbit-2 span{background:#86EFAC;box-shadow:0 0 9px #86EFAC,0 0 18px rgba(134,239,172,0.4)}
+@keyframes jvs-glow-logo-active{0%,100%{filter:drop-shadow(0 0 22px rgba(78,180,78,0.8)) drop-shadow(0 0 44px rgba(78,180,78,0.4))}50%{filter:drop-shadow(0 0 38px rgba(100,220,100,1)) drop-shadow(0 0 75px rgba(78,180,78,0.6))}}
 .login-card{background:#fff;border-radius:20px;padding:36px 40px;width:100%;max-width:380px;box-shadow:0 24px 80px rgba(0,0,0,0.4);animation:splashIn 0.4s ease}
 .login-logo-wrap{display:flex;justify-content:center;margin-bottom:24px}
 .login-logo{height:72px;object-fit:contain}
@@ -592,9 +622,20 @@ tr:hover td{background:#fafbfd}
 <!-- ══════════ LOGIN ══════════ -->
 <div id="loginScreen" class="login-overlay" style="display:none">
   <!-- Panel JVS izquierdo (solo desktop) -->
-  <div class="login-jvs-brand">
-    <img src="jvs-logo.png" class="login-jvs-logo" alt="Juan Villanueva Software" onerror="this.style.display='none'">
-    <p class="login-jvs-tagline">Soluciones digitales para tu negocio · Juan Villanueva</p>
+  <div class="login-jvs-brand" id="jvsBrand">
+    <div class="jvs-logo-scene">
+      <!-- Anillos pulsantes -->
+      <div class="jvs-ring jvs-ring-1"></div>
+      <div class="jvs-ring jvs-ring-2"></div>
+      <!-- Partículas en órbita -->
+      <div class="jvs-orbit jvs-orbit-1"><span></span></div>
+      <div class="jvs-orbit jvs-orbit-2"><span></span></div>
+      <!-- Resplandor de fondo -->
+      <div class="jvs-glow-bg"></div>
+      <!-- Logo -->
+      <img src="jvs-logo.png" class="login-jvs-logo" alt="JVS" onerror="this.style.display='none'">
+    </div>
+    <p class="login-jvs-tagline">Soluciones digitales para tu negocio<strong>Juan Villanueva</strong></p>
   </div>
   <!-- Card de ingreso -->
   <div class="login-card">
@@ -3017,6 +3058,34 @@ window.addEventListener('load', () => {
     setTimeout(() => showInstallUI(), 2000);
   }
 });
+
+// ── Animación logo login al escribir ──
+(function(){
+  function loginTypingWatcher(){
+    const brand = document.getElementById('jvsBrand');
+    if(!brand) return;
+    const u = document.getElementById('loginUser');
+    const p = document.getElementById('loginPass');
+    if(!u || !p) return;
+    let _timer;
+    function setTyping(){
+      brand.classList.add('typing');
+      clearTimeout(_timer);
+      _timer = setTimeout(()=>{
+        if(!u.value && !p.value) brand.classList.remove('typing');
+      }, 2500);
+    }
+    u.addEventListener('input', setTyping);
+    p.addEventListener('input', setTyping);
+    u.addEventListener('focus', ()=> brand.classList.add('typing'));
+    p.addEventListener('focus', ()=> brand.classList.add('typing'));
+    u.addEventListener('blur',  ()=>{ if(!u.value && !p.value){ clearTimeout(_timer); _timer = setTimeout(()=>brand.classList.remove('typing'),1200); }});
+    p.addEventListener('blur',  ()=>{ if(!u.value && !p.value){ clearTimeout(_timer); _timer = setTimeout(()=>brand.classList.remove('typing'),1200); }});
+  }
+  // Ejecutar cuando el loginScreen sea visible
+  document.addEventListener('DOMContentLoaded', loginTypingWatcher);
+  setTimeout(loginTypingWatcher, 500); // fallback
+})();
 </script>
 
 <!-- ══════════ FAB MOBILE ══════════ -->
