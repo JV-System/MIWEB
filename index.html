@@ -80,8 +80,8 @@
   .header-jvs-logo{display:none}
   .app-footer{display:none!important}
   .brand-logo-box{min-width:60px;padding:0 12px}
-  .sidebar{position:fixed;left:0;top:0;bottom:60px;z-index:150;transform:translateX(-100%);width:85vw;max-width:300px;box-shadow:4px 0 20px rgba(0,0,0,0.2)}
-  .sidebar.open{transform:translateX(0)}
+  .sidebar{position:fixed;left:0;top:0;bottom:60px;z-index:150;transform:translateX(-100%);width:85vw;max-width:300px;box-shadow:4px 0 20px rgba(0,0,0,0.2);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1)!important}
+  .sidebar.open{transform:translateX(0)!important}
   .overlay-bg{z-index:140}
   .content-body{padding:12px}
   .kpi-grid{grid-template-columns:1fr 1fr!important}
@@ -1198,14 +1198,9 @@ function showSection(sec){
 }
 
 function toggleSidebar(){
-  // Find the sidebar/chat-sidebar inside the currently visible section
-  let sidebar = null;
-  document.querySelectorAll('.main > section, .main > div.main').forEach(sec=>{
-    if(sec.style.display && sec.style.display !== 'none'){
-      const s = sec.querySelector('.sidebar, .chat-sidebar');
-      if(s) sidebar = s;
-    }
-  });
+  const sec = document.getElementById('sec-' + _bnavActive);
+  if(!sec) return;
+  const sidebar = sec.querySelector('.sidebar, .chat-sidebar');
   if(sidebar){
     sidebar.classList.toggle('open');
     document.getElementById('overlayBg').classList.toggle('open');
