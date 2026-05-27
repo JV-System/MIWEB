@@ -8,6 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Sabores de Misiones">
 <meta name="theme-color" content="#0D3B0D">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="jvs-logo.png">
 <title>Sabores de Misiones — Gestión &amp; Comunicación</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -70,6 +72,7 @@
 .bnav-btn svg{width:20px;height:20px;opacity:0.8}
 .bnav-btn.active{color:var(--accent-light);border-top-color:var(--accent)}
 .bnav-btn:hover{color:#fff}
+.bnav-badge{position:absolute;top:6px;right:calc(50% - 14px);background:#E53935;color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid #040F04}
 
 /* ── MOBILE RESPONSIVE ── */
 @media(max-width:768px){
@@ -121,6 +124,7 @@ body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 .nav-tab:hover{color:#fff}
 .nav-tab.active{color:var(--accent-light);border-bottom-color:var(--accent)}
 .nav-tab svg{width:15px;height:15px;opacity:0.8}
+.tab-badge{background:#E53935;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;padding:0 3px;margin-left:4px}
 .header-right{display:flex;align-items:center;gap:8px;padding:0 16px;margin-left:auto;flex-shrink:0}
 .header-jvs-logo{width:32px;height:32px;opacity:0.85;filter:drop-shadow(0 0 6px rgba(30,144,255,0.5));flex-shrink:0;transition:opacity 0.2s}
 .header-jvs-logo:hover{opacity:1}
@@ -1194,7 +1198,21 @@ function showSection(sec){
   // Sync bottom nav
   _bnavActive = sec;
   document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.toggle('active', b.getAttribute('onclick').includes(`'${sec}'`)));
-  closeSidebar();
+  // En mobile, auto-abrir sidebar si la sección tiene uno
+  const SECS_CON_SIDEBAR = ['pedidos','clientes','dario','compras','despachos','presupuestos','comunicacion'];
+  const isMobile = window.innerWidth <= 768;
+  const btnToggle = document.querySelector('.sidebar-toggle');
+  if(SECS_CON_SIDEBAR.includes(sec)){
+    if(btnToggle) btnToggle.style.cssText = ''; // visible (lo controla CSS media query)
+    if(isMobile){
+      const s = document.getElementById('sec-'+sec);
+      const sidebar = s ? s.querySelector('.sidebar,.chat-sidebar') : null;
+      if(sidebar){ sidebar.classList.add('open'); document.getElementById('overlayBg').classList.add('open'); }
+    }
+  } else {
+    if(btnToggle) btnToggle.style.display = 'none'; // ocultar en dashboard/config
+    closeSidebar();
+  }
 }
 
 function toggleSidebar(){
@@ -1227,7 +1245,7 @@ function renderDashboard(){
   `;
   const ultimosPed = [...db.pedidos].sort((a,b)=>b.id-a.id).slice(0,6);
   document.getElementById('dashPedidos').innerHTML = ultimosPed.length ? ultimosPed.map(p=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer" onclick="showSection('pedidos');setTimeout(()=>openPedidoDetail(${p.id}),100)">
+    <div style="position:relative;display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer" onclick="showSection('pedidos');setTimeout(()=>openPedidoDetail(${p.id}),100)">
       <div>
         <div style="font-weight:700;font-size:13px">Pedido #${p.numero}</div>
         <div style="font-size:11px;color:var(--text-muted)">${p.nombre}</div>
@@ -2087,6 +2105,8 @@ function initApp(){
   // Go to first allowed section
   const first = ROLE_TABS[currentUser.rol][0];
   showSection(first);
+  // Badge de mensajes al iniciar
+  setTimeout(updateChatBadge, 300);
 }
 
 function applyRoleTabs(){
@@ -2243,6 +2263,7 @@ function sendMsg(pedidoId){
   const p=db.pedidos.find(x=>x.id===pedidoId);
   if(p) renderChatMain(p);
   renderChatList();
+  updateChatBadge();
 }
 
 function fmtTime(ts){
@@ -2260,6 +2281,37 @@ function scrollChatBottom(){
   setTimeout(()=>{const el=document.getElementById('chatMessages');if(el)el.scrollTop=el.scrollHeight;},50);
 }
 
+// ── Notificaciones de mensajes ──
+function countUnreadMsgs(){
+  if(!currentUser || !db.mensajes) return 0;
+  return db.mensajes.filter(m=>m.autor!==currentUser.id && !(m.visto||[]).includes(currentUser.id)).length;
+}
+function updateChatBadge(){
+  _chatUnread = countUnreadMsgs();
+  renderBottomNav();
+  // También badge en el tab de escritorio
+  const chatTab = document.querySelector('.nav-tab[data-sec="comunicacion"]');
+  if(chatTab){
+    const existing = chatTab.querySelector('.tab-badge');
+    if(_chatUnread>0){
+      if(!existing){ const b=document.createElement('span'); b.className='tab-badge'; chatTab.appendChild(b); }
+      chatTab.querySelector('.tab-badge').textContent = _chatUnread>9?'9+':_chatUnread;
+    } else if(existing){ existing.remove(); }
+  }
+}
+function markAllMsgsRead(){
+  if(!currentUser || !db.mensajes) return;
+  let changed=false;
+  db.mensajes.forEach(m=>{
+    if(m.autor!==currentUser.id && !(m.visto||[]).includes(currentUser.id)){
+      m.visto = [...(m.visto||[]), currentUser.id]; changed=true;
+    }
+  });
+  if(changed){ saveDB(); _chatUnread=0; renderBottomNav(); }
+}
+// Chequear mensajes nuevos cada 15 seg (simula push)
+setInterval(()=>{ if(currentUser) updateChatBadge(); }, 15000);
+
 // Override showSection to handle comunicacion
 const _origShowSection = showSection;
 showSection = function(sec){
@@ -2267,6 +2319,7 @@ showSection = function(sec){
   if(sec==='comunicacion'){
     if(!db.mensajes) db.mensajes=[];
     renderChatList();
+    markAllMsgsRead(); // limpiar badge al entrar
   }
 };
 
@@ -2630,17 +2683,28 @@ const BNAV_LABELS = {
   compras:'Compras', despachos:'Envíos', presupuestos:'Presup.', comunicacion:'Chat', config:'Config',
 };
 let _bnavActive = '';
+// Prioridad de tabs en bottom nav (comunicacion siempre incluida)
+const BNAV_PRIORITY = {
+  admin:   ['dashboard','pedidos','clientes','comunicacion','dario'],
+  dario:   ['comunicacion','dario'],
+  lucia:   ['comunicacion','despachos'],
+  cliente: ['comunicacion'],
+};
+let _chatUnread = 0; // contador mensajes no leídos
 function renderBottomNav(){
   const inner = document.getElementById('bottomNavInner');
   if(!inner || !currentUser) return;
   const allowed = ROLE_TABS[currentUser.rol]||[];
-  // Show max 5 tabs on mobile (most important ones)
-  const show = allowed.slice(0,5);
-  inner.innerHTML = show.map(sec=>`
-    <button class="bnav-btn${_bnavActive===sec?' active':''}" onclick="showSection('${sec}')">
+  const priority = BNAV_PRIORITY[currentUser.rol] || allowed;
+  const show = priority.filter(s=>allowed.includes(s)).slice(0,5);
+  inner.innerHTML = show.map(sec=>{
+    const unread = sec==='comunicacion' && _chatUnread > 0;
+    return `<button class="bnav-btn${_bnavActive===sec?' active':''}" onclick="showSection('${sec}')" style="position:relative">
       ${BNAV_ICONS[sec]||''}
+      ${unread?`<span class="bnav-badge">${_chatUnread>9?'9+':_chatUnread}</span>`:''}
       <span>${BNAV_LABELS[sec]||sec}</span>
-    </button>`).join('');
+    </button>`;
+  }).join('');
 }
 
 (function(){
@@ -2663,6 +2727,13 @@ function renderBottomNav(){
   sessionStorage.setItem('splashDone','1');
   setTimeout(hideSplash, delay);
 })();
+
+// ── PWA: registrar service worker ──
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
 </script>
 
 <!-- ══════════ BÚSQUEDA GLOBAL ══════════ -->
