@@ -45,11 +45,13 @@ body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 .nav-tab.active{color:var(--accent-light);border-bottom-color:var(--accent)}
 .nav-tab svg{width:15px;height:15px;opacity:0.8}
 .header-right{display:flex;align-items:center;gap:8px;padding:0 16px;margin-left:auto;flex-shrink:0}
+.header-jvs-logo{width:32px;height:32px;opacity:0.85;filter:drop-shadow(0 0 6px rgba(30,144,255,0.5));flex-shrink:0;transition:opacity 0.2s}
+.header-jvs-logo:hover{opacity:1}
 .btn-icon{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);width:34px;height:34px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
 .btn-icon:hover{background:rgba(255,255,255,0.15);color:#fff}
 
 /* ── WATERMARK ── */
-.watermark{pointer-events:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:420px;height:420px;object-fit:contain;opacity:0.045;filter:blur(3px) grayscale(20%);z-index:0;user-select:none}
+.watermark{pointer-events:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:480px;height:480px;object-fit:contain;opacity:0.10;filter:blur(2px) grayscale(10%);z-index:0;user-select:none}
 .main{position:relative;z-index:1}
 
 /* ── LAYOUT ── */
@@ -212,19 +214,19 @@ tr:hover td{background:#fafbfd}
 @media(max-width:768px){.sidebar-toggle{display:flex;align-items:center;justify-content:center}}
 
 /* ══════════════════════════════════════
-   SPLASH SCREEN
+   SPLASH SCREEN  — identidad JVS (azul)
 ══════════════════════════════════════ */
-.splash-overlay{position:fixed;inset:0;background:linear-gradient(145deg,#040F04 0%,#071F07 40%,#0D3B0D 70%,#1B5E20 100%);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0}
+.splash-overlay{position:fixed;inset:0;background:linear-gradient(145deg,#020814 0%,#060E1F 40%,#0A1628 70%,#0D2044 100%);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0}
 .splash-content{display:flex;flex-direction:column;align-items:center;gap:16px;animation:splashIn 0.7s ease forwards}
-.splash-logo-box{background:#fff;border-radius:20px;padding:16px 24px;box-shadow:0 12px 48px rgba(0,0,0,0.5);animation:splashPulse 2s ease-in-out infinite}
-.splash-logo-img{height:90px;object-fit:contain;display:block}
-.splash-bienvenido{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:#fff;text-align:center;margin-top:8px;opacity:0;animation:fadeInUp 0.6s ease 0.5s forwards}
-.splash-brand{font-family:'Exo 2',sans-serif;font-size:14px;font-weight:600;color:var(--accent-light);letter-spacing:3px;text-transform:uppercase;opacity:0;animation:fadeInUp 0.6s ease 0.8s forwards}
-.splash-dev{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-top:32px;opacity:0;animation:fadeInUp 0.6s ease 1.1s forwards;font-family:'Exo 2',sans-serif}
-.splash-progress{width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:40px;overflow:hidden;opacity:0;animation:fadeInUp 0.4s ease 1.2s forwards}
-.splash-progress-bar{height:100%;background:linear-gradient(90deg,var(--blue-light),var(--accent));border-radius:2px;width:0;animation:progressFill 1.8s ease 1.3s forwards}
+.splash-logo-box{display:flex;align-items:center;justify-content:center;animation:splashPulse 2.5s ease-in-out infinite}
+.splash-logo-img{width:160px;height:160px;object-fit:contain;display:block;filter:drop-shadow(0 0 30px rgba(30,144,255,0.6))}
+.splash-bienvenido{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:#fff;text-align:center;margin-top:12px;opacity:0;animation:fadeInUp 0.6s ease 0.5s forwards}
+.splash-brand{font-family:'Exo 2',sans-serif;font-size:12px;font-weight:600;color:#1E90FF;letter-spacing:4px;text-transform:uppercase;opacity:0;animation:fadeInUp 0.6s ease 0.8s forwards}
+.splash-dev{font-family:'Exo 2',sans-serif;font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;margin-top:36px;opacity:0;animation:fadeInUp 0.6s ease 1.1s forwards}
+.splash-progress{width:220px;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:20px;overflow:hidden;opacity:0;animation:fadeInUp 0.4s ease 1.2s forwards}
+.splash-progress-bar{height:100%;background:linear-gradient(90deg,#1565D8,#1E90FF,#F5A623);border-radius:2px;width:0;animation:progressFill 1.8s ease 1.3s forwards}
 @keyframes splashIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
-@keyframes splashPulse{0%,100%{box-shadow:0 12px 48px rgba(0,0,0,0.5),0 0 0 0 rgba(232,119,10,0)}50%{box-shadow:0 12px 48px rgba(0,0,0,0.5),0 0 0 12px rgba(232,119,10,0.15)}}
+@keyframes splashPulse{0%,100%{filter:drop-shadow(0 0 20px rgba(30,144,255,0.4))}50%{filter:drop-shadow(0 0 40px rgba(30,144,255,0.8))}}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes progressFill{from{width:0}to{width:100%}}
 .splash-out{animation:splashOut 0.5s ease forwards}
@@ -233,7 +235,13 @@ tr:hover td{background:#fafbfd}
 /* ══════════════════════════════════════
    LOGIN SCREEN
 ══════════════════════════════════════ */
-.login-overlay{position:fixed;inset:0;background:linear-gradient(145deg,#040F04,#0D3B0D 50%,#1B5E20);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-overlay{position:fixed;inset:0;background:linear-gradient(145deg,#020814 0%,#060E1F 45%,#0A1628 75%,#0D2044 100%);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;gap:60px}
+.login-jvs-brand{display:none;flex-direction:column;align-items:center;gap:16px}
+@media(min-width:800px){.login-jvs-brand{display:flex}}
+.login-jvs-logo{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 0 24px rgba(30,144,255,0.5))}
+.login-jvs-name{font-family:'Exo 2',sans-serif;font-size:28px;font-weight:800;color:#fff;letter-spacing:3px}
+.login-jvs-sub{font-size:11px;color:#1E90FF;letter-spacing:2px;text-transform:uppercase;margin-top:-8px}
+.login-jvs-tagline{font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:1px;margin-top:32px;text-align:center;max-width:200px;line-height:1.6}
 .login-card{background:#fff;border-radius:20px;padding:36px 40px;width:100%;max-width:380px;box-shadow:0 24px 80px rgba(0,0,0,0.4);animation:splashIn 0.4s ease}
 .login-logo-wrap{display:flex;justify-content:center;margin-bottom:24px}
 .login-logo{height:72px;object-fit:contain}
@@ -332,7 +340,7 @@ tr:hover td{background:#fafbfd}
       <img src="yerba.png" class="brand-logo" alt="Sabores de Misiones" onerror="this.src='yerba.jpeg'">
     </div>
     <div class="brand-text">
-      <div class="brand-name">Sabores de <span>yerba mate</span></div>
+      <div class="brand-name">Sabores de</div>
       <div class="brand-misiones">MISIONES</div>
     </div>
   </div>
@@ -371,6 +379,20 @@ tr:hover td{background:#fafbfd}
     </button>
   </nav>
   <div class="header-right">
+    <!-- JVS brand logo top-right -->
+    <svg class="header-jvs-logo" viewBox="0 0 200 170" xmlns="http://www.w3.org/2000/svg" title="Juan Villanueva Software">
+      <defs>
+        <linearGradient id="hcg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1E90FF"/><stop offset="100%" stop-color="#0A3D91"/></linearGradient>
+        <linearGradient id="hcg2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#2AA8FF"/><stop offset="100%" stop-color="#1565D8"/></linearGradient>
+      </defs>
+      <path d="M160 108 Q178 108 178 90 Q178 72 160 70 Q158 52 140 48 Q132 32 114 36 Q104 22 88 26 Q72 18 62 30 Q44 30 42 48 Q26 50 26 68 Q22 84 34 92 Q28 104 40 110 H154 Q160 110 160 108Z" fill="url(#hcg1)"/>
+      <path d="M155 105 Q172 105 172 88 Q172 72 155 70 Q153 53 136 49 Q128 34 111 38 Q101 25 86 29 Q71 21 62 32 Q45 32 43 49 Q28 51 28 68 Q24 83 36 91 Q30 103 42 108 H150 Q155 108 155 105Z" fill="url(#hcg2)" opacity="0.5"/>
+      <circle cx="52" cy="72" r="4" fill="#64B5F6"/><circle cx="64" cy="84" r="3" fill="#42A5F5"/><circle cx="52" cy="84" r="2" fill="#42A5F5"/>
+      <line x1="52" y1="72" x2="64" y2="84" stroke="#42A5F5" stroke-width="1.5" opacity="0.6"/><line x1="52" y1="72" x2="52" y2="84" stroke="#42A5F5" stroke-width="1.5" opacity="0.6"/>
+      <rect x="138" y="64" width="7" height="28" rx="2" fill="#64B5F6" opacity="0.9"/><rect x="149" y="55" width="7" height="37" rx="2" fill="#42A5F5" opacity="0.9"/><rect x="160" y="70" width="7" height="22" rx="2" fill="#64B5F6" opacity="0.9"/>
+      <text x="78" y="95" font-family="Arial Black,sans-serif" font-weight="900" font-size="36" fill="white" opacity="0.95">JV</text>
+      <path d="M116 58 L104 82 L112 82 L100 108 L124 78 L116 78 Z" fill="#F5A623"/>
+    </svg>
     <div class="user-chip" id="userChip" style="display:none">
       <div class="user-avatar" id="userAvatar">?</div>
       <div>
@@ -389,17 +411,78 @@ tr:hover td{background:#fafbfd}
 <div id="splash" class="splash-overlay">
   <div class="splash-content">
     <div class="splash-logo-box">
-      <img src="yerba.png" onerror="this.src='yerba.jpeg'" class="splash-logo-img" alt="Logo">
+      <!-- JVS Cloud Logo SVG -->
+      <svg class="splash-logo-img" viewBox="0 0 200 170" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="cg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1E90FF"/><stop offset="100%" stop-color="#0A3D91"/></linearGradient>
+          <linearGradient id="cg2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#2AA8FF"/><stop offset="100%" stop-color="#1565D8"/></linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- Cloud body -->
+        <path d="M160 108 Q178 108 178 90 Q178 72 160 70 Q158 52 140 48 Q132 32 114 36 Q104 22 88 26 Q72 18 62 30 Q44 30 42 48 Q26 50 26 68 Q22 84 34 92 Q28 104 40 110 H154 Q160 110 160 108Z" fill="url(#cg1)" stroke="rgba(100,180,255,0.3)" stroke-width="1"/>
+        <!-- Inner cloud gradient overlay -->
+        <path d="M155 105 Q172 105 172 88 Q172 72 155 70 Q153 53 136 49 Q128 34 111 38 Q101 25 86 29 Q71 21 62 32 Q45 32 43 49 Q28 51 28 68 Q24 83 36 91 Q30 103 42 108 H150 Q155 108 155 105Z" fill="url(#cg2)" opacity="0.5"/>
+        <!-- Circuit dots left -->
+        <circle cx="52" cy="72" r="4" fill="#64B5F6" filter="url(#glow)"/>
+        <circle cx="64" cy="84" r="3" fill="#42A5F5"/>
+        <circle cx="52" cy="84" r="2" fill="#42A5F5"/>
+        <line x1="52" y1="72" x2="64" y2="84" stroke="#42A5F5" stroke-width="1.5" opacity="0.6"/>
+        <line x1="52" y1="72" x2="52" y2="84" stroke="#42A5F5" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="40" cy="78" r="3" fill="#42A5F5" opacity="0.7"/>
+        <line x1="40" y1="78" x2="52" y2="72" stroke="#42A5F5" stroke-width="1" opacity="0.5"/>
+        <!-- Bar chart right -->
+        <rect x="138" y="64" width="7" height="28" rx="2" fill="#64B5F6" opacity="0.9"/>
+        <rect x="149" y="55" width="7" height="37" rx="2" fill="#42A5F5" opacity="0.9"/>
+        <rect x="160" y="70" width="7" height="22" rx="2" fill="#64B5F6" opacity="0.9"/>
+        <!-- JV text -->
+        <text x="78" y="95" font-family="Arial Black,sans-serif" font-weight="900" font-size="36" fill="white" letter-spacing="1" opacity="0.95">JV</text>
+        <!-- S orange lightning -->
+        <path d="M116 58 L104 82 L112 82 L100 108 L124 78 L116 78 Z" fill="#F5A623" filter="url(#glow)"/>
+        <!-- Bottom connectors -->
+        <line x1="90" y1="110" x2="90" y2="130" stroke="#1E90FF" stroke-width="2" opacity="0.7"/>
+        <line x1="110" y1="110" x2="110" y2="130" stroke="#1E90FF" stroke-width="2" opacity="0.7"/>
+        <circle cx="70" cy="138" r="5" fill="none" stroke="#1E90FF" stroke-width="2" opacity="0.7"/>
+        <circle cx="90" cy="138" r="5" fill="#F5A623" opacity="0.9"/>
+        <circle cx="110" cy="138" r="5" fill="none" stroke="#1E90FF" stroke-width="2" opacity="0.7"/>
+        <line x1="75" y1="138" x2="85" y2="138" stroke="#1E90FF" stroke-width="2" opacity="0.6"/>
+        <line x1="115" y1="138" x2="125" y2="138" stroke="#1E90FF" stroke-width="2" opacity="0.6"/>
+        <line x1="65" y1="130" x2="70" y2="138" stroke="#1E90FF" stroke-width="2" opacity="0.6"/>
+        <line x1="125" y1="130" x2="125" y2="138" stroke="#1E90FF" stroke-width="2" opacity="0.6"/>
+      </svg>
     </div>
     <h1 class="splash-bienvenido">¡Bienvenido!</h1>
-    <p class="splash-brand">Sabores de Misiones</p>
-    <p class="splash-dev">Desarrollado por Juan Villanueva</p>
+    <p class="splash-brand">Juan Villanueva Software</p>
+    <p class="splash-dev">Soluciones de gestión para tu negocio</p>
     <div class="splash-progress"><div class="splash-progress-bar"></div></div>
   </div>
 </div>
 
 <!-- ══════════ LOGIN ══════════ -->
 <div id="loginScreen" class="login-overlay" style="display:none">
+  <!-- Panel JVS izquierdo (solo desktop) -->
+  <div class="login-jvs-brand">
+    <svg class="login-jvs-logo" viewBox="0 0 200 170" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lg1b" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1E90FF"/><stop offset="100%" stop-color="#0A3D91"/></linearGradient>
+        <linearGradient id="lg2b" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#2AA8FF"/><stop offset="100%" stop-color="#1565D8"/></linearGradient>
+      </defs>
+      <path d="M160 108 Q178 108 178 90 Q178 72 160 70 Q158 52 140 48 Q132 32 114 36 Q104 22 88 26 Q72 18 62 30 Q44 30 42 48 Q26 50 26 68 Q22 84 34 92 Q28 104 40 110 H154 Q160 110 160 108Z" fill="url(#lg1b)" stroke="rgba(100,180,255,0.3)" stroke-width="1"/>
+      <path d="M155 105 Q172 105 172 88 Q172 72 155 70 Q153 53 136 49 Q128 34 111 38 Q101 25 86 29 Q71 21 62 32 Q45 32 43 49 Q28 51 28 68 Q24 83 36 91 Q30 103 42 108 H150 Q155 108 155 105Z" fill="url(#lg2b)" opacity="0.5"/>
+      <circle cx="52" cy="72" r="4" fill="#64B5F6"/><circle cx="64" cy="84" r="3" fill="#42A5F5"/><circle cx="52" cy="84" r="2" fill="#42A5F5"/>
+      <line x1="52" y1="72" x2="64" y2="84" stroke="#42A5F5" stroke-width="1.5" opacity="0.6"/><line x1="52" y1="72" x2="52" y2="84" stroke="#42A5F5" stroke-width="1.5" opacity="0.6"/><circle cx="40" cy="78" r="3" fill="#42A5F5" opacity="0.7"/><line x1="40" y1="78" x2="52" y2="72" stroke="#42A5F5" stroke-width="1" opacity="0.5"/>
+      <rect x="138" y="64" width="7" height="28" rx="2" fill="#64B5F6" opacity="0.9"/><rect x="149" y="55" width="7" height="37" rx="2" fill="#42A5F5" opacity="0.9"/><rect x="160" y="70" width="7" height="22" rx="2" fill="#64B5F6" opacity="0.9"/>
+      <text x="78" y="95" font-family="Arial Black,sans-serif" font-weight="900" font-size="36" fill="white" letter-spacing="1" opacity="0.95">JV</text>
+      <path d="M116 58 L104 82 L112 82 L100 108 L124 78 L116 78 Z" fill="#F5A623"/>
+      <line x1="90" y1="110" x2="90" y2="130" stroke="#1E90FF" stroke-width="2" opacity="0.7"/><line x1="110" y1="110" x2="110" y2="130" stroke="#1E90FF" stroke-width="2" opacity="0.7"/>
+      <circle cx="70" cy="138" r="5" fill="none" stroke="#1E90FF" stroke-width="2" opacity="0.7"/><circle cx="90" cy="138" r="5" fill="#F5A623" opacity="0.9"/><circle cx="110" cy="138" r="5" fill="none" stroke="#1E90FF" stroke-width="2" opacity="0.7"/>
+      <line x1="75" y1="138" x2="85" y2="138" stroke="#1E90FF" stroke-width="2" opacity="0.6"/><line x1="115" y1="138" x2="125" y2="138" stroke="#1E90FF" stroke-width="2" opacity="0.6"/>
+      <line x1="65" y1="130" x2="70" y2="138" stroke="#1E90FF" stroke-width="2" opacity="0.6"/><line x1="125" y1="130" x2="125" y2="138" stroke="#1E90FF" stroke-width="2" opacity="0.6"/>
+    </svg>
+    <div class="login-jvs-name">JVS</div>
+    <div class="login-jvs-sub">Software &amp; Gestión</div>
+    <p class="login-jvs-tagline">Soluciones digitales para tu negocio · Juan Villanueva</p>
+  </div>
+  <!-- Card de ingreso -->
   <div class="login-card">
     <div class="login-logo-wrap">
       <img src="yerba.png" onerror="this.src='yerba.jpeg'" class="login-logo" alt="Logo">
