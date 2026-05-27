@@ -6,22 +6,22 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="JVS Yerba">
-<meta name="theme-color" content="#0A1628">
-<title>JVS — Gestión &amp; Comunicación</title>
+<meta name="apple-mobile-web-app-title" content="Sabores de Misiones">
+<meta name="theme-color" content="#0D3B0D">
+<title>Sabores de Misiones — Gestión &amp; Comunicación</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --navy: #0A1628; --navy-mid: #0D2044; --navy-light: #1a3060;
-  --accent: #F5A623; --accent-light: #FFB940;
-  --blue: #1565D8; --blue-light: #1E90FF;
-  --teal: #1D9E75; --teal-light: #E1F5EE;
+  --navy: #071F07; --navy-mid: #0D3B0D; --navy-light: #1B5E20;
+  --accent: #E8770A; --accent-light: #F59420;
+  --blue: #2E7D32; --blue-light: #4CAF50;
+  --teal: #1B8A5A; --teal-light: #D8F5EB;
   --red: #C0392B; --red-light: #FCEBEB;
-  --amber: #BA7517; --amber-light: #FAEEDA;
-  --purple: #8B5CF6; --purple-light: #EDE9FE;
-  --text: #1a1a1a; --text-muted: #666; --border: #e0e0e0;
-  --bg: #f0f4f9; --white: #fff;
+  --amber: #8B4513; --amber-light: #FDF0E0;
+  --purple: #7B5EA7; --purple-light: #EDE9FE;
+  --text: #1a1a1a; --text-muted: #666; --border: #dde8d0;
+  --bg: #F2F7EE; --white: #fff;
   --radius: 8px; --radius-lg: 12px;
   --sidebar-w: 280px;
 }
@@ -30,17 +30,18 @@ html,body{height:100%;overflow:hidden}
 body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;height:100dvh}
 
 /* ── HEADER ── */
-.app-header{background:linear-gradient(135deg,#060E1F 0%,#0A1628 50%,#0D2044 100%);display:flex;align-items:stretch;border-bottom:2px solid var(--blue);position:relative;flex-shrink:0;z-index:100}
-.app-header::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--accent),var(--blue-light))}
-.header-brand{display:flex;align-items:center;padding:0 20px;border-right:1px solid rgba(21,101,216,0.3);gap:10px;min-width:200px}
-.jvs-logo{width:44px;height:44px;flex-shrink:0}
-.brand-text{display:flex;flex-direction:column;gap:1px}
-.brand-name{font-size:16px;font-weight:800;color:#fff;letter-spacing:1px}
-.brand-sub{font-size:9px;font-weight:500;color:var(--accent);letter-spacing:2px;text-transform:uppercase}
+.app-header{background:linear-gradient(135deg,#040F04 0%,#071F07 45%,#0D3B0D 100%);display:flex;align-items:stretch;border-bottom:2px solid #2E7D32;position:relative;flex-shrink:0;z-index:100}
+.app-header::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:linear-gradient(90deg,#2E7D32,#E8770A,#4CAF50,#E8770A,#2E7D32)}
+.header-brand{display:flex;align-items:center;padding:0 18px;border-right:1px solid rgba(78,160,78,0.35);gap:12px;min-width:220px}
+.brand-logo{width:48px;height:48px;flex-shrink:0}
+.brand-text{display:flex;flex-direction:column;gap:0px}
+.brand-name{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;letter-spacing:0.3px;line-height:1.2}
+.brand-name span{color:var(--accent-light);font-size:9px;font-family:'Exo 2',sans-serif;font-weight:500;letter-spacing:2px;text-transform:uppercase;display:block}
+.brand-misiones{font-family:'Exo 2',sans-serif;font-size:15px;font-weight:800;color:var(--accent-light);letter-spacing:2px;text-transform:uppercase;text-shadow:0 0 12px rgba(232,119,10,0.5)}
 .nav-tabs{display:flex;align-items:stretch;flex:1;padding:0 8px;overflow-x:auto}
 .nav-tab{display:flex;align-items:center;gap:6px;padding:0 16px;color:rgba(255,255,255,0.5);font-size:12px;font-weight:600;cursor:pointer;border:none;border-bottom:3px solid transparent;background:none;transition:all 0.2s;white-space:nowrap;letter-spacing:0.3px;font-family:'Exo 2',sans-serif}
 .nav-tab:hover{color:#fff}
-.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-tab.active{color:var(--accent-light);border-bottom-color:var(--accent)}
 .nav-tab svg{width:15px;height:15px;opacity:0.8}
 .header-right{display:flex;align-items:center;gap:8px;padding:0 16px;margin-left:auto;flex-shrink:0}
 .btn-icon{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);width:34px;height:34px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
@@ -55,9 +56,9 @@ body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 .sidebar-search input{width:100%;padding:7px 11px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--bg);font-family:'Exo 2',sans-serif;outline:none}
 .sidebar-search input:focus{border-color:var(--blue)}
 .list-area{overflow-y:auto;flex:1}
-.list-item{padding:11px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background 0.15s;position:relative;border-left:3px solid transparent}
+.list-item{padding:11px 14px;border-bottom:1px solid #edf3e8;cursor:pointer;transition:background 0.15s;position:relative;border-left:3px solid transparent}
 .list-item:hover{background:var(--bg)}
-.list-item.active{background:#EBF8FF;border-left-color:var(--blue)}
+.list-item.active{background:#EBF5E8;border-left-color:var(--blue)}
 .list-item-num{font-size:11px;font-weight:700;color:var(--navy)}
 .list-item-title{font-size:13px;font-weight:600;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:60px}
 .list-item-meta{font-size:11px;color:var(--text-muted)}
@@ -75,7 +76,7 @@ body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 
 /* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;font-family:'Exo 2',sans-serif;letter-spacing:0.3px}
-.btn-primary{background:var(--blue);color:#fff}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(46,125,50,0.3)}
 .btn-primary:hover{background:var(--blue-light)}
 .btn-success{background:var(--teal);color:#fff}
 .btn-success:hover{background:#16a085}
@@ -111,7 +112,7 @@ body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 .form-group{display:flex;flex-direction:column;gap:5px}
 .form-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted)}
 .form-control{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'Exo 2',sans-serif;outline:none;background:#fff;transition:border-color 0.2s}
-.form-control:focus{border-color:var(--blue)}
+.form-control:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(46,125,50,0.12)}
 select.form-control{cursor:pointer}
 textarea.form-control{resize:vertical;min-height:72px}
 
@@ -160,8 +161,17 @@ tr:hover td{background:#fafbfd}
 /* ── TABS within content ── */
 .inner-tabs{display:flex;gap:4px;padding:0 20px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0}
 .inner-tab{padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s;font-family:'Exo 2',sans-serif}
-.inner-tab.active{color:var(--navy);border-bottom-color:var(--blue)}
+.inner-tab.active{color:var(--navy-light);border-bottom-color:var(--blue)}
 .inner-tab:hover{color:var(--text)}
+
+/* ── KPI verde-misiones ── */
+.kpi-blue::before{background:linear-gradient(90deg,#2E7D32,#4CAF50)}
+.kpi-teal::before{background:linear-gradient(90deg,#1B8A5A,#2ECC71)}
+.kpi-accent::before{background:linear-gradient(90deg,#E8770A,#F59420)}
+.kpi-purple::before{background:linear-gradient(90deg,#7B5EA7,#9B59B6)}
+.kpi-red::before{background:linear-gradient(90deg,#C0392B,#E74C3C)}
+.badge-open{background:#E8F5E9;color:#2E7D32}
+.badge-pending{background:#FFF3E0;color:#E65100}
 
 /* ── SALDO CHIP ── */
 .saldo-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700}
@@ -199,9 +209,9 @@ tr:hover td{background:#fafbfd}
 .overlay-bg.open{display:block}
 
 /* ── FLUJO DARÍO ── */
-.balance-bar{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:var(--radius-lg);padding:16px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.balance-bar{background:linear-gradient(135deg,#040F04,#0D3B0D 60%,#1B5E20);border-radius:var(--radius-lg);padding:16px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;border:1px solid rgba(78,160,78,0.2)}
 .balance-bar .lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;opacity:0.7}
-.balance-bar .val{font-size:24px;font-weight:800;color:var(--accent)}
+.balance-bar .val{font-size:24px;font-weight:800;color:var(--accent-light)}
 .tx-row-pos td:nth-child(5){color:var(--teal);font-weight:700}
 .tx-row-neg td:nth-child(5){color:var(--red);font-weight:700}
 </style>
@@ -214,22 +224,46 @@ tr:hover td{background:#fafbfd}
     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <div class="header-brand">
-    <!-- JVS SVG Logo -->
-    <svg class="jvs-logo" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="44" height="44" rx="10" fill="#1565D8"/>
-      <rect width="44" height="44" rx="10" fill="url(#lg1)"/>
+    <!-- Mate gourd SVG logo -->
+    <svg class="brand-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="lg1" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#1E90FF"/>
-          <stop offset="1" stop-color="#0D47A1"/>
+        <linearGradient id="gourdGrad" x1="10" y1="16" x2="38" y2="48" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#E65100"/>
+          <stop offset="50%" stop-color="#BF360C"/>
+          <stop offset="100%" stop-color="#8B2500"/>
+        </linearGradient>
+        <linearGradient id="leafGrad" x1="0" y1="0" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#66BB6A"/>
+          <stop offset="100%" stop-color="#1B5E20"/>
+        </linearGradient>
+        <linearGradient id="bombGrad" x1="30" y1="4" x2="38" y2="20" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#E0E0E0"/>
+          <stop offset="100%" stop-color="#9E9E9E"/>
         </linearGradient>
       </defs>
-      <text x="22" y="29" text-anchor="middle" fill="white" font-family="'Exo 2',sans-serif" font-weight="800" font-size="16" letter-spacing="0.5">JVS</text>
-      <line x1="8" y1="33" x2="36" y2="33" stroke="#F5A623" stroke-width="2" stroke-linecap="round"/>
+      <!-- gourd body -->
+      <ellipse cx="22" cy="34" rx="13" ry="12" fill="url(#gourdGrad)"/>
+      <!-- gourd neck -->
+      <rect x="17" y="20" width="10" height="8" rx="3" fill="#A0320A"/>
+      <!-- gourd rim -->
+      <ellipse cx="22" cy="20" rx="6" ry="2.5" fill="#C94010"/>
+      <!-- yerba fill -->
+      <ellipse cx="22" cy="20" rx="5" ry="1.8" fill="#4CAF50" opacity="0.85"/>
+      <!-- bombilla straw -->
+      <rect x="27" y="6" width="3.5" height="22" rx="1.75" transform="rotate(18 27 6)" fill="url(#bombGrad)"/>
+      <!-- bombilla tip filter -->
+      <ellipse cx="31" cy="23" rx="2.2" ry="2.2" fill="#BDBDBD" transform="rotate(18 31 23)"/>
+      <!-- gourd shine -->
+      <ellipse cx="16" cy="30" rx="3" ry="5" fill="rgba(255,255,255,0.12)" transform="rotate(-10 16 30)"/>
+      <!-- leaves left -->
+      <path d="M8 22 Q2 16 6 10 Q10 18 8 22Z" fill="url(#leafGrad)"/>
+      <path d="M10 26 Q3 22 5 15 Q11 20 10 26Z" fill="#2E7D32" opacity="0.8"/>
+      <!-- orange accent stripe -->
+      <path d="M11 38 Q22 46 33 38" stroke="#F59420" stroke-width="1.5" stroke-linecap="round" fill="none"/>
     </svg>
     <div class="brand-text">
-      <span class="brand-name">JVS</span>
-      <span class="brand-sub">Gestión Yerba</span>
+      <div class="brand-name">Sabores de <span>yerba mate</span></div>
+      <div class="brand-misiones">MISIONES</div>
     </div>
   </div>
   <nav class="nav-tabs" id="mainNav">
@@ -939,7 +973,7 @@ function pedTab(btn, tab){
 function buildWspMsg(p){
   const productos = (p.productos||[]).filter(r=>r.tipo&&r.kg>0);
   const prods = productos.map(r=>`🧉 ${r.kg} ${prodLabel(r.tipo)}${r.estampilla?' (c/estampilla)':''}`).join('\n');
-  let msg = `Pedido ${p.numero}\n${p.nombre||''}`;
+  let msg = `*Pedido N°${p.numero} — Sabores de Misiones*\n${p.nombre||''}`;
   if(p.dni) msg += `\nDni ${p.dni}`;
   if(p.tel) msg += `\nTel ${p.tel}`;
   if(p.email) msg += `\n${p.email}`;
@@ -1315,7 +1349,7 @@ function buildPresPreview(total){
   const items=PRODUCTOS.filter(p=>Number(document.getElementById('pres_'+p.id)?.value)>0)
     .map(p=>{const kg=Number(document.getElementById('pres_'+p.id).value); return `🧉 ${kg} kg — ${p.label} — ${fmt(kg*getPrice(p.id,presList))}`;}).join('\n');
   const cli=presClienteData;
-  let msg=`PRESUPUESTO JVS Yerba\n`;
+  let msg=`🧉 *PRESUPUESTO — Sabores de Misiones*\n`;
   if(cli) msg+=`Para: ${cli.nombre}\n`;
   msg+=`Lista ${presList}${presList>1?' (Desc. '+Math.round(LIST_DISCOUNTS[presList]*100)+'%)':''}\n\n`;
   msg+=items;
