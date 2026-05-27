@@ -422,8 +422,10 @@ tr:hover td{background:#fafbfd}
 .login-jvs-brand.typing .jvs-orbit-2 span{background:#86EFAC;box-shadow:0 0 9px #86EFAC,0 0 18px rgba(134,239,172,0.4)}
 @keyframes jvs-glow-logo-active{0%,100%{filter:drop-shadow(0 0 22px rgba(78,180,78,0.8)) drop-shadow(0 0 44px rgba(78,180,78,0.4))}50%{filter:drop-shadow(0 0 38px rgba(100,220,100,1)) drop-shadow(0 0 75px rgba(78,180,78,0.6))}}
 .login-card{background:#fff;border-radius:20px;padding:36px 40px;width:100%;max-width:380px;box-shadow:0 24px 80px rgba(0,0,0,0.4);animation:splashIn 0.4s ease}
-.login-logo-wrap{display:flex;justify-content:center;margin-bottom:24px}
-.login-logo{height:72px;object-fit:contain}
+.login-logo-wrap{display:flex;justify-content:center;margin-bottom:20px}
+.login-logo{height:108px;width:108px;object-fit:contain;animation:mate-float 3.8s ease-in-out infinite,mate-glow 3.8s ease-in-out infinite;will-change:transform,filter}
+@keyframes mate-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.04)}}
+@keyframes mate-glow{0%,100%{filter:drop-shadow(0 4px 6px rgba(0,0,0,0.18)) drop-shadow(0 0 10px rgba(245,148,32,0.35))}50%{filter:drop-shadow(0 6px 14px rgba(0,0,0,0.28)) drop-shadow(0 0 24px rgba(245,148,32,0.75)) drop-shadow(0 0 42px rgba(245,148,32,0.3))}}
 .login-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--navy-light);text-align:center;margin-bottom:4px}
 .login-sub{font-size:11px;color:var(--text-muted);text-align:center;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:28px}
 .login-form{display:flex;flex-direction:column;gap:14px}
@@ -640,7 +642,7 @@ tr:hover td{background:#fafbfd}
   <!-- Card de ingreso -->
   <div class="login-card">
     <div class="login-logo-wrap">
-      <img src="yerba.png" onerror="this.src='yerba.jpeg'" class="login-logo" alt="Logo">
+      <img src="yerba.png" onerror="this.src='yerba.jpeg'" class="login-logo" alt="Sabores de Misiones">
     </div>
     <div class="login-title">Sabores de Misiones</div>
     <div class="login-sub">Gestión &amp; Comunicación</div>
