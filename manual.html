@@ -173,6 +173,177 @@ body{
 }
 .portada-origen strong{color:#fff;font-weight:800}
 
+/* ══════════════ SHOWCASE ══════════════ */
+
+/* Ticker */
+.ticker-section{background:#06144A;padding:0;overflow:hidden;border-bottom:1px solid rgba(41,121,255,0.2)}
+.ticker-wrap{overflow:hidden;white-space:nowrap;padding:10px 0}
+.ticker-inner{display:inline-flex;gap:0;animation:ticker-scroll 35s linear infinite}
+.ticker-inner:hover{animation-play-state:paused}
+.ticker-item{display:inline-flex;align-items:center;gap:6px;padding:0 28px;font-size:12px;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap}
+.ticker-item span{font-size:15px}
+.ticker-dot{width:4px;height:4px;border-radius:50%;background:var(--blue-mid);flex-shrink:0}
+@keyframes ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* Showcase hero */
+.showcase{
+  background:linear-gradient(180deg,#06144A 0%,#0B1F5F 40%,#0D2280 70%,#0B1F5F 100%);
+  padding:64px 40px 72px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.showcase::before{
+  content:'';position:absolute;
+  top:-100px;left:-100px;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(41,121,255,0.12) 0%,transparent 65%);
+  pointer-events:none;animation:orb-float 8s ease-in-out infinite;
+}
+.showcase::after{
+  content:'';position:absolute;
+  bottom:-80px;right:-80px;
+  width:350px;height:350px;
+  background:radial-gradient(circle,rgba(232,119,10,0.08) 0%,transparent 65%);
+  pointer-events:none;animation:orb-float 10s ease-in-out infinite reverse;
+}
+@keyframes orb-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.08)}}
+
+.showcase-inner{max-width:900px;margin:0 auto;position:relative;z-index:1}
+
+/* Live badge */
+.live-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(21,101,216,0.2);
+  border:1.5px solid rgba(41,121,255,0.5);
+  border-radius:30px;padding:6px 18px;
+  margin-bottom:28px;
+}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#4CAF50;box-shadow:0 0 0 0 rgba(76,175,80,0.7);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,0.7)}50%{box-shadow:0 0 0 6px rgba(76,175,80,0)}}
+.live-text{font-size:11px;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:1.5px;text-transform:uppercase}
+
+/* Título showcase */
+.showcase-title{
+  font-family:'Playfair Display',serif;
+  font-size:38px;font-weight:900;
+  color:#fff;line-height:1.2;
+  margin-bottom:14px;
+}
+.showcase-title span{color:var(--orange-bd)}
+.showcase-desc{
+  font-size:15px;color:rgba(255,255,255,0.75);
+  max-width:560px;margin:0 auto 48px;
+  line-height:1.75;
+}
+
+/* Feature cards */
+.feat-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  margin-bottom:48px;
+}
+.feat-card{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:16px;
+  padding:28px 20px 24px;
+  text-align:left;
+  cursor:default;
+  opacity:0;
+  transform:translateY(40px);
+  transition:transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+  position:relative;overflow:hidden;
+}
+.feat-card::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--blue-mid),var(--orange));
+  opacity:0;transition:opacity 0.35s;
+}
+.feat-card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 20px 50px rgba(0,0,0,0.4);
+  border-color:rgba(41,121,255,0.4);
+  background:rgba(255,255,255,0.10);
+}
+.feat-card:hover::before{opacity:1}
+.feat-card.visible{
+  animation:fadeInUp 0.65s cubic-bezier(0.22,1,0.36,1) forwards;
+  animation-delay:var(--d,0s);
+}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(40px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.feat-icon{
+  font-size:34px;margin-bottom:14px;
+  display:block;
+  filter:drop-shadow(0 4px 12px rgba(41,121,255,0.4));
+  transition:transform 0.3s;
+}
+.feat-card:hover .feat-icon{transform:scale(1.15) rotate(-3deg)}
+.feat-name{font-size:16px;font-weight:800;color:#fff;margin-bottom:8px}
+.feat-desc{font-size:12px;color:rgba(255,255,255,0.68);line-height:1.65}
+.feat-tag{
+  display:inline-block;margin-top:12px;
+  font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 9px;border-radius:20px;
+  background:rgba(41,121,255,0.2);color:rgba(255,255,255,0.7);
+}
+
+/* Capabilities strip */
+.caps-strip{
+  display:flex;flex-wrap:wrap;justify-content:center;
+  gap:12px;margin-bottom:40px;
+}
+.cap-chip{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:30px;padding:9px 18px;
+  font-size:12px;font-weight:600;
+  color:rgba(255,255,255,0.85);
+  opacity:0;transform:scale(0.85);
+  transition:background 0.25s,border-color 0.25s;
+}
+.cap-chip:hover{background:rgba(41,121,255,0.2);border-color:rgba(41,121,255,0.5)}
+.cap-chip.visible{animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;animation-delay:var(--d,0s)}
+@keyframes popIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+.cap-chip-icon{font-size:16px}
+
+/* CTA link */
+.showcase-cta{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,var(--blue),var(--blue-mid));
+  color:#fff;font-size:13px;font-weight:800;
+  padding:14px 32px;border-radius:40px;
+  text-decoration:none;
+  box-shadow:0 8px 28px rgba(21,101,216,0.45);
+  transition:transform 0.25s,box-shadow 0.25s;
+  letter-spacing:0.5px;
+}
+.showcase-cta:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(21,101,216,0.6)}
+.showcase-cta-arrow{font-size:18px;transition:transform 0.25s}
+.showcase-cta:hover .showcase-cta-arrow{transform:translateX(5px)}
+
+/* Divider entre showcase y doc */
+.showcase-divider{
+  height:4px;
+  background:linear-gradient(90deg,var(--navy),var(--blue),var(--orange),var(--blue),var(--navy));
+}
+
+@media(max-width:640px){
+  .feat-grid{grid-template-columns:1fr}
+  .showcase-title{font-size:26px}
+  .showcase{padding:44px 20px 56px}
+  .caps-strip{gap:8px}
+}
+@media(min-width:641px) and (max-width:900px){
+  .feat-grid{grid-template-columns:1fr 1fr}
+}
+
 /* ══════════════ CUERPO ══════════════ */
 .doc-body{max-width:880px;margin:0 auto;padding:44px 40px}
 
@@ -446,6 +617,114 @@ tbody tr:last-child td{border-bottom:none}
     <p>Fue construido <strong>a medida</strong> a partir de la información que la titular compartió por <strong>WhatsApp</strong> y de su <strong>planilla Excel</strong> de trabajo diario. Cada campo, cada módulo y cada flujo refleja exactamente cómo funciona el negocio real de Sabores de Misiones.</p>
   </div>
 </div>
+
+<!-- ══════════════ TICKER ══════════════ -->
+<div class="ticker-section">
+  <div class="ticker-wrap">
+    <div class="ticker-inner" id="tickerInner">
+      <div class="ticker-item"><span>📦</span> Gestión de Pedidos</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>👥</span> Base de Clientes</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>💬</span> Chat por Pedido</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>🛒</span> Órdenes de Compra</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>🚚</span> Despachos</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>📄</span> Presupuestos</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>⚖️</span> Cuenta Darío</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>📊</span> Dashboard en tiempo real</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>📱</span> App en el celular</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>🔐</span> Control de acceso por rol</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>⚙️</span> Configurable</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>☁️</span> Funciona sin internet</div><div class="ticker-dot"></div>
+      <!-- Duplicado para loop infinito -->
+      <div class="ticker-item"><span>📦</span> Gestión de Pedidos</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>👥</span> Base de Clientes</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>💬</span> Chat por Pedido</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>🛒</span> Órdenes de Compra</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>🚚</span> Despachos</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>📄</span> Presupuestos</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>⚖️</span> Cuenta Darío</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>📊</span> Dashboard en tiempo real</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>📱</span> App en el celular</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>🔐</span> Control de acceso por rol</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>⚙️</span> Configurable</div><div class="ticker-dot"></div>
+      <div class="ticker-item"><span>☁️</span> Funciona sin internet</div><div class="ticker-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SHOWCASE ══════════════ -->
+<div class="showcase">
+  <div class="showcase-inner">
+
+    <!-- Live badge -->
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      <div class="live-text">Proyecto activo · En producción</div>
+    </div>
+
+    <h2 class="showcase-title">Un sistema hecho a medida,<br><span>no una plantilla genérica</span></h2>
+    <p class="showcase-desc">Cada módulo fue pensado para el negocio real de Sabores de Misiones. Desde los campos del formulario hasta el flujo de trabajo — todo refleja cómo opera el negocio.</p>
+
+    <!-- Feature cards -->
+    <div class="feat-grid">
+      <div class="feat-card" style="--d:0.05s">
+        <span class="feat-icon">📦</span>
+        <div class="feat-name">Pedidos</div>
+        <div class="feat-desc">Registro completo de ventas con número automático, seguimiento de estado, mensaje WhatsApp y exportación PDF.</div>
+        <span class="feat-tag">Núcleo del sistema</span>
+      </div>
+      <div class="feat-card" style="--d:0.15s">
+        <span class="feat-icon">👥</span>
+        <div class="feat-name">Clientes</div>
+        <div class="feat-desc">Base de datos con historial de compras, estadísticas por cliente y lista de precio personalizada. Autocomplete en pedidos.</div>
+        <span class="feat-tag">Base de datos</span>
+      </div>
+      <div class="feat-card" style="--d:0.25s">
+        <span class="feat-icon">💬</span>
+        <div class="feat-name">Comunicación</div>
+        <div class="feat-desc">Chat interno por pedido. El cliente ve solo sus conversaciones. Cambio de estado directo desde el chat con registro automático.</div>
+        <span class="feat-tag">Mensajería</span>
+      </div>
+      <div class="feat-card" style="--d:0.35s">
+        <span class="feat-icon">📄</span>
+        <div class="feat-name">Presupuestos</div>
+        <div class="feat-desc">Generador de cotizaciones con 4 listas de precio, edición de precio por ítem (solo admin) y mensaje listo para WhatsApp.</div>
+        <span class="feat-tag">Ventas</span>
+      </div>
+      <div class="feat-card" style="--d:0.45s">
+        <span class="feat-icon">🛒</span>
+        <div class="feat-name">Compras</div>
+        <div class="feat-desc">Órdenes de compra numeradas automáticamente (OC-001, OC-002…) con tarjetas expandibles y detalle de ítems.</div>
+        <span class="feat-tag">Proveedores</span>
+      </div>
+      <div class="feat-card" style="--d:0.55s">
+        <span class="feat-icon">📊</span>
+        <div class="feat-name">Dashboard</div>
+        <div class="feat-desc">KPIs en tiempo real: ingresos, saldo con Darío, kg vendidos por mes (navegable) y pedidos activos.</div>
+        <span class="feat-tag">Métricas</span>
+      </div>
+    </div>
+
+    <!-- Capabilities -->
+    <div class="caps-strip">
+      <div class="cap-chip" style="--d:0.1s"><span class="cap-chip-icon">📱</span> Instala como app (PWA)</div>
+      <div class="cap-chip" style="--d:0.2s"><span class="cap-chip-icon">☁️</span> Funciona sin internet</div>
+      <div class="cap-chip" style="--d:0.3s"><span class="cap-chip-icon">🔐</span> 4 roles de acceso</div>
+      <div class="cap-chip" style="--d:0.4s"><span class="cap-chip-icon">⚡</span> Actualiza en tiempo real</div>
+      <div class="cap-chip" style="--d:0.5s"><span class="cap-chip-icon">⚙️</span> Estados configurables</div>
+      <div class="cap-chip" style="--d:0.6s"><span class="cap-chip-icon">💾</span> Backup y restauración</div>
+      <div class="cap-chip" style="--d:0.7s"><span class="cap-chip-icon">📲</span> Mensaje WhatsApp automático</div>
+      <div class="cap-chip" style="--d:0.8s"><span class="cap-chip-icon">🌐</span> Acceso desde cualquier lugar</div>
+    </div>
+
+    <!-- CTA -->
+    <a href="https://jv-system.github.io/Sabores-de-misiones/" target="_blank" class="showcase-cta">
+      Ver sistema en vivo
+      <span class="showcase-cta-arrow">→</span>
+    </a>
+
+  </div>
+</div>
+<div class="showcase-divider"></div>
 
 <!-- ══════════════ CUERPO ══════════════ -->
 <div class="doc-body">
@@ -1033,5 +1312,30 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </footer>
 
+<script>
+// ── Animaciones al hacer scroll (IntersectionObserver) ──
+(function(){
+  const observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.feat-card, .cap-chip').forEach(function(el){
+    observer.observe(el);
+  });
+
+  // Si el showcase ya está visible al cargar (pantalla grande), activar igual
+  setTimeout(function(){
+    document.querySelectorAll('.feat-card, .cap-chip').forEach(function(el){
+      const rect = el.getBoundingClientRect();
+      if(rect.top < window.innerHeight) el.classList.add('visible');
+    });
+  }, 100);
+})();
+</script>
 </body>
 </html>
