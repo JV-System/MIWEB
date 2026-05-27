@@ -327,6 +327,11 @@ tr:hover td{background:#fafbfd}
   .content-body{padding:14px}
 }
 
+/* ── FAB mobile ── */
+.fab{display:none;position:fixed;bottom:76px;right:16px;z-index:160;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#E8770A,#F59420);color:#fff;font-size:26px;font-weight:300;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(232,119,10,0.55);align-items:center;justify-content:center;transition:transform 0.15s,box-shadow 0.15s;line-height:1}
+.fab:active{transform:scale(0.92)}
+@media(max-width:768px){.fab{display:flex}}
+
 /* ── TOASTS ── */
 .toast-container{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
 .toast{background:var(--navy);color:#fff;padding:10px 16px;border-radius:var(--radius);font-size:13px;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,0.2);animation:slideIn 0.25s ease;display:flex;align-items:center;gap:8px}
@@ -1207,6 +1212,7 @@ function showSection(sec){
   // Sync bottom nav
   _bnavActive = sec;
   document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.toggle('active', b.getAttribute('onclick').includes(`'${sec}'`)));
+  updateFab(sec);
   // En mobile, auto-abrir sidebar en secciones con lista (excepto comunicacion que maneja sus propias vistas)
   const SECS_CON_SIDEBAR = ['pedidos','clientes','dario','compras','despachos','presupuestos'];
   const btnToggle = document.querySelector('.sidebar-toggle');
@@ -1215,7 +1221,12 @@ function showSection(sec){
     if(window.innerWidth <= 768){
       const s = document.getElementById('sec-'+sec);
       const sidebar = s ? s.querySelector('.sidebar') : null;
-      if(sidebar){ sidebar.classList.add('open'); document.getElementById('overlayBg').classList.add('open'); }
+      if(sidebar){
+        sidebar.classList.add('open');
+        document.getElementById('overlayBg').classList.add('open');
+        const fab = document.getElementById('fabBtn');
+        if(fab) fab.style.display = 'none'; // ocultar FAB mientras el sidebar está abierto
+      }
     }
   } else {
     if(btnToggle) btnToggle.style.display = sec==='comunicacion' ? 'none' : 'none';
@@ -1235,6 +1246,9 @@ function toggleSidebar(){
 function closeSidebar(){
   document.querySelectorAll('.sidebar, .chat-sidebar').forEach(s=>s.classList.remove('open'));
   document.getElementById('overlayBg').classList.remove('open');
+  // Restaurar FAB
+  const fab = document.getElementById('fabBtn');
+  if(fab) updateFab(_bnavActive);
 }
 
 // ════════════════════════════════════════════════
@@ -1314,6 +1328,7 @@ function openPedidoDetail(id){
   const p = db.pedidos.find(x=>x.id===id); if(!p) return;
   db.pedidos.forEach(x=>x._active=false); p._active=true;
   renderPedidosList();
+  closeSidebar(); // mobile: cierra la lista y muestra el detalle
   const totalKg = (p.productos||[]).reduce((s,r)=>s+(Number(r.kg)||0),0);
   const wspMsg = buildWspMsg(p);
   document.getElementById('contentPedidos').innerHTML = `
@@ -2590,6 +2605,30 @@ function quickLogin(userId){
 }
 
 // ════════════════════════════════════════════════
+//  FAB MOBILE
+// ════════════════════════════════════════════════
+const FAB_SECTIONS = {
+  pedidos:      ()=> openNuevoPedido(),
+  clientes:     ()=> openClienteModal(),
+  compras:      ()=> openNuevaCompra(),
+  despachos:    ()=> openNuevoDespacho(),
+  presupuestos: ()=> openNuevoPresupuesto(),
+};
+function updateFab(sec){
+  const fab = document.getElementById('fabBtn');
+  if(!fab) return;
+  if(FAB_SECTIONS[sec] && window.innerWidth <= 768){
+    fab.style.display = 'flex';
+  } else {
+    fab.style.display = 'none';
+  }
+}
+function fabAction(){
+  const fn = FAB_SECTIONS[_bnavActive];
+  if(fn) fn();
+}
+
+// ════════════════════════════════════════════════
 //  DARK MODE
 // ════════════════════════════════════════════════
 function applyTheme(dark){
@@ -2826,6 +2865,9 @@ function installPWA(){
   }
 })();
 </script>
+
+<!-- ══════════ FAB MOBILE ══════════ -->
+<button class="fab" id="fabBtn" onclick="fabAction()" title="Nuevo">+</button>
 
 <!-- ══════════ BÚSQUEDA GLOBAL ══════════ -->
 <div id="searchOverlay" class="search-overlay" style="display:none" onclick="if(event.target===this)closeSearch()">
