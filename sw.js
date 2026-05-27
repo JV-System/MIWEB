@@ -1,9 +1,9 @@
-const CACHE = 'sabores-v5';
+const CACHE = 'sabores-v6';
 const ASSETS = [
   '/Sabores-de-misiones/manifest.json',
   '/Sabores-de-misiones/jvs-logo.png',
   '/Sabores-de-misiones/jvs-icon.png',
-  '/Sabores-de-misiones/yerba.jpeg'
+  '/Sabores-de-misiones/LogoYerba.png'
 ];
 
 // Instalar: cachear assets estáticos (imágenes, manifest)
