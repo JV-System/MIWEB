@@ -66,29 +66,31 @@
 .search-res-results{max-height:400px;overflow-y:auto}
 
 /* ── BOTTOM NAV MOBILE ── */
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:linear-gradient(135deg,#040F04,#071F07);border-top:1px solid rgba(78,160,78,0.3);z-index:200;padding-bottom:env(safe-area-inset-bottom)}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:66px;background:linear-gradient(180deg,#071F07 0%,#040F04 100%);border-top:1px solid rgba(78,160,78,0.25);z-index:200;padding-bottom:env(safe-area-inset-bottom)}
 .bottom-nav-inner{display:flex;align-items:stretch;height:100%}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:rgba(255,255,255,0.45);background:none;border:none;cursor:pointer;font-size:9px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.3px;text-transform:uppercase;padding:0 4px;transition:color 0.2s;border-top:3px solid transparent}
-.bnav-btn svg{width:20px;height:20px;opacity:0.8}
-.bnav-btn.active{color:var(--accent-light);border-top-color:var(--accent)}
-.bnav-btn:hover{color:#fff}
-.bnav-badge{position:absolute;top:6px;right:calc(50% - 14px);background:#E53935;color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid #040F04}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:rgba(255,255,255,0.4);background:none;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.4px;text-transform:uppercase;padding:0 2px;transition:color 0.18s;border-top:3px solid transparent;min-width:0}
+.bnav-btn svg{width:22px;height:22px;flex-shrink:0}
+.bnav-btn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1}
+.bnav-btn.active{color:#F59420;border-top-color:#E8770A}
+.bnav-btn:active{opacity:0.7}
+.bnav-badge{position:absolute;top:7px;right:calc(50% - 18px);background:#E53935;color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid #040F04}
 
 /* ── MOBILE RESPONSIVE ── */
 @media(max-width:768px){
-  body{padding-bottom:60px}
+  body{padding-bottom:66px}
   .nav-tabs{display:none!important}
   .bottom-nav{display:flex}
   .brand-text{display:none}
   .header-jvs-logo{display:none}
   .app-footer{display:none!important}
   .brand-logo-box{min-width:60px;padding:0 12px}
-  .sidebar{position:fixed;left:0;top:0;bottom:60px;z-index:150;transform:translateX(-100%);width:85vw;max-width:300px;box-shadow:4px 0 20px rgba(0,0,0,0.2);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1)!important}
+  .sidebar{position:fixed;left:0;top:0;bottom:66px;z-index:150;transform:translateX(-100%);width:85vw;max-width:300px;box-shadow:4px 0 20px rgba(0,0,0,0.2);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1)!important}
   .sidebar.open{transform:translateX(0)!important}
   .overlay-bg{z-index:140}
   .content-body{padding:12px}
   .kpi-grid{grid-template-columns:1fr 1fr!important}
   .cli-stats-grid{grid-template-columns:1fr 1fr}
+  #dashGrids{grid-template-columns:1fr!important}
   .detail-grid{grid-template-columns:1fr!important}
   .chat-sidebar{position:fixed;left:0;top:0;bottom:60px;z-index:150;transform:translateX(-100%);width:85vw;max-width:300px;box-shadow:4px 0 20px rgba(0,0,0,0.2)}
   .chat-sidebar.open{transform:translateX(0)}
@@ -1245,12 +1247,12 @@ function renderDashboard(){
   `;
   const ultimosPed = [...db.pedidos].sort((a,b)=>b.id-a.id).slice(0,6);
   document.getElementById('dashPedidos').innerHTML = ultimosPed.length ? ultimosPed.map(p=>`
-    <div style="position:relative;display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer" onclick="showSection('pedidos');setTimeout(()=>openPedidoDetail(${p.id}),100)">
-      <div>
-        <div style="font-weight:700;font-size:13px">Pedido #${p.numero}</div>
-        <div style="font-size:11px;color:var(--text-muted)">${p.nombre}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(128,128,128,0.15);cursor:pointer;gap:8px" onclick="showSection('pedidos');setTimeout(()=>openPedidoDetail(${p.id}),100)">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Pedido #${p.numero} — ${p.nombre}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${p.fecha||''}</div>
       </div>
-      <span class="item-badge badge-${badgeClass(p.estado)}">${p.estado}</span>
+      <span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0" class="badge-${badgeClass(p.estado)}">${p.estado}</span>
     </div>`).join('') : '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">Sin pedidos aún</div>';
 
   const saldo = saldoDario;
@@ -2734,6 +2736,72 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   });
 }
+
+// ── PWA: botón instalar ──
+let _pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  _pwaPrompt = e;
+  // Mostrar banner de instalación
+  showInstallBanner();
+});
+window.addEventListener('appinstalled', ()=>{
+  const b = document.getElementById('installBanner');
+  if(b) b.remove();
+  _pwaPrompt = null;
+});
+
+function showInstallBanner(){
+  if(document.getElementById('installBanner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'installBanner';
+  banner.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;flex:1">
+      <img src="jvs-icon.png" style="width:32px;height:32px;border-radius:8px" onerror="this.style.display='none'">
+      <div>
+        <div style="font-weight:700;font-size:13px;color:#fff">Instalar Sabores de Misiones</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6)">Agregar a la pantalla de inicio</div>
+      </div>
+    </div>
+    <button onclick="installPWA()" style="background:#E8770A;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Exo 2',sans-serif">Instalar</button>
+    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;padding:0 4px;line-height:1">×</button>
+  `;
+  banner.style.cssText = 'position:fixed;bottom:66px;left:0;right:0;background:linear-gradient(135deg,#0D3B0D,#071F07);border-top:1px solid rgba(78,160,78,0.4);padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:190;box-shadow:0 -4px 20px rgba(0,0,0,0.3)';
+  document.body.appendChild(banner);
+}
+
+function installPWA(){
+  if(!_pwaPrompt) return;
+  _pwaPrompt.prompt();
+  _pwaPrompt.userChoice.then(r=>{
+    if(r.outcome==='accepted'){
+      const b = document.getElementById('installBanner');
+      if(b) b.remove();
+    }
+    _pwaPrompt = null;
+  });
+}
+
+// iOS: detectar Safari y mostrar instrucción
+(function(){
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone;
+  if(isIOS && !isStandalone && !localStorage.getItem('iosTipDismissed')){
+    setTimeout(()=>{
+      if(document.getElementById('installBanner')) return;
+      const tip = document.createElement('div');
+      tip.id = 'installBanner';
+      tip.innerHTML = `
+        <div style="flex:1;font-size:12px;color:#fff">
+          <strong>Instalar en iPhone:</strong> tocá <strong>Compartir</strong> (□↑) y luego <em>"Agregar a inicio"</em>
+        </div>
+        <button onclick="localStorage.setItem('iosTipDismissed','1');this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer">×</button>
+      `;
+      tip.style.cssText = 'position:fixed;bottom:66px;left:0;right:0;background:linear-gradient(135deg,#0D3B0D,#071F07);border-top:1px solid rgba(78,160,78,0.4);padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:190';
+      document.body.appendChild(tip);
+    }, 4000);
+  }
+})();
 </script>
 
 <!-- ══════════ BÚSQUEDA GLOBAL ══════════ -->
