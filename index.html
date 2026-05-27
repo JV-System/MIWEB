@@ -3383,9 +3383,33 @@ function clickInstall() {
       _pwaPrompt = null;
     });
   } else {
-    // Sin prompt nativo: abrir Mi Perfil con instrucciones manuales
-    openMiPerfil();
+    _showInstallGuide();
   }
+}
+function _showInstallGuide(){
+  const existing = document.getElementById('installGuideModal');
+  if(existing) existing.remove();
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isMob = window.innerWidth <= 768;
+  let instruccion = '';
+  if(isIOS){
+    instruccion = 'En Safari: tocá <strong>Compartir ⎙</strong> → <strong>"Agregar a pantalla de inicio"</strong>';
+  } else if(isMob){
+    instruccion = 'En Chrome: tocá el menú <strong>⋮</strong> → <strong>"Instalar app"</strong> o <strong>"Agregar a pantalla de inicio"</strong>';
+  } else {
+    instruccion = 'En Chrome/Edge: hacé clic en el ícono <strong>⊕</strong> en la barra de dirección del navegador';
+  }
+  const div = document.createElement('div');
+  div.id = 'installGuideModal';
+  div.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  div.innerHTML = `<div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);text-align:center">
+    <div style="font-size:38px;margin-bottom:14px">📲</div>
+    <div style="font-size:17px;font-weight:800;color:#071F07;margin-bottom:8px">Instalar app</div>
+    <div style="font-size:13px;color:#444;line-height:1.7;margin-bottom:22px">${instruccion}</div>
+    <button onclick="document.getElementById('installGuideModal').remove()" class="btn btn-primary" style="width:100%;justify-content:center">Entendido</button>
+  </div>`;
+  div.addEventListener('click', function(e){ if(e.target===div) div.remove(); });
+  document.body.appendChild(div);
 }
 // Alias usado desde renderInstallZone
 function installPWA(){ clickInstall(); }
