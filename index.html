@@ -380,6 +380,17 @@ tr:hover td{background:#fafbfd}
 .pl-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);transition:all 0.2s;font-family:'Exo 2',sans-serif}
 .pl-btn.active{border-color:var(--blue);background:var(--blue);color:#fff}
 
+/* ── PRECIOS EDITABLES (Presupuestos) ── */
+.pres-price-input{width:88px;font-size:12px;font-weight:700;padding:3px 7px;border:1.5px solid var(--accent);border-radius:6px;text-align:right;color:var(--navy-light);background:#fffbf3;font-family:'Exo 2',sans-serif;transition:border-color 0.2s}
+.pres-price-input:focus{outline:none;border-color:var(--accent-light);box-shadow:0 0 0 2px rgba(232,119,10,0.15)}
+[data-theme="dark"] .pres-price-input{background:#2a1e0a;color:#f0c070;border-color:var(--accent)}
+.pres-precio-custom{color:var(--accent)!important;font-weight:700!important}
+.btn-unlock-prices{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:inline-flex;align-items:center;gap:5px;color:var(--text-muted);font-family:'Exo 2',sans-serif;transition:all 0.2s}
+.btn-unlock-prices:hover{border-color:var(--accent);color:var(--accent)}
+.btn-unlock-prices.unlocked{border-color:var(--accent);background:rgba(232,119,10,0.1);color:var(--accent)}
+.pres-edit-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.pres-custom-note{font-size:11px;color:var(--accent);font-weight:600;display:flex;align-items:center;gap:4px}
+
 /* ── SIDEBAR TOGGLE ── */
 .sidebar-toggle{display:none;background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;padding:8px}
 @media(max-width:768px){.sidebar-toggle{display:flex;align-items:center;justify-content:center}}
@@ -854,7 +865,15 @@ tr:hover td{background:#fafbfd}
             </div>
           </div>
         </div>
-        <div class="card-title">Productos</div>
+        <div class="pres-edit-header">
+          <div class="card-title" style="margin-bottom:0">Productos</div>
+          <div id="presEditControls" style="display:none;align-items:center;gap:8px">
+            <span class="pres-custom-note" id="presCustomNote" style="display:none">✎ Precios personalizados</span>
+            <button class="btn-unlock-prices" id="btnUnlockPrices" onclick="togglePresEditMode()">
+              🔒 Editar precios
+            </button>
+          </div>
+        </div>
         <div id="presProductos"></div>
         <div style="margin-top:16px;text-align:right">
           <div style="font-size:13px;color:var(--text-muted);margin-bottom:6px">Total estimado</div>
@@ -1294,7 +1313,7 @@ function showSection(sec){
   if(sec==='dario'){ renderDario(); populateDarioMolienda(); }
   if(sec==='compras') renderCompras();
   if(sec==='despachos') renderDespachos();
-  if(sec==='presupuestos'){ renderPresupuestos(); populateClienteSelects(); }
+  if(sec==='presupuestos'){ presEditMode=false; presCustomPrices={}; renderPresupuestos(); populateClienteSelects(); }
   if(sec==='config') renderConfigSection();
   // Sync bottom nav
   _bnavActive = sec;
@@ -2100,6 +2119,38 @@ function deleteDespacho(id){ if(!confirm('¿Eliminar?')) return; db.despachos=db
 //  PRESUPUESTOS
 // ════════════════════════════════════════════════
 let presList=1; let presClienteData=null;
+let presCustomPrices={}; // {productId: precioCustom} — solo para esta sesión
+let presEditMode=false;
+
+function getPresPrice(productId){
+  return presCustomPrices[productId]!==undefined ? presCustomPrices[productId] : getPrice(productId,presList);
+}
+function togglePresEditMode(){
+  presEditMode=!presEditMode;
+  const btn=document.getElementById('btnUnlockPrices');
+  if(btn){
+    btn.textContent=presEditMode?'🔓 Fijar precios':'🔒 Editar precios';
+    btn.classList.toggle('unlocked',presEditMode);
+  }
+  renderPresProductos();
+}
+function presUpdateCustomPrice(productId,val){
+  const v=Number(val);
+  if(v>0) presCustomPrices[productId]=v;
+  else delete presCustomPrices[productId];
+  calcPresTotal();
+  _presUpdateCustomNote();
+}
+function presResetPrices(){
+  presCustomPrices={};
+  renderPresProductos();
+  toast('Precios restablecidos','success');
+}
+function _presUpdateCustomNote(){
+  const n=Object.keys(presCustomPrices).length;
+  const note=document.getElementById('presCustomNote');
+  if(note) note.style.display=n>0?'flex':'none';
+}
 function setPresList(n,btn){
   presList=n;
   document.querySelectorAll('.pl-btn').forEach(b=>b.classList.remove('active'));
@@ -2114,27 +2165,60 @@ function renderPresupuestos(){
 function presLoadCliente(){
   const id=Number(document.getElementById('presCliente').value);
   presClienteData=db.clientes.find(c=>c.id===id)||null;
-  if(presClienteData) { presList=Number(presClienteData.lista)||1; document.querySelectorAll('.pl-btn').forEach((b,i)=>b.classList.toggle('active',i+1===presList)); }
+  if(presClienteData){ presList=Number(presClienteData.lista)||1; document.querySelectorAll('.pl-btn').forEach((b,i)=>b.classList.toggle('active',i+1===presList)); }
   renderPresProductos();
 }
 function renderPresProductos(){
   const container=document.getElementById('presProductos');
+  const canEdit=currentUser&&currentUser.rol==='admin';
+  // Mostrar / ocultar controles de edición
+  const ctrl=document.getElementById('presEditControls');
+  if(ctrl) ctrl.style.display=canEdit?'flex':'none';
+  _presUpdateCustomNote();
+
   container.innerHTML=PRODUCTOS.map(p=>{
-    const precio=getPrice(p.id,presList);
+    const precio=getPresPrice(p.id);
+    const isCustom=presCustomPrices[p.id]!==undefined;
+    let precioCell;
+    if(presEditMode&&canEdit){
+      precioCell=`<input type="number" class="pres-price-input" id="presc_${p.id}" value="${precio}" min="1" step="1" onchange="presUpdateCustomPrice('${p.id}',this.value)" title="Precio por kg">`;
+    } else {
+      precioCell=`<div style="font-size:12px;white-space:nowrap" class="${isCustom?'pres-precio-custom':''}">${fmt(precio)}/kg${isCustom?'&thinsp;✎':''}</div>`;
+    }
     return `<div class="prod-row">
       <div style="font-size:13px;font-weight:500">${p.label}</div>
       <input type="number" class="form-control" min="0" placeholder="Kg" style="width:90px" id="pres_${p.id}" oninput="calcPresTotal()" value="">
-      <div style="font-size:12px;color:var(--text-muted);white-space:nowrap">${fmt(precio)}/kg</div>
+      ${precioCell}
       <div style="font-size:13px;font-weight:700;color:var(--navy);min-width:80px;text-align:right" id="presst_${p.id}">—</div>
     </div>`;
   }).join('');
+
+  // Botón reset precios si hay custom
+  if(canEdit){
+    const n=Object.keys(presCustomPrices).length;
+    const existingReset=document.getElementById('btnResetPrices');
+    if(!existingReset&&n>0){
+      const ctrl=document.getElementById('presEditControls');
+      if(ctrl){
+        const rb=document.createElement('button');
+        rb.id='btnResetPrices';
+        rb.className='btn btn-ghost btn-sm';
+        rb.style.cssText='font-size:11px;color:var(--accent)';
+        rb.textContent='↺ Restablecer';
+        rb.onclick=presResetPrices;
+        ctrl.insertBefore(rb,ctrl.firstChild);
+      }
+    } else if(existingReset&&n===0){
+      existingReset.remove();
+    }
+  }
   calcPresTotal();
 }
 function calcPresTotal(){
   let total=0;
   PRODUCTOS.forEach(p=>{
     const kg=Number(document.getElementById('pres_'+p.id)?.value)||0;
-    const sub=kg*getPrice(p.id,presList);
+    const sub=kg*getPresPrice(p.id);
     const el=document.getElementById('presst_'+p.id);
     if(el) el.textContent=kg>0?fmt(sub):'—';
     total+=sub;
@@ -2146,7 +2230,7 @@ function calcPresTotal(){
 }
 function buildPresPreview(total){
   const items=PRODUCTOS.filter(p=>Number(document.getElementById('pres_'+p.id)?.value)>0)
-    .map(p=>{const kg=Number(document.getElementById('pres_'+p.id).value); return `🧉 ${kg} kg — ${p.label} — ${fmt(kg*getPrice(p.id,presList))}`;}).join('\n');
+    .map(p=>{const kg=Number(document.getElementById('pres_'+p.id).value); return `🧉 ${kg} kg — ${p.label} — ${fmt(kg*getPresPrice(p.id))}`;}).join('\n');
   const cli=presClienteData;
   let msg=`🧉 *PRESUPUESTO — Sabores de Misiones*\n`;
   if(cli) msg+=`Para: ${cli.nombre}\n`;
