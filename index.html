@@ -1689,6 +1689,7 @@ function renderClientes(){
 
 function openClienteProfile(id){
   activeClienteId=id;
+  closeSidebar(); // mobile: cierra la lista y muestra el perfil
   renderClientes();
   const c=db.clientes.find(x=>x.id===id); if(!c) return;
   const peds=[...db.pedidos.filter(p=>p.nombre===c.nombre)].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
