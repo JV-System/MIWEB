@@ -54,6 +54,31 @@ body{font-family:'Exo 2','Segoe UI',system-ui,sans-serif;background:var(--bg);co
 .watermark{pointer-events:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:480px;height:480px;object-fit:contain;opacity:0.10;filter:blur(2px) grayscale(10%);z-index:0;user-select:none}
 .main{position:relative;z-index:1}
 
+/* ── FOOTER ── */
+.app-footer{background:linear-gradient(135deg,#040F04 0%,#071F07 100%);border-top:1px solid rgba(21,101,216,0.25);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;height:30px;z-index:100}
+.footer-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0A1628,#0D2044);border:1px solid rgba(21,101,216,0.55);border-radius:20px;padding:3px 10px 3px 5px;box-shadow:0 0 10px rgba(21,101,216,0.2)}
+.footer-badge-icon{width:18px;height:18px;border-radius:50%;overflow:hidden;flex-shrink:0}
+.footer-badge-icon img{width:100%;height:100%;object-fit:cover}
+.footer-badge-text{font-family:'Exo 2',sans-serif;font-size:10px;font-weight:800;color:#fff;letter-spacing:1px;text-transform:uppercase}
+.footer-sep{color:rgba(255,255,255,0.25);font-size:11px}
+.footer-dev{font-family:'Exo 2',sans-serif;font-size:11px;color:rgba(255,255,255,0.45)}
+.footer-dev strong{color:var(--accent-light);font-weight:600}
+
+/* ── CONFIG / USUARIOS ── */
+.config-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px}
+.config-card-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafcf8}
+.config-card-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:flex;align-items:center;gap:8px}
+.users-table{width:100%;border-collapse:collapse}
+.users-table th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);border-bottom:1px solid var(--border);background:#fafcf8}
+.users-table td{padding:11px 16px;font-size:13px;border-bottom:1px solid #f0f4ec;vertical-align:middle}
+.users-table tr:last-child td{border-bottom:none}
+.users-table tr:hover td{background:#f7fbf4}
+.role-badge{display:inline-flex;padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.role-admin{background:#e8f0fe;color:#1a3d8f}
+.role-dario{background:var(--amber-light);color:var(--amber)}
+.role-lucia{background:var(--purple-light);color:var(--purple)}
+.role-cliente{background:var(--teal-light);color:var(--teal)}
+
 /* ── LAYOUT ── */
 .main{display:flex;flex:1;min-height:0;overflow:hidden}
 .sidebar{width:var(--sidebar-w);background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform 0.25s}
@@ -390,6 +415,10 @@ tr:hover td{background:#fafbfd}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       <span>Comunicación</span>
     </button>
+    <button class="nav-tab" onclick="showSection('config')" data-sec="config">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>Configuración</span>
+    </button>
   </nav>
   <div class="header-right">
     <!-- JVS brand logo top-right -->
@@ -475,7 +504,7 @@ tr:hover td{background:#fafbfd}
     </div>
     <div class="login-hint">
       <b>Usuarios de prueba:</b>
-      admin / sabores2026 &nbsp;·&nbsp; dario / dario2026<br>
+      admin / admin &nbsp;·&nbsp; dario / dario2026<br>
       lucia / lucia2026 &nbsp;·&nbsp; yesica / yesica2026<br>
       gisela / gisela2026 &nbsp;·&nbsp; facundo / facundo2026
     </div>
@@ -688,7 +717,49 @@ tr:hover td{background:#fafbfd}
     </div>
   </section>
 
+  <!-- ══════════════════════════ CONFIGURACIÓN ══════════════════════════ -->
+  <section id="sec-config" class="content" style="display:none">
+    <div class="content-toolbar">
+      <span class="toolbar-title">⚙️ Configuración del Sistema</span>
+      <button class="btn btn-primary btn-sm" onclick="openModalUsuario()">+ Nuevo Usuario</button>
+    </div>
+    <div class="content-body">
+      <div class="config-card">
+        <div class="config-card-head">
+          <div class="config-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            Gestión de Usuarios
+          </div>
+        </div>
+        <table class="users-table" id="usersTable">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Nombre</th>
+              <th>Rol</th>
+              <th>Contraseña</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="usersTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
 </div><!-- /main -->
+
+<!-- ── FOOTER ── -->
+<footer class="app-footer" id="appFooter" style="display:none">
+  <div class="footer-badge">
+    <div class="footer-badge-icon">
+      <img src="jvs-icon.png" alt="JV" onerror="this.parentElement.textContent='JV'">
+    </div>
+    <span class="footer-badge-text">JV Systems</span>
+  </div>
+  <span class="footer-sep">·</span>
+  <span class="footer-dev">Desarrollado por <strong>Juan Villanueva</strong></span>
+</footer>
 
 <!-- ══════════════ MODAL PEDIDO ══════════════ -->
 <div class="modal-overlay" id="modalPedido">
@@ -1023,6 +1094,7 @@ function showSection(sec){
   if(sec==='compras') renderCompras();
   if(sec==='despachos') renderDespachos();
   if(sec==='presupuestos'){ renderPresupuestos(); populateClienteSelects(); }
+  if(sec==='config') renderConfigSection();
   closeSidebar();
 }
 
@@ -1608,8 +1680,8 @@ document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click
 // ════════════════════════════════════════════════
 //  USUARIOS & AUTH
 // ════════════════════════════════════════════════
-const USUARIOS = [
-  {id:'admin',  nombre:'Administrador', pass:'sabores2026', rol:'admin',   avatar:'AD', clienteId:null},
+const USUARIOS_DEFAULT = [
+  {id:'admin',  nombre:'Administrador', pass:'admin',      rol:'admin',   avatar:'AD', clienteId:null},
   {id:'dario',  nombre:'Darío',         pass:'dario2026',  rol:'dario',   avatar:'DA', clienteId:null},
   {id:'lucia',  nombre:'Lucía',         pass:'lucia2026',  rol:'lucia',   avatar:'LU', clienteId:null},
   {id:'yesica', nombre:'Yesica Ramírez',pass:'yesica2026', rol:'cliente', avatar:'YR', clienteId:1001},
@@ -1617,9 +1689,13 @@ const USUARIOS = [
   {id:'facundo',nombre:'Facundo Sotelo',pass:'facundo2026',rol:'cliente', avatar:'FS', clienteId:1010},
 ];
 
+// USUARIOS cargados desde localStorage (persistentes)
+let USUARIOS = (()=>{ try{ const s=localStorage.getItem('jvs_usuarios'); return s?JSON.parse(s):USUARIOS_DEFAULT; }catch(e){ return USUARIOS_DEFAULT; } })();
+function saveUsuarios(){ localStorage.setItem('jvs_usuarios', JSON.stringify(USUARIOS)); }
+
 const ROLE_LABELS = {admin:'Administrador', dario:'Preparación', lucia:'Despacho', cliente:'Cliente'};
 const ROLE_TABS = {
-  admin:   ['dashboard','pedidos','clientes','dario','compras','despachos','presupuestos','comunicacion'],
+  admin:   ['dashboard','pedidos','clientes','dario','compras','despachos','presupuestos','comunicacion','config'],
   dario:   ['comunicacion','dario'],
   lucia:   ['comunicacion','despachos'],
   cliente: ['comunicacion'],
@@ -1653,6 +1729,7 @@ function doLogout(){
   document.getElementById('btnLogout').style.display='none';
   // hide app
   document.getElementById('mainArea').style.display='none';
+  document.getElementById('appFooter').style.display='none';
   document.querySelector('.app-header .nav-tabs').style.display='none';
 }
 
@@ -1664,6 +1741,7 @@ function initApp(){
   document.getElementById('userName').textContent = currentUser.nombre;
   document.getElementById('userRoleLabel').textContent = ROLE_LABELS[currentUser.rol]||currentUser.rol;
   document.getElementById('mainArea').style.display='flex';
+  document.getElementById('appFooter').style.display='flex';
   document.querySelector('.app-header .nav-tabs').style.display='flex';
   // Apply role: show/hide tabs
   applyRoleTabs();
@@ -1972,6 +2050,114 @@ document.querySelector('.app-header .nav-tabs').style.display='none';
 const savedUser = sessionStorage.getItem('jvs_user');
 if(savedUser){
   try{ currentUser=JSON.parse(savedUser); } catch(e){ currentUser=null; }
+}
+
+// ════════════════════════════════════════════════
+//  CONFIGURACIÓN — Gestión de Usuarios
+// ════════════════════════════════════════════════
+function renderConfigSection(){
+  const tbody = document.getElementById('usersTbody');
+  if(!tbody) return;
+  const rolColors = {admin:'role-admin',dario:'role-dario',lucia:'role-lucia',cliente:'role-cliente'};
+  tbody.innerHTML = USUARIOS.map(u=>`
+    <tr>
+      <td><code style="font-size:12px;background:#f0f4ec;padding:2px 7px;border-radius:5px">${u.id}</code></td>
+      <td><b>${u.nombre}</b></td>
+      <td><span class="role-badge ${rolColors[u.rol]||'role-cliente'}">${ROLE_LABELS[u.rol]||u.rol}</span></td>
+      <td><span style="letter-spacing:2px;color:#aaa">${'•'.repeat(Math.min(u.pass.length,10))}</span></td>
+      <td style="display:flex;gap:6px;align-items:center">
+        <button class="btn btn-ghost btn-sm" onclick="editUsuario('${u.id}')">✏️ Editar</button>
+        ${u.id==='admin'?'':'<button class="btn btn-danger btn-sm" onclick="deleteUsuario(\''+u.id+'\')">🗑️</button>'}
+      </td>
+    </tr>`).join('');
+}
+
+let editingUserId = null;
+
+function openModalUsuario(id){
+  editingUserId = id||null;
+  const u = id ? USUARIOS.find(x=>x.id===id) : null;
+  const roles = ['admin','dario','lucia','cliente'];
+  const opts = roles.map(r=>`<option value="${r}" ${u&&u.rol===r?'selected':''}>${ROLE_LABELS[r]}</option>`).join('');
+  const html = `
+    <div class="modal-overlay open" id="modalUsuario" onclick="if(event.target===this)closeModalUsuario()">
+      <div class="modal" style="max-width:420px">
+        <div class="modal-header">
+          <h3 class="modal-title">${u?'Editar Usuario':'Nuevo Usuario'}</h3>
+          <button class="btn-icon" onclick="closeModalUsuario()">✕</button>
+        </div>
+        <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+          ${!u?`<div class="form-group">
+            <label class="form-label">Usuario (ID de ingreso)</label>
+            <input class="form-input" id="cfgUserId" placeholder="ej: maria" autocomplete="off">
+          </div>`:''}
+          <div class="form-group">
+            <label class="form-label">Nombre completo</label>
+            <input class="form-input" id="cfgNombre" value="${u?u.nombre:''}" placeholder="Nombre y Apellido">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña${u?' (dejar vacío para no cambiar)':''}</label>
+            <input class="form-input" id="cfgPass" type="text" placeholder="${u?'Nueva contraseña (opcional)':'Contraseña'}" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rol / Permisos</label>
+            <select class="form-input" id="cfgRol">${opts}</select>
+            <div style="margin-top:6px;font-size:11px;color:var(--text-muted)">
+              Administrador: acceso total · Preparación: solo cuenta Darío + comunicación · Despacho: despachos + comunicación · Cliente: solo comunicación
+            </div>
+          </div>
+          <div id="cfgError" style="display:none;background:var(--red-light);color:var(--red);padding:8px 12px;border-radius:6px;font-size:12px"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModalUsuario()">Cancelar</button>
+          <button class="btn btn-primary" onclick="saveUsuarioModal()">💾 Guardar</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeModalUsuario(){
+  const m = document.getElementById('modalUsuario');
+  if(m) m.remove();
+  editingUserId = null;
+}
+
+function saveUsuarioModal(){
+  const err = document.getElementById('cfgError');
+  const nombre = document.getElementById('cfgNombre').value.trim();
+  const pass = document.getElementById('cfgPass').value.trim();
+  const rol = document.getElementById('cfgRol').value;
+  if(!nombre){ err.textContent='El nombre es obligatorio'; err.style.display='block'; return; }
+  if(editingUserId){
+    const u = USUARIOS.find(x=>x.id===editingUserId);
+    if(!u) return;
+    u.nombre = nombre; u.rol = rol;
+    if(pass) u.pass = pass;
+    u.avatar = nombre.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    if(currentUser && currentUser.id===u.id){ currentUser={...u}; sessionStorage.setItem('jvs_user',JSON.stringify(currentUser)); }
+    toast('Usuario actualizado ✓','success');
+  } else {
+    const idEl = document.getElementById('cfgUserId');
+    const newId = (idEl?idEl.value.trim().toLowerCase():'').replace(/\s/g,'');
+    if(!newId){ err.textContent='El ID de usuario es obligatorio'; err.style.display='block'; return; }
+    if(!/^[a-z0-9_]+$/.test(newId)){ err.textContent='ID solo puede tener letras minúsculas, números y _'; err.style.display='block'; return; }
+    if(USUARIOS.find(x=>x.id===newId)){ err.textContent='Ya existe un usuario con ese ID'; err.style.display='block'; return; }
+    if(!pass){ err.textContent='La contraseña es obligatoria'; err.style.display='block'; return; }
+    USUARIOS.push({ id:newId, nombre, pass, rol, avatar:nombre.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2), clienteId:null });
+    toast('Usuario creado ✓','success');
+  }
+  saveUsuarios(); closeModalUsuario(); renderConfigSection();
+}
+
+function editUsuario(id){ openModalUsuario(id); }
+
+function deleteUsuario(id){
+  if(id==='admin'){ toast('No se puede eliminar al administrador','error'); return; }
+  if(!confirm('¿Eliminar usuario "'+id+'"? Esta acción no se puede deshacer.')) return;
+  USUARIOS = USUARIOS.filter(u=>u.id!==id);
+  saveUsuarios(); renderConfigSection();
+  toast('Usuario eliminado','success');
 }
 
 // Splash — igual que Branca: recarga rápida si ya fue visto
