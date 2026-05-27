@@ -3,743 +3,1026 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Manual de Usuario — Sabores de Misiones</title>
+<title>Manual del Sistema — Sabores de Misiones · JVS</title>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  :root{
-    --verde-oscuro:#071F07;
-    --verde-mid:#0D3B0D;
-    --verde-claro:#2E7D32;
-    --verde-light:#4CAF50;
-    --naranja:#E8770A;
-    --naranja-light:#F59420;
-    --azul-jvs:#1565D8;
-    --azul-light:#1E90FF;
-    --texto:#1a1a1a;
-    --texto-suave:#555;
-    --borde:#e0e8d8;
-    --fondo:#f7fbf4;
-    --blanco:#fff;
-  }
-  body{
-    font-family:'Exo 2','Segoe UI',sans-serif;
-    font-size:13px;
-    color:var(--texto);
-    background:#fff;
-    line-height:1.6;
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:     #0B1F5F;
+  --blue:     #1565D8;
+  --blue-mid: #2979FF;
+  --blue-sky: #E8F0FE;
+  --blue-pale:#F0F4FF;
+  --orange:   #E8770A;
+  --orange-lt:#FFF3E0;
+  --orange-bd:#F59420;
+  --text:     #111111;
+  --body:     #2a2a2a;
+  --muted:    #555555;
+  --border:   #C8D8F8;
+  --white:    #ffffff;
+  --done-bg:  #E8F5E9;
+  --done-txt: #1B5E20;
+  --warn-bg:  #FFF8E1;
+  --warn-txt: #E65100;
+  --tip-bg:   #EDE7F6;
+  --tip-txt:  #4527A0;
+}
+body{
+  font-family:'Exo 2','Segoe UI',sans-serif;
+  font-size:14px;
+  color:var(--body);
+  background:#fff;
+  line-height:1.7;
+}
 
-  /* ─── HEADER ─── */
-  .doc-header{
-    background:linear-gradient(135deg,#040F04 0%,#071F07 45%,#0D3B0D 100%);
-    padding:0;
-    position:relative;
-    overflow:hidden;
-  }
-  .doc-header::after{
-    content:'';
-    position:absolute;
-    bottom:0;left:0;right:0;height:3px;
-    background:linear-gradient(90deg,#2E7D32,#E8770A,#4CAF50,#E8770A,#2E7D32);
-  }
-  .header-inner{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:14px 40px;
-    gap:20px;
-  }
-  .header-brand{display:flex;align-items:center;gap:16px}
-  .header-logo-box{
-    background:#fff;
-    border-radius:12px;
-    padding:5px 12px;
-    display:flex;
-    align-items:center;
-    box-shadow:0 3px 14px rgba(0,0,0,0.5),0 0 0 1.5px rgba(78,160,78,0.4);
-  }
-  .header-logo-box img{height:42px;object-fit:contain;display:block}
-  .header-brand-text{color:#fff}
-  .header-brand-name{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;opacity:.85}
-  .header-brand-mis{font-family:'Exo 2',sans-serif;font-size:17px;font-weight:900;color:#F59420;letter-spacing:2px;text-transform:uppercase;text-shadow:0 0 12px rgba(232,119,10,0.5)}
-  .header-jvs{display:flex;align-items:center;gap:10px}
-  .header-jvs img{height:36px;filter:drop-shadow(0 0 6px rgba(30,144,255,0.5));opacity:.9}
-  .header-jvs-text{color:rgba(255,255,255,0.7);font-size:10px;letter-spacing:1px;text-transform:uppercase}
-  .header-doc-label{
-    background:rgba(232,119,10,0.18);
-    border:1px solid rgba(232,119,10,0.4);
-    color:#F59420;
-    font-size:9px;
-    font-weight:700;
-    letter-spacing:2px;
-    text-transform:uppercase;
-    padding:3px 10px;
-    border-radius:20px;
-    margin-top:3px;
-    display:inline-block;
-  }
+/* ══════════════ HEADER ══════════════ */
+.doc-header{
+  background:linear-gradient(135deg,#06144A 0%,#0B1F5F 50%,#1565D8 100%);
+  position:relative;
+  overflow:hidden;
+}
+.doc-header::before{
+  content:'';
+  position:absolute;
+  top:-60px;right:-60px;
+  width:260px;height:260px;
+  border-radius:50%;
+  background:rgba(41,121,255,0.18);
+}
+.doc-header::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,#1565D8,#E8770A,#2979FF,#E8770A,#1565D8);
+}
+.header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 48px;
+  gap:20px;
+  position:relative;
+  z-index:1;
+}
+.header-brand{display:flex;align-items:center;gap:14px}
+.header-logo-wrap{
+  background:#fff;
+  border-radius:12px;
+  padding:6px 12px;
+  display:flex;align-items:center;
+  box-shadow:0 4px 16px rgba(0,0,0,0.45);
+}
+.header-logo-wrap img{height:40px;object-fit:contain}
+.header-brand-txt{color:#fff}
+.header-brand-name{font-size:11px;font-weight:600;opacity:.7;letter-spacing:0.5px}
+.header-brand-title{font-size:18px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase}
+.header-brand-title span{color:var(--orange-bd)}
+.header-right{display:flex;align-items:center;gap:10px}
+.header-jvs-logo{height:44px;filter:drop-shadow(0 0 10px rgba(41,121,255,0.6))}
+.header-doc-chip{
+  background:rgba(232,119,10,0.18);
+  border:1px solid rgba(232,119,10,0.5);
+  color:var(--orange-bd);
+  font-size:9px;font-weight:800;
+  letter-spacing:2px;text-transform:uppercase;
+  padding:4px 12px;border-radius:20px;
+}
 
-  /* ─── PORTADA ─── */
-  .portada{
-    background:linear-gradient(160deg,#040F04 0%,#071F07 40%,#0D3B0D 70%,#071F07 100%);
-    min-height:500px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:60px 40px;
-    position:relative;
-    overflow:hidden;
-  }
-  .portada::before{
-    content:'';
-    position:absolute;
-    top:50%;left:50%;
-    transform:translate(-50%,-50%);
-    width:500px;height:500px;
-    background:radial-gradient(circle,rgba(78,160,78,0.12) 0%,transparent 70%);
-    pointer-events:none;
-  }
-  .portada-logo{
-    width:150px;height:150px;
-    object-fit:contain;
-    margin-bottom:30px;
-    filter:drop-shadow(0 8px 30px rgba(0,0,0,0.5));
-    position:relative;z-index:1;
-  }
-  .portada-titulo{
-    font-family:'Playfair Display',serif;
-    font-size:42px;font-weight:900;
-    color:#fff;
-    line-height:1.15;
-    margin-bottom:8px;
-    position:relative;z-index:1;
-  }
-  .portada-titulo span{color:#F59420}
-  .portada-sub{
-    font-size:13px;color:rgba(255,255,255,0.55);
-    letter-spacing:3px;text-transform:uppercase;
-    margin-bottom:28px;position:relative;z-index:1;
-  }
-  .portada-badge{
-    background:rgba(232,119,10,0.15);
-    border:1.5px solid rgba(232,119,10,0.5);
-    border-radius:30px;
-    padding:10px 28px;
-    color:#F59420;
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:1.5px;
-    text-transform:uppercase;
-    margin-bottom:40px;
-    position:relative;z-index:1;
-  }
-  .portada-meta{
-    display:flex;gap:40px;justify-content:center;
-    position:relative;z-index:1;
-  }
-  .portada-meta-item{text-align:center}
-  .portada-meta-val{font-size:22px;font-weight:800;color:#4CAF50}
-  .portada-meta-lbl{font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-  .portada-jvs{
-    margin-top:50px;
-    display:flex;align-items:center;gap:12px;
-    position:relative;z-index:1;
-    opacity:.6;
-  }
-  .portada-jvs img{height:28px}
-  .portada-jvs-txt{color:rgba(255,255,255,0.7);font-size:11px;letter-spacing:0.5px}
+/* ══════════════ PORTADA ══════════════ */
+.portada{
+  background:linear-gradient(160deg,#06144A 0%,#0B1F5F 45%,#1030A0 80%,#0B1F5F 100%);
+  min-height:480px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:70px 40px;
+  position:relative;
+  overflow:hidden;
+}
+.portada::before{
+  content:'';position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:560px;height:560px;
+  background:radial-gradient(circle,rgba(41,121,255,0.14) 0%,transparent 70%);
+  pointer-events:none;
+}
+.portada-logo{
+  width:130px;height:130px;
+  object-fit:contain;
+  margin-bottom:32px;
+  filter:drop-shadow(0 8px 30px rgba(0,0,0,0.55));
+  position:relative;z-index:1;
+}
+.portada-titulo{
+  font-family:'Playfair Display',serif;
+  font-size:44px;font-weight:900;
+  color:#fff;line-height:1.15;
+  margin-bottom:8px;
+  position:relative;z-index:1;
+}
+.portada-titulo span{color:var(--orange-bd)}
+.portada-sub{
+  font-size:13px;
+  color:rgba(255,255,255,0.55);
+  letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:28px;position:relative;z-index:1;
+}
+.portada-badge{
+  background:rgba(232,119,10,0.15);
+  border:1.5px solid rgba(232,119,10,0.5);
+  border-radius:30px;
+  padding:10px 28px;
+  color:var(--orange-bd);
+  font-size:12px;font-weight:800;
+  letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:40px;
+  position:relative;z-index:1;
+}
+.portada-stats{
+  display:flex;gap:50px;justify-content:center;
+  position:relative;z-index:1;
+  flex-wrap:wrap;
+}
+.portada-stat{text-align:center}
+.portada-stat-val{font-size:26px;font-weight:900;color:var(--blue-mid)}
+.portada-stat-lbl{font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.portada-origen{
+  margin-top:44px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:12px;
+  padding:16px 28px;
+  max-width:540px;
+  position:relative;z-index:1;
+  text-align:center;
+}
+.portada-origen p{
+  color:rgba(255,255,255,0.6);
+  font-size:12px;
+  line-height:1.7;
+  margin:0;
+}
+.portada-origen strong{color:rgba(255,255,255,0.9)}
 
-  /* ─── CONTENIDO ─── */
-  .doc-body{max-width:860px;margin:0 auto;padding:40px}
+/* ══════════════ CUERPO ══════════════ */
+.doc-body{max-width:880px;margin:0 auto;padding:44px 40px}
 
-  /* Índice */
-  .toc{
-    background:var(--fondo);
-    border:1px solid var(--borde);
-    border-left:4px solid var(--verde-claro);
-    border-radius:8px;
-    padding:24px 28px;
-    margin-bottom:40px;
-  }
-  .toc-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--verde-claro);margin-bottom:16px}
-  .toc-list{list-style:none;columns:2;column-gap:30px}
-  .toc-list li{padding:4px 0;border-bottom:1px dotted #dde8d8}
-  .toc-list a{color:var(--texto-suave);text-decoration:none;font-size:12px;display:flex;justify-content:space-between}
-  .toc-list a:hover{color:var(--verde-claro)}
-  .toc-num{color:#aaa;font-size:11px}
+/* Índice */
+.toc{
+  background:var(--blue-pale);
+  border:1px solid var(--border);
+  border-left:5px solid var(--blue);
+  border-radius:10px;
+  padding:26px 30px;
+  margin-bottom:48px;
+}
+.toc-title{
+  font-size:11px;font-weight:900;
+  text-transform:uppercase;letter-spacing:2px;
+  color:var(--blue);margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;
+}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 30px}
+.toc-item{
+  padding:6px 0;
+  border-bottom:1px dashed var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.toc-item a{
+  color:var(--body);text-decoration:none;font-size:13px;font-weight:500;
+  flex:1;
+}
+.toc-item a:hover{color:var(--blue)}
+.toc-num{
+  background:var(--blue);color:#fff;
+  font-size:9px;font-weight:800;
+  width:20px;height:20px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.toc-emoji{font-size:14px;width:20px;text-align:center;flex-shrink:0}
 
-  /* Secciones */
-  .sec{margin-bottom:48px;padding-top:8px}
-  .sec-header{
-    display:flex;align-items:center;gap:12px;
-    border-bottom:2px solid var(--verde-claro);
-    padding-bottom:10px;margin-bottom:20px;
-  }
-  .sec-num{
-    background:var(--verde-claro);
-    color:#fff;
-    width:28px;height:28px;
-    border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-size:12px;font-weight:800;flex-shrink:0;
-  }
-  .sec-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--verde-oscuro)}
-  .sec-emoji{font-size:22px}
+/* Secciones */
+.sec{margin-bottom:56px;scroll-margin-top:20px}
+.sec-header{
+  display:flex;align-items:center;gap:14px;
+  border-bottom:3px solid var(--blue);
+  padding-bottom:12px;margin-bottom:24px;
+}
+.sec-num{
+  background:linear-gradient(135deg,var(--navy),var(--blue));
+  color:#fff;
+  width:32px;height:32px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;flex-shrink:0;
+  box-shadow:0 3px 10px rgba(21,101,216,0.4);
+}
+.sec-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--navy)}
+.sec-emoji{font-size:24px}
 
-  h3{font-size:14px;font-weight:700;color:var(--verde-mid);margin:18px 0 8px;text-transform:uppercase;letter-spacing:0.5px}
-  p{margin-bottom:10px;color:var(--texto-suave)}
-  ul,ol{margin:0 0 12px 20px;color:var(--texto-suave)}
-  li{margin-bottom:5px}
+h3{
+  font-size:13px;font-weight:800;
+  color:var(--navy);
+  margin:20px 0 10px;
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  display:flex;align-items:center;gap:6px;
+}
+h3::after{content:'';flex:1;height:1px;background:var(--border);margin-left:8px}
+p{margin-bottom:12px;color:var(--body)}
+ul,ol{margin:0 0 14px 22px;color:var(--body)}
+li{margin-bottom:6px}
+strong{color:var(--text)}
 
-  /* Cajas de info */
-  .info-box{
-    background:var(--fondo);
-    border:1px solid var(--borde);
-    border-left:3px solid var(--verde-claro);
-    border-radius:6px;
-    padding:12px 16px;
-    margin:14px 0;
-    font-size:12px;
-    color:var(--texto-suave);
-  }
-  .info-box.tip{border-left-color:#1565D8;background:#EFF5FF}
-  .info-box.warn{border-left-color:#E8770A;background:#FFF8F0}
-  .info-box strong{color:var(--texto);display:block;margin-bottom:4px}
+/* ── Cajas ── */
+.box{
+  border-radius:10px;padding:16px 20px;margin:16px 0;
+  border-left:4px solid;
+}
+.box-info{background:var(--blue-sky);border-color:var(--blue);color:var(--body)}
+.box-info strong{color:var(--navy)}
+.box-ok{background:var(--done-bg);border-color:#4CAF50;color:#1B3A1B}
+.box-ok strong{color:var(--done-txt)}
+.box-tip{background:var(--tip-bg);border-color:#7E57C2;color:#2E1B5E}
+.box-tip strong{color:var(--tip-txt)}
+.box-warn{background:var(--warn-bg);border-color:var(--orange);color:#3A1F00}
+.box-warn strong{color:var(--warn-txt)}
+.box p{margin:0;font-size:13px;line-height:1.7}
+.box p+p{margin-top:8px}
 
-  /* Roles */
-  .roles-grid{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}
-  .role-card{
-    flex:1;min-width:160px;
-    border-radius:8px;
-    padding:12px 14px;
-    border:1px solid;
-  }
-  .role-card.admin{background:#FFF3CD;border-color:#ffc107;color:#856404}
-  .role-card.dario{background:#D1ECF1;border-color:#17a2b8;color:#0c5460}
-  .role-card.lucia{background:#CCE5FF;border-color:#004085;color:#004085}
-  .role-card.cliente{background:#D4EDDA;border-color:#28a745;color:#155724}
-  .role-name{font-weight:800;font-size:13px;margin-bottom:4px}
-  .role-desc{font-size:11px;line-height:1.5}
+/* ── Tabla ── */
+.tbl-wrap{overflow-x:auto;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{
+  background:linear-gradient(135deg,var(--navy),var(--blue));
+  color:#fff;padding:10px 14px;
+  text-align:left;font-weight:700;
+  font-size:11px;letter-spacing:0.5px;text-transform:uppercase;
+}
+tbody td{padding:10px 14px;border-bottom:1px solid #E8EEFF;color:var(--body)}
+tbody tr:hover td{background:var(--blue-pale)}
+tbody tr:last-child td{border-bottom:none}
 
-  /* Tabla */
-  table{width:100%;border-collapse:collapse;margin:12px 0 18px;font-size:12px}
-  th{background:var(--verde-oscuro);color:#fff;padding:8px 12px;text-align:left;font-weight:700;letter-spacing:0.5px;font-size:11px;text-transform:uppercase}
-  td{padding:8px 12px;border-bottom:1px solid var(--borde)}
-  tr:nth-child(even) td{background:#f9fdf7}
-  tr:hover td{background:#f0f8ec}
+/* ── Pasos ── */
+.steps{list-style:none;margin:0 0 16px;padding:0;counter-reset:step}
+.steps li{
+  counter-increment:step;
+  display:flex;align-items:flex-start;gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+.steps li:last-child{border-bottom:none}
+.steps li::before{
+  content:counter(step);
+  background:var(--blue);color:#fff;
+  font-size:11px;font-weight:800;
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:2px;
+}
+.steps li span{color:var(--body);font-size:13px}
 
-  /* Badges */
-  .badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;vertical-align:middle}
-  .badge-pending{background:#FFF3CD;color:#856404}
-  .badge-open{background:#D1ECF1;color:#0C5460}
-  .badge-enviado{background:#CCE5FF;color:#004085}
-  .badge-done{background:#D4EDDA;color:#155724}
+/* ── Chips de estado ── */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.chip{padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.3px}
+.chip-pend{background:#FFF3E0;color:#E65100;border:1.5px solid #E65100}
+.chip-conf{background:#E8F5E9;color:#1B5E20;border:1.5px solid #2E7D32}
+.chip-desp{background:#EDE7F6;color:#4527A0;border:1.5px solid #7B5EA7}
+.chip-cobr{background:#F0F0F0;color:#444;border:1.5px solid #999}
 
-  /* Steps */
-  .steps{list-style:none;margin:12px 0;padding:0}
-  .steps li{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
-  .step-num{
-    background:var(--naranja);color:#fff;
-    width:22px;height:22px;min-width:22px;
-    border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-size:11px;font-weight:800;margin-top:1px;
-  }
-  .step-txt{flex:1;font-size:12px;color:var(--texto-suave)}
+/* ── Roles ── */
+.roles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;margin:16px 0}
+.role-card{
+  background:var(--blue-pale);
+  border:1.5px solid var(--border);
+  border-radius:12px;padding:16px;
+}
+.role-card-name{
+  font-size:13px;font-weight:800;color:var(--navy);
+  margin-bottom:6px;display:flex;align-items:center;gap:6px;
+}
+.role-card ul{margin:0;padding-left:16px;font-size:12px;color:var(--body)}
+.role-card li{margin-bottom:3px}
+.role-badge{
+  font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.rb-admin{background:#E3F2FD;color:#0D47A1}
+.rb-dario{background:#FFF3E0;color:#E65100}
+.rb-lucia{background:#EDE7F6;color:#4527A0}
+.rb-cli{background:#E8F5E9;color:#1B5E20}
 
-  /* Teclado */
-  kbd{background:#f4f4f4;border:1px solid #ccc;border-bottom:2px solid #aaa;border-radius:4px;padding:1px 6px;font-size:11px;font-family:monospace}
+/* ── Highlight inline ── */
+.hi{
+  background:var(--blue-sky);
+  color:var(--navy);
+  font-weight:700;
+  padding:1px 7px;
+  border-radius:5px;
+  font-size:12px;
+}
+.hi-orange{
+  background:var(--orange-lt);
+  color:var(--orange);
+  font-weight:700;
+  padding:1px 7px;
+  border-radius:5px;
+  font-size:12px;
+}
 
-  /* Separador de sección */
-  .sec-divider{border:none;border-top:1px dashed var(--borde);margin:32px 0}
+/* ── Separador de sección ── */
+.sec-divider{
+  height:1px;
+  background:linear-gradient(90deg,var(--border),transparent);
+  margin:12px 0 20px;
+}
 
-  /* ─── FOOTER ─── */
-  .doc-footer{
-    background:linear-gradient(135deg,#040F04 0%,#071F07 100%);
-    padding:20px 40px;
-    display:flex;align-items:center;justify-content:space-between;
-    gap:20px;
-    border-top:3px solid transparent;
-    border-image:linear-gradient(90deg,#2E7D32,#E8770A,#4CAF50) 1;
-  }
-  .footer-left{display:flex;align-items:center;gap:12px}
-  .footer-jvs-box{
-    background:#fff;border-radius:8px;
-    padding:4px 8px;
-    display:flex;align-items:center;
-  }
-  .footer-jvs-box img{height:28px}
-  .footer-copy{color:rgba(255,255,255,0.5);font-size:10px;letter-spacing:0.5px}
-  .footer-copy strong{color:rgba(255,255,255,0.8)}
-  .footer-right{text-align:right}
-  .footer-site{color:#4CAF50;font-size:11px;font-weight:600}
-  .footer-date{color:rgba(255,255,255,0.4);font-size:10px;margin-top:2px}
+/* ── Origen del sistema ── */
+.origen-card{
+  background:linear-gradient(135deg,#06144A,#1030A0);
+  border-radius:14px;padding:28px 32px;
+  color:#fff;margin:20px 0;
+  position:relative;overflow:hidden;
+}
+.origen-card::after{
+  content:'💬';position:absolute;
+  right:24px;bottom:-10px;
+  font-size:90px;opacity:.1;
+}
+.origen-card h4{font-size:16px;font-weight:800;margin-bottom:12px;color:var(--orange-bd)}
+.origen-card p{color:rgba(255,255,255,0.82);font-size:13px;line-height:1.75;margin-bottom:10px}
+.origen-card p:last-child{margin:0}
+.origen-card strong{color:#fff}
 
-  /* ─── PRINT ─── */
-  @media print{
-    body{font-size:12px}
-    .portada{min-height:400px}
-    .portada-titulo{font-size:34px}
-    .sec{page-break-inside:avoid}
-    .doc-header,.doc-footer{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .portada{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    @page{margin:0;size:A4}
-  }
+/* ── Footer ── */
+.doc-footer{
+  background:linear-gradient(135deg,#06144A 0%,#0B1F5F 100%);
+  padding:32px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+}
+.footer-left{display:flex;align-items:center;gap:14px}
+.footer-logo{height:40px;filter:drop-shadow(0 0 8px rgba(41,121,255,0.5))}
+.footer-text{color:rgba(255,255,255,0.65);font-size:11px;line-height:1.6}
+.footer-text strong{color:rgba(255,255,255,0.9)}
+.footer-right{color:rgba(255,255,255,0.4);font-size:10px;text-align:right}
+
+/* ── Print ── */
+@media print{
+  .doc-header,.portada,.doc-footer{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .sec{page-break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+}
+@media(max-width:640px){
+  .header-inner{padding:14px 20px}
+  .doc-body{padding:28px 20px}
+  .portada-titulo{font-size:30px}
+  .toc-grid{grid-template-columns:1fr}
+  .roles-grid{grid-template-columns:1fr 1fr}
+  .portada-stats{gap:28px}
+  .doc-footer{padding:24px 20px;flex-direction:column;align-items:flex-start}
+}
 </style>
 </head>
 <body>
 
-<!-- ══════ HEADER ══════ -->
+<!-- ══════════════ HEADER ══════════════ -->
 <header class="doc-header">
   <div class="header-inner">
     <div class="header-brand">
-      <div class="header-logo-box">
+      <div class="header-logo-wrap">
         <img src="LogoYerba.png" alt="Sabores de Misiones">
       </div>
-      <div class="header-brand-text">
-        <div class="header-brand-name">Sabores de</div>
-        <div class="header-brand-mis">MISIONES</div>
-        <span class="header-doc-label">Manual de Usuario</span>
+      <div class="header-brand-txt">
+        <div class="header-brand-name">Sabores de Misiones</div>
+        <div class="header-brand-title">Manual del <span>Sistema</span></div>
       </div>
     </div>
-    <div class="header-jvs">
-      <img src="jvs-logo.png" alt="JV Systems">
-      <div>
-        <div style="color:#fff;font-weight:700;font-size:12px">JV Systems</div>
-        <div class="header-jvs-text">Software &amp; Gestión</div>
-      </div>
+    <div class="header-right">
+      <img src="jvs-logo.png" class="header-jvs-logo" alt="JVS" onerror="this.style.display='none'">
+      <div class="header-doc-chip">Documentación oficial</div>
     </div>
   </div>
 </header>
 
-<!-- ══════ PORTADA ══════ -->
+<!-- ══════════════ PORTADA ══════════════ -->
 <div class="portada">
-  <img src="LogoYerba.png" alt="Logo" class="portada-logo">
-  <div class="portada-titulo">Sabores de <span>Misiones</span></div>
-  <div class="portada-sub">Gestión &amp; Comunicación</div>
-  <div class="portada-badge">📋 Manual Completo del Sistema</div>
-  <div class="portada-meta">
-    <div class="portada-meta-item">
-      <div class="portada-meta-val">9</div>
-      <div class="portada-meta-lbl">Módulos</div>
+  <img src="jvs-logo.png" class="portada-logo" alt="JVS" onerror="this.style.display='none'">
+  <div class="portada-titulo">Sistema de Gestión<br><span>Sabores de Misiones</span></div>
+  <div class="portada-sub">Desarrollado por Juan Villanueva · JVS</div>
+  <div class="portada-badge">Manual de Usuario — Versión 2.0</div>
+  <div class="portada-stats">
+    <div class="portada-stat">
+      <div class="portada-stat-val">11</div>
+      <div class="portada-stat-lbl">Módulos</div>
     </div>
-    <div class="portada-meta-item">
-      <div class="portada-meta-val">4</div>
-      <div class="portada-meta-lbl">Tipos de Usuario</div>
+    <div class="portada-stat">
+      <div class="portada-stat-val">4</div>
+      <div class="portada-stat-lbl">Roles de usuario</div>
     </div>
-    <div class="portada-meta-item">
-      <div class="portada-meta-val">PWA</div>
-      <div class="portada-meta-lbl">Funciona offline</div>
+    <div class="portada-stat">
+      <div class="portada-stat-val">PWA</div>
+      <div class="portada-stat-lbl">Funciona sin internet</div>
+    </div>
+    <div class="portada-stat">
+      <div class="portada-stat-val">100%</div>
+      <div class="portada-stat-lbl">En la nube</div>
     </div>
   </div>
-  <div class="portada-jvs">
-    <img src="jvs-icon.png" alt="JVS">
-    <div class="portada-jvs-txt">Desarrollado por <strong style="color:rgba(255,255,255,0.9)">Juan Villanueva · JV Systems</strong></div>
+  <div class="portada-origen">
+    <p><strong>¿Cómo nació este sistema?</strong><br>
+    Fue construido a medida a partir de la información que la titular compartió por WhatsApp y de su planilla Excel de trabajo diario. Cada campo, cada módulo y cada flujo refleja exactamente cómo funciona el negocio real de Sabores de Misiones.</p>
   </div>
 </div>
 
-<!-- ══════ CUERPO ══════ -->
+<!-- ══════════════ CUERPO ══════════════ -->
 <div class="doc-body">
 
   <!-- ÍNDICE -->
   <div class="toc">
-    <div class="toc-title">📑 Índice de Contenidos</div>
-    <ul class="toc-list">
-      <li><a href="#sec1"><span>1. Acceso al Sistema</span><span class="toc-num">Login</span></a></li>
-      <li><a href="#sec2"><span>2. Roles y Permisos</span><span class="toc-num">Usuarios</span></a></li>
-      <li><a href="#sec3"><span>3. Dashboard</span><span class="toc-num">Inicio</span></a></li>
-      <li><a href="#sec4"><span>4. Pedidos</span><span class="toc-num">Ventas</span></a></li>
-      <li><a href="#sec5"><span>5. Clientes</span><span class="toc-num">CRM</span></a></li>
-      <li><a href="#sec6"><span>6. Cuenta Darío</span><span class="toc-num">Preparación</span></a></li>
-      <li><a href="#sec7"><span>7. Comunicación</span><span class="toc-num">Chat</span></a></li>
-      <li><a href="#sec8"><span>8. Compras</span><span class="toc-num">Insumos</span></a></li>
-      <li><a href="#sec9"><span>9. Despachos</span><span class="toc-num">Envíos</span></a></li>
-      <li><a href="#sec10"><span>10. Presupuestos</span><span class="toc-num">Cotización</span></a></li>
-      <li><a href="#sec11"><span>11. Configuración</span><span class="toc-num">Admin</span></a></li>
-      <li><a href="#sec12"><span>12. Mi Perfil e Instalación</span><span class="toc-num">App</span></a></li>
-    </ul>
+    <div class="toc-title">📋 Contenido del manual</div>
+    <div class="toc-grid">
+      <div class="toc-item"><span class="toc-num">1</span><span class="toc-emoji">🏠</span><a href="#s1">Dashboard — Panel principal</a></div>
+      <div class="toc-item"><span class="toc-num">2</span><span class="toc-emoji">📦</span><a href="#s2">Pedidos</a></div>
+      <div class="toc-item"><span class="toc-num">3</span><span class="toc-emoji">👥</span><a href="#s3">Clientes</a></div>
+      <div class="toc-item"><span class="toc-num">4</span><span class="toc-emoji">⚖️</span><a href="#s4">Cuenta Darío</a></div>
+      <div class="toc-item"><span class="toc-num">5</span><span class="toc-emoji">🛒</span><a href="#s5">Compras — Órdenes de Compra</a></div>
+      <div class="toc-item"><span class="toc-num">6</span><span class="toc-emoji">🚚</span><a href="#s6">Despachos</a></div>
+      <div class="toc-item"><span class="toc-num">7</span><span class="toc-emoji">📄</span><a href="#s7">Presupuestos</a></div>
+      <div class="toc-item"><span class="toc-num">8</span><span class="toc-emoji">💬</span><a href="#s8">Comunicación — Chat</a></div>
+      <div class="toc-item"><span class="toc-num">9</span><span class="toc-emoji">⚙️</span><a href="#s9">Configuración</a></div>
+      <div class="toc-item"><span class="toc-num">10</span><span class="toc-emoji">🔐</span><a href="#s10">Usuarios y permisos</a></div>
+      <div class="toc-item"><span class="toc-num">11</span><span class="toc-emoji">📱</span><a href="#s11">Instalar como app (PWA)</a></div>
+      <div class="toc-item"><span class="toc-num">12</span><span class="toc-emoji">🔧</span><a href="#s12">Datos y seguridad</a></div>
+    </div>
   </div>
 
-  <!-- 1. ACCESO -->
-  <div class="sec" id="sec1">
+  <!-- ────────────── ORIGEN ────────────── -->
+  <div class="origen-card">
+    <h4>📂 Origen y base del sistema</h4>
+    <p>Antes del sistema, la titular de <strong>Sabores de Misiones</strong> manejaba su operación con una <strong>planilla Excel</strong> para registrar pedidos y ventas, y coordinaba con proveedores, clientes y con Darío principalmente por <strong>WhatsApp</strong>.</p>
+    <p>A partir de esa información — los campos de la planilla, los mensajes de WhatsApp, y el flujo real del negocio — se construyó este sistema a medida. Por eso cada módulo refleja una necesidad concreta: los pedidos tienen los mismos campos que la planilla, el chat reemplaza el WhatsApp desordenado, y la cuenta de Darío digitaliza lo que antes era un cuaderno de cuentas.</p>
+    <p><strong>El sistema no impone una forma de trabajar — acompaña la forma en que ya se trabaja.</strong></p>
+  </div>
+
+  <!-- ══════ 1. DASHBOARD ══════ -->
+  <div class="sec" id="s1">
     <div class="sec-header">
       <div class="sec-num">1</div>
-      <span class="sec-emoji">🔐</span>
-      <div class="sec-title">Acceso al Sistema</div>
+      <div class="sec-emoji">🏠</div>
+      <div class="sec-title">Dashboard — Panel principal</div>
     </div>
-    <p>Para ingresar al sistema, abrí el navegador y accedé a la dirección:</p>
-    <div class="info-box tip">
-      <strong>🌐 URL del sistema</strong>
-      https://jv-system.github.io/Sabores-de-misiones/
+
+    <p>Es la primera pantalla que aparece al ingresar. Muestra un resumen ejecutivo del negocio en tiempo real, tomando los datos de todas las secciones del sistema.</p>
+
+    <h3>📊 Los 4 indicadores (KPIs)</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Indicador</th><th>Qué muestra</th><th>De dónde viene</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Ingresos Totales</strong></td><td>Suma de todos los ingresos cobrados en todos los pedidos desde el inicio</td><td>Campo "Ingreso cobrado" de cada pedido</td></tr>
+          <tr><td><strong>Saldo c/ Darío</strong></td><td>Si el número es positivo: Darío te debe. Si es negativo: vos le debés a Darío</td><td>Módulo Cuenta Darío — moliendas vs pagos</td></tr>
+          <tr><td><strong>Kg Vendidos</strong></td><td>Total de kg en pedidos del mes seleccionado</td><td>Suma de kg de todos los pedidos del mes</td></tr>
+          <tr><td><strong>Pedidos Activos</strong></td><td>Pedidos en estado Pendiente o Confirmado (aún no terminados)</td><td>Módulo Pedidos</td></tr>
+        </tbody>
+      </table>
     </div>
-    <ol class="steps">
-      <li><span class="step-num">1</span><span class="step-txt">Ingresá tu <strong>nombre de usuario</strong> en el primer campo.</span></li>
-      <li><span class="step-num">2</span><span class="step-txt">Ingresá tu <strong>contraseña</strong> en el segundo campo.</span></li>
-      <li><span class="step-num">3</span><span class="step-txt">Presioná <strong>"Ingresar →"</strong> o la tecla <kbd>Enter</kbd>.</span></li>
-    </ol>
-    <div class="info-box warn">
-      <strong>⚠️ Sesión cerrada automáticamente</strong>
-      Al cerrar o recargar el navegador la sesión se mantiene. Para cerrarla manualmente usá el botón <strong>"Salir"</strong> en el encabezado.
+
+    <div class="box box-info">
+      <p><strong>Selector de mes en Kg Vendidos:</strong> El KPI tiene flechas ‹ › para navegar entre meses. Así podés comparar enero, febrero, mayo, etc. sin cambiar ningún filtro. El mes actual aparece resaltado en naranja.</p>
     </div>
+
+    <h3>📋 Últimos pedidos</h3>
+    <p>Lista los 6 pedidos más recientes con nombre del cliente, fecha y estado. Haciendo click en cualquiera vas directo al detalle de ese pedido.</p>
+
+    <h3>⚖️ Resumen Cuenta Darío</h3>
+    <p>Muestra el saldo actual con Darío de forma destacada. Tiene un botón "Ver detalle" para ir directamente al módulo completo.</p>
   </div>
 
-  <hr class="sec-divider">
-
-  <!-- 2. ROLES -->
-  <div class="sec" id="sec2">
+  <!-- ══════ 2. PEDIDOS ══════ -->
+  <div class="sec" id="s2">
     <div class="sec-header">
       <div class="sec-num">2</div>
-      <span class="sec-emoji">👥</span>
-      <div class="sec-title">Roles y Permisos</div>
-    </div>
-    <p>El sistema cuenta con 4 tipos de usuario, cada uno con acceso a distintas secciones:</p>
-    <div class="roles-grid">
-      <div class="role-card admin">
-        <div class="role-name">👑 Administrador</div>
-        <div class="role-desc">Acceso total al sistema. Gestiona usuarios, ve todos los módulos, configura estados y exporta datos.</div>
-      </div>
-      <div class="role-card dario">
-        <div class="role-name">🧪 Darío (Preparación)</div>
-        <div class="role-desc">Accede a Cuenta Darío y Comunicación. Registra movimientos de preparación y se comunica por chat.</div>
-      </div>
-      <div class="role-card lucia">
-        <div class="role-name">📦 Lucía (Despacho)</div>
-        <div class="role-desc">Accede a Despachos y Comunicación. Gestiona los envíos y se comunica con el equipo.</div>
-      </div>
-      <div class="role-card cliente">
-        <div class="role-name">🧑 Cliente</div>
-        <div class="role-desc">Solo accede al chat de Comunicación. Puede ver el estado de sus pedidos y enviar mensajes.</div>
-      </div>
-    </div>
-    <h3>Resumen de acceso por sección</h3>
-    <table>
-      <thead><tr><th>Sección</th><th>Admin</th><th>Darío</th><th>Lucía</th><th>Cliente</th></tr></thead>
-      <tbody>
-        <tr><td>Dashboard</td><td>✅</td><td>—</td><td>—</td><td>—</td></tr>
-        <tr><td>Pedidos</td><td>✅</td><td>—</td><td>—</td><td>—</td></tr>
-        <tr><td>Clientes</td><td>✅</td><td>—</td><td>—</td><td>—</td></tr>
-        <tr><td>Cuenta Darío</td><td>✅</td><td>✅</td><td>—</td><td>—</td></tr>
-        <tr><td>Compras</td><td>✅</td><td>—</td><td>—</td><td>—</td></tr>
-        <tr><td>Despachos</td><td>✅</td><td>—</td><td>✅</td><td>—</td></tr>
-        <tr><td>Presupuestos</td><td>✅</td><td>—</td><td>—</td><td>—</td></tr>
-        <tr><td>Comunicación</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
-        <tr><td>Configuración</td><td>✅</td><td>—</td><td>—</td><td>—</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <hr class="sec-divider">
-
-  <!-- 3. DASHBOARD -->
-  <div class="sec" id="sec3">
-    <div class="sec-header">
-      <div class="sec-num">3</div>
-      <span class="sec-emoji">📊</span>
-      <div class="sec-title">Dashboard</div>
-    </div>
-    <p>La pantalla principal muestra un resumen ejecutivo del negocio en tiempo real.</p>
-    <h3>Indicadores principales (KPIs)</h3>
-    <table>
-      <thead><tr><th>Indicador</th><th>Descripción</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Ingresos Totales</strong></td><td>Suma de todos los pedidos cobrados</td></tr>
-        <tr><td><strong>Saldo c/ Darío</strong></td><td>Balance pendiente de la cuenta interna de preparación</td></tr>
-        <tr><td><strong>Kg vendidos (mes)</strong></td><td>Total de kilogramos de yerba del mes actual</td></tr>
-        <tr><td><strong>Pedidos Activos</strong></td><td>Pedidos en estado Pendiente o Confirmado</td></tr>
-      </tbody>
-    </table>
-    <h3>Secciones del dashboard</h3>
-    <ul>
-      <li><strong>Últimos Pedidos</strong> — Los 6 pedidos más recientes con estado y acceso rápido.</li>
-      <li><strong>Cuenta Darío</strong> — Resumen del saldo con botón "Ver detalle".</li>
-    </ul>
-    <div class="info-box tip">
-      <strong>💡 Acceso rápido</strong>
-      Hacé clic en cualquier pedido del dashboard para ir directamente a su detalle.
-    </div>
-  </div>
-
-  <hr class="sec-divider">
-
-  <!-- 4. PEDIDOS -->
-  <div class="sec" id="sec4">
-    <div class="sec-header">
-      <div class="sec-num">4</div>
-      <span class="sec-emoji">📋</span>
+      <div class="sec-emoji">📦</div>
       <div class="sec-title">Pedidos</div>
     </div>
-    <p>Módulo central para gestionar todos los pedidos de venta de yerba mate.</p>
-    <h3>Crear un nuevo pedido</h3>
-    <ol class="steps">
-      <li><span class="step-num">1</span><span class="step-txt">Hacé clic en <strong>"+ Nuevo Pedido"</strong> (en desktop) o en el botón <strong>+</strong> flotante naranja (en mobile).</span></li>
-      <li><span class="step-num">2</span><span class="step-txt">Completá los datos: <strong>cliente</strong>, <strong>fecha</strong>, <strong>transporte</strong> y <strong>productos</strong>.</span></li>
-      <li><span class="step-num">3</span><span class="step-txt">Agregá los productos con su tipo, kilogramos y precio por kg.</span></li>
-      <li><span class="step-num">4</span><span class="step-txt">Hacé clic en <strong>"Guardar"</strong>. El pedido se crea con número correlativo automático.</span></li>
-    </ol>
-    <h3>Estados de un pedido</h3>
-    <p>Cada pedido tiene un estado que refleja su avance en el flujo de trabajo:</p>
-    <table>
-      <thead><tr><th>Estado</th><th>Significado</th></tr></thead>
-      <tbody>
-        <tr><td><span class="badge badge-pending">⏳ Pendiente</span></td><td>El pedido fue creado pero aún no fue confirmado</td></tr>
-        <tr><td><span class="badge badge-open">✅ Confirmado</span></td><td>El pedido está confirmado y en preparación</td></tr>
-        <tr><td><span class="badge badge-enviado">🚚 Despachado</span></td><td>El pedido fue enviado al cliente</td></tr>
-        <tr><td><span class="badge badge-done">💰 Cobrado</span></td><td>El pedido fue entregado y el pago recibido</td></tr>
-      </tbody>
-    </table>
-    <div class="info-box">
-      <strong>📌 Cambiar estado desde el chat</strong>
-      El estado también puede modificarse directamente desde la conversación del chat del pedido, usando el selector desplegable en el encabezado de la conversación.
+
+    <p>Es el corazón del sistema. Reemplaza la planilla Excel donde se registraban los pedidos. Cada pedido representa una venta a un cliente con todos sus datos, productos, precios y estado.</p>
+
+    <div class="box box-info">
+      <p><strong>¿De dónde viene esta información?</strong> Los campos del formulario de pedido (nombre, DNI, teléfono, transporte, tipo de molienda, kg) se tomaron directamente de las columnas de la planilla Excel original que manejaba la titular.</p>
     </div>
-    <h3>Acciones disponibles en el detalle</h3>
+
+    <h3>📝 Cómo crear un pedido nuevo</h3>
+    <ol class="steps">
+      <li><span>Ir a <strong>Pedidos</strong> → hacer click en el botón <strong>+ Nuevo</strong></span></li>
+      <li><span>Opcional: elegir un <strong>cliente existente</strong> del desplegable para que los datos se carguen solos. Si es nuevo, completar a mano.</span></li>
+      <li><span>Completar los datos del cliente: nombre, DNI, teléfono, email, transporte.</span></li>
+      <li><span>Agregar los <strong>productos</strong>: tipo de molienda y kg. Se pueden agregar varios productos por pedido.</span></li>
+      <li><span>Ingresar el <strong>presupuesto enviado</strong> (lo que le cotizaste) y el <strong>ingreso cobrado</strong> (lo que efectivamente pagó) si ya cobró.</span></li>
+      <li><span>Elegir el <strong>estado</strong> inicial (generalmente Pendiente).</span></li>
+      <li><span>Guardar. El sistema asigna un número de pedido automáticamente.</span></li>
+    </ol>
+
+    <h3>📋 Campos del formulario de pedido</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Qué representa</th><th>Obligatorio</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Número (#)</strong></td><td>Asignado automáticamente, secuencial</td><td>Automático</td></tr>
+          <tr><td><strong>Cliente</strong></td><td>Nombre del comprador</td><td>Sí</td></tr>
+          <tr><td><strong>DNI</strong></td><td>Documento del cliente</td><td>No</td></tr>
+          <tr><td><strong>Teléfono</strong></td><td>Para contacto y WhatsApp</td><td>No</td></tr>
+          <tr><td><strong>Transporte</strong></td><td>Empresa y sucursal de envío (dato clave de la planilla Excel)</td><td>No</td></tr>
+          <tr><td><strong>Productos</strong></td><td>Tipo de molienda + kg. Múltiples ítems</td><td>Sí</td></tr>
+          <tr><td><strong>Presupuesto enviado</strong></td><td>Lo que cotizaste al cliente</td><td>No</td></tr>
+          <tr><td><strong>Ingreso cobrado</strong></td><td>Lo que el cliente pagó</td><td>No</td></tr>
+          <tr><td><strong>Fecha</strong></td><td>Fecha del pedido</td><td>Sí</td></tr>
+          <tr><td><strong>Estado</strong></td><td>Etapa actual del pedido</td><td>Sí</td></tr>
+          <tr><td><strong>Observaciones</strong></td><td>Notas internas</td><td>No</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>🔄 Flujo de estados</h3>
+    <p>Cada pedido pasa por estados que reflejan su avance. Los estados son configurables desde la sección Configuración.</p>
+    <div class="chips">
+      <div class="chip chip-pend">⏳ Pendiente</div>
+      <span style="color:#999;align-self:center">→</span>
+      <div class="chip chip-conf">✅ Confirmado</div>
+      <span style="color:#999;align-self:center">→</span>
+      <div class="chip chip-desp">🚚 Despachado</div>
+      <span style="color:#999;align-self:center">→</span>
+      <div class="chip chip-cobr">💰 Cobrado</div>
+    </div>
+    <p>El estado se puede cambiar tanto desde el detalle del pedido como directamente desde la sección <strong>Comunicación</strong> (chat).</p>
+
+    <h3>🔍 Filtros de la lista</h3>
     <ul>
-      <li><strong>✏️ Editar</strong> — Modificar cualquier dato del pedido.</li>
-      <li><strong>🖨️ Imprimir</strong> — Generar una hoja de pedido para imprimir o guardar como PDF.</li>
-      <li><strong>💬 Chat</strong> — Ir a la conversación asociada al pedido.</li>
-      <li><strong>🗑️ Eliminar</strong> — Borrar el pedido (acción irreversible).</li>
+      <li><strong>Buscador de texto:</strong> busca por nombre del cliente o número de pedido.</li>
+      <li><strong>Chips de estado:</strong> debajo del buscador hay botones para filtrar por Pendiente, Confirmado, Despachado, Cobrado. Cada chip muestra la cantidad de pedidos en ese estado.</li>
     </ul>
+
+    <h3>📱 Mensaje WhatsApp</h3>
+    <p>Cada pedido tiene una pestaña <strong>"Mensaje WhatsApp"</strong> que genera automáticamente un texto formateado listo para enviar al cliente, con todos los datos del pedido, productos y precio. Se copia con un toque y se pega directo en WhatsApp.</p>
+
+    <h3>📄 PDF</h3>
+    <p>El botón <strong>PDF</strong> en el detalle del pedido abre la vista de impresión del navegador para guardar o imprimir el pedido como documento.</p>
+
+    <div class="box box-tip">
+      <p><strong>Consejo:</strong> Cuando un cliente paga, acordate de completar el campo <strong>Ingreso cobrado</strong> y cambiar el estado a <strong>Cobrado</strong>. Eso actualiza automáticamente el KPI de Ingresos Totales del Dashboard.</p>
+    </div>
   </div>
 
-  <hr class="sec-divider">
-
-  <!-- 5. CLIENTES -->
-  <div class="sec" id="sec5">
+  <!-- ══════ 3. CLIENTES ══════ -->
+  <div class="sec" id="s3">
     <div class="sec-header">
-      <div class="sec-num">5</div>
-      <span class="sec-emoji">👤</span>
+      <div class="sec-num">3</div>
+      <div class="sec-emoji">👥</div>
       <div class="sec-title">Clientes</div>
     </div>
-    <p>Registro y seguimiento de todos los clientes del negocio.</p>
-    <h3>Datos del cliente</h3>
+
+    <p>Guarda la base de datos de compradores frecuentes. Al tener un cliente cargado, sus datos se autocompletan en cada pedido nuevo sin tener que escribirlos de nuevo.</p>
+
+    <h3>📋 Ficha del cliente</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Uso</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Nombre completo</strong></td><td>Identificación del cliente</td></tr>
+          <tr><td><strong>DNI</strong></td><td>Documento</td></tr>
+          <tr><td><strong>Teléfono</strong></td><td>Contacto directo</td></tr>
+          <tr><td><strong>Email</strong></td><td>Contacto alternativo</td></tr>
+          <tr><td><strong>Ciudad / Provincia</strong></td><td>Ubicación para el transporte</td></tr>
+          <tr><td><strong>Transporte habitual</strong></td><td>Empresa y sucursal que usa el cliente. Se autocompleta en pedidos nuevos.</td></tr>
+          <tr><td><strong>Lista de precios</strong></td><td>Lista 1 a 4. Define qué precio ve en los presupuestos automáticamente.</td></tr>
+          <tr><td><strong>Notas</strong></td><td>Observaciones internas (ej: "paga en mano", "descuento acordado")</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>📈 Historial y estadísticas</h3>
+    <p>Al abrir un cliente, el panel derecho muestra:</p>
     <ul>
-      <li><strong>Nombre</strong>, <strong>teléfono</strong>, <strong>ciudad</strong>, <strong>dirección</strong></li>
-      <li><strong>Notas</strong> internas</li>
+      <li>Todos sus pedidos históricos con fechas y estados</li>
+      <li>Total de kg comprados</li>
+      <li>Total facturado</li>
+      <li>Último pedido</li>
+      <li>Productos más comprados</li>
     </ul>
-    <h3>Perfil del cliente</h3>
-    <p>Al ingresar a un cliente se muestra su perfil completo con:</p>
-    <ul>
-      <li>Total de pedidos y fecha de la última compra</li>
-      <li>Monto total gastado</li>
-      <li>Frecuencia de compra (semanal, mensual, etc.)</li>
-      <li>Productos más pedidos con cantidad en kg</li>
-      <li>Historial completo de pedidos</li>
-    </ul>
-    <div class="info-box tip">
-      <strong>💡 Autocompletar en pedidos</strong>
-      Al cargar un pedido nuevo podés seleccionar un cliente existente y sus datos se completan automáticamente.
+
+    <div class="box box-ok">
+      <p><strong>Ventaja principal:</strong> Cuando creás un pedido nuevo y elegís un cliente de la lista, el nombre, DNI, teléfono, email, transporte y lista de precios se cargan solos. Ahorra mucho tiempo.</p>
     </div>
   </div>
 
-  <hr class="sec-divider">
-
-  <!-- 6. CUENTA DARÍO -->
-  <div class="sec" id="sec6">
+  <!-- ══════ 4. CUENTA DARÍO ══════ -->
+  <div class="sec" id="s4">
     <div class="sec-header">
-      <div class="sec-num">6</div>
-      <span class="sec-emoji">⚖️</span>
+      <div class="sec-num">4</div>
+      <div class="sec-emoji">⚖️</div>
       <div class="sec-title">Cuenta Darío</div>
     </div>
-    <p>Registro de la cuenta corriente interna entre el negocio y Darío (responsable de preparación).</p>
-    <h3>Tipos de movimiento</h3>
-    <table>
-      <thead><tr><th>Tipo</th><th>Descripción</th></tr></thead>
-      <tbody>
-        <tr><td><strong>🧪 Molienda / Preparación</strong></td><td>Costo de preparación de un pedido (suma a la deuda)</td></tr>
-        <tr><td><strong>💵 Pago</strong></td><td>Pago realizado a Darío (resta de la deuda)</td></tr>
-        <tr><td><strong>📦 Otro</strong></td><td>Cualquier ajuste o movimiento adicional</td></tr>
-      </tbody>
-    </table>
-    <div class="info-box warn">
-      <strong>⚠️ Saldo deudor</strong>
-      Cuando el saldo aparece en rojo significa que se le debe dinero a Darío. Verde indica que el saldo está saldado o positivo.
-    </div>
-  </div>
 
-  <hr class="sec-divider">
+    <p>Darío es quien realiza la <strong>molienda</strong> (procesamiento) de la yerba. La Cuenta Darío es una cuenta corriente digital entre la empresa y él. Reemplaza el cuaderno o planilla donde se llevaba el registro de lo que se le adeudaba.</p>
 
-  <!-- 7. COMUNICACIÓN -->
-  <div class="sec" id="sec7">
-    <div class="sec-header">
-      <div class="sec-num">7</div>
-      <span class="sec-emoji">💬</span>
-      <div class="sec-title">Comunicación (Chat)</div>
+    <div class="box box-info">
+      <p><strong>¿De dónde viene esta idea?</strong> La titular llevaba en una planilla o por mensajes el registro de cada molienda que hacía Darío y los pagos que le realizaba. Este módulo digitaliza esa cuenta de forma clara y siempre actualizada.</p>
     </div>
-    <p>Sistema de mensajería interna vinculado a cada pedido. Funciona de forma similar a WhatsApp.</p>
-    <h3>Vista de lista (conversaciones)</h3>
-    <p>Al ingresar a Comunicación se muestra la lista de todas las conversaciones activas, ordenadas por último mensaje. Cada conversación está vinculada a un pedido específico.</p>
-    <h3>Vista de conversación</h3>
+
+    <h3>📊 Cómo funciona el saldo</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Tipo de movimiento</th><th>Efecto en el saldo</th><th>Cuándo usarlo</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Molienda (cargo)</strong></td><td>➖ Resta — aumenta la deuda</td><td>Cada vez que Darío procesa yerba para un pedido</td></tr>
+          <tr><td><strong>Pago — Transferencia</strong></td><td>➕ Suma — reduce la deuda</td><td>Cuando se le transfiere dinero</td></tr>
+          <tr><td><strong>Pago — Extracción</strong></td><td>➕ Suma — reduce la deuda</td><td>Cuando se le paga en efectivo</td></tr>
+          <tr><td><strong>Pago — Yerba Canchada</strong></td><td>➕ Suma — reduce la deuda</td><td>Cuando se le paga con materia prima (yerba canchada)</td></tr>
+          <tr><td><strong>Otro</strong></td><td>➕ Suma</td><td>Cualquier otro pago o ajuste</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box box-warn">
+      <p><strong>Lectura del saldo:</strong><br>
+      <strong>Saldo positivo (+)</strong> → Darío te debe a vos.<br>
+      <strong>Saldo negativo (−)</strong> → Vos le debés a Darío. El dashboard lo muestra en rojo con el texto "Debés".</p>
+    </div>
+
+    <h3>📝 Cómo registrar un movimiento</h3>
     <ol class="steps">
-      <li><span class="step-num">1</span><span class="step-txt">Tocá o hacé clic en una conversación para abrirla.</span></li>
-      <li><span class="step-num">2</span><span class="step-txt">Escribí tu mensaje en el campo de texto inferior.</span></li>
-      <li><span class="step-num">3</span><span class="step-txt">Presioná <kbd>Enter</kbd> o el botón de enviar ➤ para enviar.</span></li>
+      <li><span>Ir a <strong>Cuenta Darío</strong> → click en <strong>+ Movimiento</strong></span></li>
+      <li><span>Seleccionar la <strong>fecha</strong> del movimiento</span></li>
+      <li><span>Elegir el <strong>tipo</strong> (Molienda o un tipo de pago)</span></li>
+      <li><span>Si es molienda: elegir el <strong>tipo de molienda</strong> y cargar los <strong>kg</strong></span></li>
+      <li><span>Ingresar el <strong>subtotal en pesos</strong></span></li>
+      <li><span>Opcional: agregar una <strong>observación</strong> (ej: "Pedido #16 Nadia")</span></li>
+      <li><span>Guardar. El saldo se recalcula al instante.</span></li>
     </ol>
-    <h3>Cambiar estado del pedido desde el chat</h3>
-    <p>En el encabezado de la conversación (solo para Admin, Darío y Lucía) aparece un selector de estado. Al cambiarlo:</p>
-    <ul>
-      <li>El pedido se actualiza automáticamente en el sistema</li>
-      <li>Aparece un mensaje de sistema en el chat indicando el cambio (ej: <em>"⏳ pendiente → ✅ confirmado"</em>)</li>
-      <li>La lista de pedidos se actualiza en tiempo real</li>
-    </ul>
-    <h3>Notificaciones</h3>
-    <ul>
-      <li>El ícono del chat muestra un badge rojo con la cantidad de mensajes no leídos</li>
-      <li>En mobile, el badge aparece en el botón del menú inferior</li>
-    </ul>
-    <div class="info-box tip">
-      <strong>💡 Volver a la lista en mobile</strong>
-      Usá la flecha ← en el encabezado de la conversación para volver a la lista de chats.
-    </div>
+
+    <h3>📋 Vista de la tabla</h3>
+    <p>Todos los movimientos aparecen en una tabla cronológica con columna de <strong>saldo acumulado</strong>: vas viendo cómo sube y baja la cuenta movimiento a movimiento. Los movimientos de molienda aparecen en naranja (deuda), los pagos en verde.</p>
   </div>
 
-  <hr class="sec-divider">
-
-  <!-- 8. COMPRAS -->
-  <div class="sec" id="sec8">
+  <!-- ══════ 5. COMPRAS ══════ -->
+  <div class="sec" id="s5">
     <div class="sec-header">
-      <div class="sec-num">8</div>
-      <span class="sec-emoji">🛒</span>
-      <div class="sec-title">Compras</div>
+      <div class="sec-num">5</div>
+      <div class="sec-emoji">🛒</div>
+      <div class="sec-title">Compras — Órdenes de Compra</div>
     </div>
-    <p>Registro de compras de insumos y materia prima (yerba, bolsas, cajas, etc.).</p>
-    <h3>Registrar una compra</h3>
+
+    <p>Registra las compras de materia prima a los proveedores (secaderos): yerba canchada, fina, extra fina, palito molido, estampillas, azúcar mascabo, etc.</p>
+
+    <div class="box box-info">
+      <p><strong>¿De dónde viene?</strong> Esta sección replica el registro de compras a proveedores que la titular llevaba en su planilla, donde anotaba proveedor, tipo de producto, kg y precio unitario de cada compra.</p>
+    </div>
+
+    <h3>🔢 Número de Orden de Compra (OC)</h3>
+    <p>Cada compra recibe automáticamente un número correlativo: <span class="hi">OC-001</span>, <span class="hi">OC-002</span>, <span class="hi">OC-003</span>... Este número no se puede editar y nunca se repite.</p>
+
+    <h3>📦 Vista de tarjetas expandibles</h3>
+    <p>Las compras se muestran como tarjetas. Cada tarjeta muestra en el encabezado:</p>
+    <ul>
+      <li>Número de OC (ej: OC-005)</li>
+      <li>Nombre del proveedor (ej: Secadero Don Ramón)</li>
+      <li>Fecha de la compra</li>
+      <li>Monto total de la orden</li>
+    </ul>
+    <p>Al hacer click en la tarjeta se <strong>expande</strong> y muestra el detalle completo: cada ítem con concepto, cantidad, precio unitario y subtotal. Al final aparece el total de la OC y el botón para eliminarla.</p>
+
+    <h3>📊 KPIs de Compras</h3>
+    <ul>
+      <li><strong>Total kg comprados:</strong> suma de kg de todos los ítems (excluye estampillas)</li>
+      <li><strong>Total invertido:</strong> monto total gastado en todas las compras</li>
+      <li><strong>Órdenes de Compra:</strong> cantidad total de OC registradas</li>
+    </ul>
+
+    <h3>📝 Cómo registrar una compra</h3>
     <ol class="steps">
-      <li><span class="step-num">1</span><span class="step-txt">Clic en <strong>"+ Nueva Compra"</strong>.</span></li>
-      <li><span class="step-num">2</span><span class="step-txt">Completá: <strong>producto</strong>, <strong>cantidad</strong>, <strong>precio unitario</strong>, <strong>proveedor</strong> y <strong>fecha</strong>.</span></li>
-      <li><span class="step-num">3</span><span class="step-txt">Guardá. El total se calcula automáticamente.</span></li>
+      <li><span>Ir a <strong>Compras</strong> → click en <strong>+ Nueva Compra</strong></span></li>
+      <li><span>Completar la <strong>fecha</strong> y el <strong>proveedor</strong></span></li>
+      <li><span>Agregar los ítems con <strong>+ Ítem</strong>: elegir concepto, cantidad y precio unitario</span></li>
+      <li><span>El total se calcula automáticamente</span></li>
+      <li><span>Guardar. El sistema asigna el número de OC automáticamente.</span></li>
     </ol>
+
+    <div class="box box-tip">
+      <p><strong>Los conceptos disponibles son:</strong> Canchada, Fina, Extra Fina, Palito Molido, Estampillas, Azúcar Mascabo y Otro. Si necesitás agregar más, avisá y se puede ampliar la lista.</p>
+    </div>
   </div>
 
-  <hr class="sec-divider">
-
-  <!-- 9. DESPACHOS -->
-  <div class="sec" id="sec9">
+  <!-- ══════ 6. DESPACHOS ══════ -->
+  <div class="sec" id="s6">
     <div class="sec-header">
-      <div class="sec-num">9</div>
-      <span class="sec-emoji">🚚</span>
+      <div class="sec-num">6</div>
+      <div class="sec-emoji">🚚</div>
       <div class="sec-title">Despachos</div>
     </div>
-    <p>Registro y seguimiento de todos los envíos realizados.</p>
-    <h3>Registrar un despacho</h3>
-    <ol class="steps">
-      <li><span class="step-num">1</span><span class="step-txt">Clic en <strong>"+ Nuevo Despacho"</strong>.</span></li>
-      <li><span class="step-num">2</span><span class="step-txt">Seleccioná el <strong>pedido vinculado</strong> desde el desplegable.</span></li>
-      <li><span class="step-num">3</span><span class="step-txt">Completá: <strong>transporte</strong>, <strong>fecha de envío</strong> y <strong>número de seguimiento</strong> (opcional).</span></li>
-      <li><span class="step-num">4</span><span class="step-txt">Guardá. El pedido vinculado cambia a estado <span class="badge badge-enviado">🚚 Despachado</span>.</span></li>
-    </ol>
+
+    <p>Registra los envíos físicos de mercadería a los clientes. Cada despacho se vincula a un pedido y guarda los datos del envío: kg enviados, precio por kg, tipo de servicio y costo total.</p>
+
+    <h3>📋 Campos de un despacho</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Fecha</strong></td><td>Cuándo se despachó</td></tr>
+          <tr><td><strong>Pedido vinculado</strong></td><td>A qué pedido corresponde este envío</td></tr>
+          <tr><td><strong>Cliente</strong></td><td>Se carga automáticamente del pedido</td></tr>
+          <tr><td><strong>Kg despachados</strong></td><td>Cantidad enviada</td></tr>
+          <tr><td><strong>Precio por kg</strong></td><td>Costo del servicio de transporte por kg</td></tr>
+          <tr><td><strong>Tipo de servicio</strong></td><td>Embalaje + flete, solo flete, retira en persona, etc.</td></tr>
+          <tr><td><strong>Subtotal</strong></td><td>Kg × precio (calculado automáticamente)</td></tr>
+          <tr><td><strong>Observaciones</strong></td><td>Notas del envío</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>📊 KPIs de Despachos</h3>
+    <ul>
+      <li><strong>Total Kg Despachados:</strong> suma de todos los kg enviados históricamente</li>
+      <li><strong>Costo Total Despacho:</strong> suma de todos los costos de envío</li>
+      <li><strong>Cantidad de despachos</strong> registrados</li>
+    </ul>
+
+    <div class="box box-warn">
+      <p><strong>Importante:</strong> El despacho y el pedido son registros separados. Despachar un pedido no cambia su estado automáticamente — hay que actualizar el estado manualmente a "Despachado".</p>
+    </div>
   </div>
 
-  <hr class="sec-divider">
-
-  <!-- 10. PRESUPUESTOS -->
-  <div class="sec" id="sec10">
+  <!-- ══════ 7. PRESUPUESTOS ══════ -->
+  <div class="sec" id="s7">
     <div class="sec-header">
-      <div class="sec-num">10</div>
-      <span class="sec-emoji">📄</span>
+      <div class="sec-num">7</div>
+      <div class="sec-emoji">📄</div>
       <div class="sec-title">Presupuestos</div>
     </div>
-    <p>Generación de cotizaciones para clientes, con posibilidad de convertirlas en pedidos reales.</p>
-    <h3>Crear un presupuesto</h3>
-    <ol class="steps">
-      <li><span class="step-num">1</span><span class="step-txt">Clic en <strong>"+ Nuevo Presupuesto"</strong>.</span></li>
-      <li><span class="step-num">2</span><span class="step-txt">Seleccioná el cliente o ingresá un nombre manual.</span></li>
-      <li><span class="step-num">3</span><span class="step-txt">Agregá los productos con cantidad y precio.</span></li>
-      <li><span class="step-num">4</span><span class="step-txt">Guardá o imprimí directamente.</span></li>
-    </ol>
-    <h3>Convertir a pedido</h3>
-    <p>Desde el detalle de un presupuesto, clic en <strong>"Convertir a Pedido"</strong> para crear el pedido automáticamente con todos los datos del presupuesto.</p>
+
+    <p>Generador de presupuestos en tiempo real. Permite armar cotizaciones por cliente con sus productos y cantidades, aplicar la lista de precios correspondiente y generar un mensaje listo para WhatsApp.</p>
+
+    <h3>💰 Listas de precio</h3>
+    <p>Hay 4 listas de precio predefinidas:</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Lista</th><th>Descuento</th><th>Para quién</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Lista 1</strong></td><td>Sin descuento — precio base</td><td>Clientes estándar</td></tr>
+          <tr><td><strong>Lista 2</strong></td><td>−2% (compras +40 kg)</td><td>Clientes frecuentes medianos</td></tr>
+          <tr><td><strong>Lista 3</strong></td><td>−4% (compras +100 kg)</td><td>Clientes mayoristas</td></tr>
+          <tr><td><strong>Lista 4</strong></td><td>−6% especial</td><td>Clientes especiales</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Si un cliente tiene lista asignada en su ficha, al seleccionarlo en el generador de presupuestos se aplica automáticamente su lista.</p>
+
+    <h3>✏️ Edición de precio (solo Administrador)</h3>
+    <p>El botón <span class="hi">🔒 Editar precios</span> está disponible únicamente para el rol <strong>Administrador</strong>. Al activarlo, cada precio por kg se vuelve editable para ese presupuesto en particular. Los precios modificados se muestran en naranja con el símbolo ✎. El mensaje de WhatsApp y el total reflejan los precios personalizados.</p>
+
+    <div class="box box-tip">
+      <p><strong>Los precios personalizados son temporales:</strong> solo duran mientras estás en la pantalla. Al salir o cambiar de sección, los precios vuelven a los de la lista. Esto evita modificaciones accidentales permanentes.</p>
+    </div>
+
+    <h3>📤 Usar el presupuesto</h3>
+    <ul>
+      <li><strong>Copiar para WhatsApp:</strong> genera el mensaje completo y lo copia al portapapeles</li>
+      <li><strong>Imprimir:</strong> abre el diálogo de impresión del navegador</li>
+      <li><strong>Guardar como Pedido:</strong> crea directamente un pedido nuevo con todos los datos del presupuesto</li>
+    </ul>
   </div>
 
-  <hr class="sec-divider">
-
-  <!-- 11. CONFIGURACIÓN -->
-  <div class="sec" id="sec11">
+  <!-- ══════ 8. COMUNICACIÓN ══════ -->
+  <div class="sec" id="s8">
     <div class="sec-header">
-      <div class="sec-num">11</div>
-      <span class="sec-emoji">⚙️</span>
+      <div class="sec-num">8</div>
+      <div class="sec-emoji">💬</div>
+      <div class="sec-title">Comunicación — Chat</div>
+    </div>
+
+    <p>Sistema de mensajería interna integrado al sistema. Cada pedido tiene su propia conversación donde el equipo interno y el cliente pueden comunicarse sin salir de la aplicación.</p>
+
+    <div class="box box-info">
+      <p><strong>¿Por qué se agregó esto?</strong> Antes toda la comunicación de pedidos pasaba por WhatsApp personal, lo que hacía difícil hacer seguimiento. Este chat centraliza los mensajes por pedido.</p>
+    </div>
+
+    <h3>💬 Cómo funciona</h3>
+    <ul>
+      <li>A la izquierda hay una <strong>lista de conversaciones</strong> (una por pedido activo), con badge de mensajes no leídos</li>
+      <li>Haciendo click en una conversación se abre el chat de ese pedido</li>
+      <li>Se puede buscar por número de pedido o nombre del cliente</li>
+    </ul>
+
+    <h3>🔄 Cambiar estado desde el chat</h3>
+    <p>Los usuarios con rol distinto a "Cliente" (admin, Darío, Lucía) ven un <strong>desplegable de estado</strong> en la cabecera del chat. Al cambiar el estado desde ahí:</p>
+    <ul>
+      <li>El pedido se actualiza inmediatamente</li>
+      <li>Se registra un <strong>mensaje automático de sistema</strong> en la conversación indicando el cambio (ej: "Estado cambiado de ⏳ pendiente → ✅ confirmado")</li>
+      <li>El cliente puede verlo en su vista</li>
+    </ul>
+
+    <h3>👁️ Visibilidad según rol</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Rol</th><th>Qué ve en el chat</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Admin / Lucía</strong></td><td>Todas las conversaciones de todos los pedidos</td></tr>
+          <tr><td><strong>Darío</strong></td><td>Solo accede a Comunicación y su sección de molienda</td></tr>
+          <tr><td><strong>Cliente</strong></td><td>Solo ve la conversación de sus propios pedidos</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════ 9. CONFIGURACIÓN ══════ -->
+  <div class="sec" id="s9">
+    <div class="sec-header">
+      <div class="sec-num">9</div>
+      <div class="sec-emoji">⚙️</div>
       <div class="sec-title">Configuración</div>
     </div>
-    <p>Solo accesible para el <strong>Administrador</strong>. Permite gestionar usuarios y personalizar el sistema.</p>
-    <h3>Estados de Pedidos</h3>
-    <p>Podés crear, editar, eliminar y reordenar los estados que aparecen en el sistema:</p>
+
+    <p>Panel de administración del sistema. Solo accesible para el rol <strong>Administrador</strong>.</p>
+
+    <h3>🔄 Estados de pedido configurables</h3>
+    <p>Los estados del flujo de pedidos (Pendiente, Confirmado, Despachado, Cobrado) no son fijos: se pueden personalizar completamente desde aquí.</p>
     <ul>
-      <li><strong>+ Nuevo estado</strong> — Definís emoji, nombre y color de la etiqueta</li>
-      <li><strong>✏️ Editar</strong> — Modificar nombre, emoji o color de un estado existente</li>
-      <li><strong>🗑️ Eliminar</strong> — Eliminar estados que ya no se usan</li>
-      <li><strong>↑ ↓ Reordenar</strong> — Cambiar el orden en que aparecen en el selector</li>
+      <li><strong>Agregar</strong> nuevos estados con nombre, emoji y color</li>
+      <li><strong>Editar</strong> los estados existentes</li>
+      <li><strong>Eliminar</strong> estados que no se usen</li>
+      <li><strong>Reordenar</strong> el flujo con las flechas ↑ ↓</li>
     </ul>
-    <div class="info-box">
-      <strong>📌 Colores disponibles</strong>
-      Amarillo, Celeste, Azul, Verde, Rojo y Gris. Los colores se aplican automáticamente a todas las etiquetas del sistema.
+    <p>Los cambios aplican en todo el sistema: lista de pedidos, chat, filtros y dashboard.</p>
+
+    <h3>👥 Gestión de usuarios</h3>
+    <p>Podés ver todos los usuarios del sistema, agregar nuevos y modificar sus datos (nombre, contraseña, rol, cliente vinculado en caso de rol Cliente).</p>
+
+    <h3>📁 Datos de prueba y backup</h3>
+    <ul>
+      <li><strong>Cargar datos de prueba:</strong> carga un set de datos demo (solo si la base está vacía). Útil para probar el sistema.</li>
+      <li><strong>Exportar datos:</strong> descarga un archivo JSON con todos los datos del sistema. Ideal como respaldo.</li>
+      <li><strong>Importar datos:</strong> carga un backup previamente exportado.</li>
+    </ul>
+
+    <div class="box box-warn">
+      <p><strong>Atención:</strong> Los datos se guardan en el navegador del dispositivo (localStorage). Si se limpia el caché del navegador, los datos se pierden. Hacer backup regularmente con la función "Exportar datos".</p>
     </div>
-    <h3>Gestión de Usuarios</h3>
-    <table>
-      <thead><tr><th>Acción</th><th>Descripción</th></tr></thead>
-      <tbody>
-        <tr><td><strong>+ Nuevo Usuario</strong></td><td>Crear un nuevo acceso con ID, nombre, contraseña y rol</td></tr>
-        <tr><td><strong>✏️ Editar</strong></td><td>Cambiar nombre, contraseña o rol de un usuario existente</td></tr>
-        <tr><td><strong>🗑️ Eliminar</strong></td><td>Dar de baja un usuario (no aplica al admin principal)</td></tr>
-      </tbody>
-    </table>
   </div>
 
-  <hr class="sec-divider">
+  <!-- ══════ 10. USUARIOS ══════ -->
+  <div class="sec" id="s10">
+    <div class="sec-header">
+      <div class="sec-num">10</div>
+      <div class="sec-emoji">🔐</div>
+      <div class="sec-title">Usuarios y permisos</div>
+    </div>
 
-  <!-- 12. PERFIL E INSTALACIÓN -->
-  <div class="sec" id="sec12">
+    <p>El sistema tiene 4 roles con diferentes niveles de acceso. Cada usuario entra con su usuario y contraseña y solo ve lo que le corresponde.</p>
+
+    <div class="roles-grid">
+      <div class="role-card">
+        <div class="role-card-name"><span class="role-badge rb-admin">Admin</span> Administrador</div>
+        <ul>
+          <li>Acceso completo a todo</li>
+          <li>Único que puede editar precios en presupuestos</li>
+          <li>Gestión de usuarios</li>
+          <li>Configuración del sistema</li>
+          <li>Exportar / importar datos</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="role-card-name"><span class="role-badge rb-dario">Darío</span> Darío</div>
+        <ul>
+          <li>Comunicación (chat)</li>
+          <li>Cuenta Darío (moliendas)</li>
+          <li>Solo ve sus secciones</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="role-card-name"><span class="role-badge rb-lucia">Lucía</span> Lucía</div>
+        <ul>
+          <li>Dashboard</li>
+          <li>Pedidos</li>
+          <li>Clientes</li>
+          <li>Comunicación</li>
+          <li>Presupuestos</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="role-card-name"><span class="role-badge rb-cli">Cliente</span> Cliente</div>
+        <ul>
+          <li>Solo Comunicación</li>
+          <li>Ve sus propios pedidos</li>
+          <li>No accede a datos internos</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="box box-tip">
+      <p><strong>Usuarios cliente:</strong> Cada cliente puede tener su propio acceso. Al crear el usuario se vincula con el cliente en la base de datos, para que en el chat solo vea sus conversaciones.</p>
+    </div>
+  </div>
+
+  <!-- ══════ 11. PWA ══════ -->
+  <div class="sec" id="s11">
+    <div class="sec-header">
+      <div class="sec-num">11</div>
+      <div class="sec-emoji">📱</div>
+      <div class="sec-title">Instalar como app (PWA)</div>
+    </div>
+
+    <p>El sistema es una <strong>PWA (Progressive Web App)</strong>: puede instalarse en el celular o computadora como si fuera una app nativa, sin pasar por ninguna tienda de aplicaciones.</p>
+
+    <h3>📲 Cómo instalar en Android</h3>
+    <ol class="steps">
+      <li><span>Abrir el sistema en <strong>Chrome</strong> desde el celular</span></li>
+      <li><span>Tocar los tres puntos ⋮ en la esquina superior derecha</span></li>
+      <li><span>Seleccionar <strong>"Agregar a pantalla de inicio"</strong> o <strong>"Instalar app"</strong></span></li>
+      <li><span>Confirmar. El ícono aparece en el escritorio del celular.</span></li>
+    </ol>
+
+    <h3>🍎 Cómo instalar en iPhone (Safari)</h3>
+    <ol class="steps">
+      <li><span>Abrir el sistema en <strong>Safari</strong></span></li>
+      <li><span>Tocar el botón de compartir (cuadrado con flecha) en la barra de abajo</span></li>
+      <li><span>Seleccionar <strong>"Añadir a pantalla de inicio"</strong></span></li>
+      <li><span>Confirmar. La app queda instalada.</span></li>
+    </ol>
+
+    <h3>💻 Cómo instalar en computadora (Chrome)</h3>
+    <ol class="steps">
+      <li><span>En la barra de direcciones, buscar el ícono de instalación ⊕ a la derecha</span></li>
+      <li><span>Hacer click y confirmar la instalación</span></li>
+      <li><span>El sistema se abre como ventana independiente sin barra del navegador</span></li>
+    </ol>
+
+    <div class="box box-ok">
+      <p><strong>Ventajas de instalarlo como app:</strong> carga más rápido, ocupa toda la pantalla, tiene su propio ícono, y funciona incluso sin conexión a internet (con los últimos datos guardados).</p>
+    </div>
+  </div>
+
+  <!-- ══════ 12. DATOS ══════ -->
+  <div class="sec" id="s12">
     <div class="sec-header">
       <div class="sec-num">12</div>
-      <span class="sec-emoji">📲</span>
-      <div class="sec-title">Mi Perfil e Instalación como App</div>
+      <div class="sec-emoji">🔧</div>
+      <div class="sec-title">Datos y seguridad</div>
     </div>
-    <h3>Mi Perfil</h3>
-    <p>Accedé desde el ícono de usuario en el encabezado. Permite:</p>
+
+    <h3>💾 ¿Dónde se guardan los datos?</h3>
+    <p>Todos los datos (pedidos, clientes, compras, etc.) se guardan en el <strong>localStorage del navegador</strong> del dispositivo que se usa. Esto significa:</p>
     <ul>
-      <li>Cambiar tu <strong>nombre de visualización</strong></li>
-      <li>Cambiar tu <strong>contraseña</strong></li>
-      <li>Ver tus <strong>últimos pedidos</strong> (para usuarios cliente)</li>
-      <li>Instalar la aplicación</li>
+      <li>No requiere servidor ni base de datos externa</li>
+      <li>Los datos están disponibles incluso sin internet</li>
+      <li>Si se borra el caché del navegador, los datos desaparecen</li>
+      <li>Si se usa en dos dispositivos distintos, los datos no se sincronizan automáticamente</li>
     </ul>
-    <h3>Instalar como aplicación (PWA)</h3>
-    <p>El sistema puede instalarse como app nativa en cualquier dispositivo, funcionando sin necesidad del navegador:</p>
-    <table>
-      <thead><tr><th>Dispositivo</th><th>Cómo instalar</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Android (Chrome)</strong></td><td>Tocá el banner <strong>"⬇ Instalar"</strong> que aparece automáticamente, o usá el menú ⋮ → "Instalar app"</td></tr>
-        <tr><td><strong>iPhone / iPad</strong></td><td>Tocá <strong>Compartir</strong> (□↑) en Safari → <strong>"Agregar a pantalla de inicio"</strong></td></tr>
-        <tr><td><strong>PC / Mac (Chrome o Edge)</strong></td><td>Clic en el ícono ⊕ en la barra de dirección, o menú ⋮ → <strong>"Instalar Sabores de Misiones"</strong></td></tr>
-      </tbody>
-    </table>
-    <div class="info-box tip">
-      <strong>✅ Ventajas de instalar la app</strong>
-      Funciona sin internet (offline), carga más rápido, no necesitás abrir el navegador y tiene ícono propio en tu pantalla de inicio.
+
+    <div class="box box-warn">
+      <p><strong>Recomendación:</strong> Usar siempre el <strong>mismo dispositivo y navegador</strong> para operar el sistema. Hacer <strong>backup semanal</strong> desde Configuración → Exportar datos.</p>
     </div>
-    <h3>Búsqueda global</h3>
-    <p>Desde cualquier sección, podés buscar pedidos o clientes usando:</p>
+
+    <h3>☁️ ¿Dónde está alojado el sistema?</h3>
+    <p>El código del sistema está publicado en <strong>GitHub Pages</strong>: <span class="hi">https://jv-system.github.io/Sabores-de-misiones/</span></p>
+    <p>Las actualizaciones del sistema (nuevas funcionalidades, correcciones) se publican automáticamente desde el repositorio. Al recargar la aplicación, el Service Worker detecta la nueva versión y actualiza sin intervención del usuario.</p>
+
+    <h3>🔒 Seguridad de acceso</h3>
     <ul>
-      <li>El ícono 🔍 en el encabezado</li>
-      <li>El atajo de teclado <kbd>Ctrl</kbd> + <kbd>K</kbd> (en PC)</li>
+      <li>El acceso requiere usuario y contraseña</li>
+      <li>La sesión dura mientras el navegador esté abierto (sessionStorage)</li>
+      <li>Al cerrar el navegador, se cierra la sesión automáticamente</li>
+      <li>Los usuarios y contraseñas son configurables desde el panel de Configuración (solo Admin)</li>
     </ul>
+
+    <h3>🔄 Actualizaciones automáticas</h3>
+    <p>El sistema usa un <strong>Service Worker</strong> que controla la versión de la aplicación. Cuando se publica una actualización, al abrir el sistema en el navegador este detecta la nueva versión y recarga automáticamente para mostrar los cambios.</p>
+
+    <div class="box box-ok">
+      <p><strong>En resumen:</strong> El sistema no requiere mantenimiento de tu parte. Las actualizaciones se aplican solas. Lo único que hay que hacer es hacer backup periódico de los datos desde Configuración.</p>
+    </div>
   </div>
 
-</div><!-- /doc-body -->
+</div><!-- fin doc-body -->
 
-<!-- ══════ FOOTER ══════ -->
+<!-- ══════════════ FOOTER ══════════════ -->
 <footer class="doc-footer">
   <div class="footer-left">
-    <div class="footer-jvs-box">
-      <img src="jvs-icon.png" alt="JVS">
-    </div>
-    <div>
-      <div class="footer-copy"><strong>JV Systems</strong> — Software &amp; Gestión</div>
-      <div class="footer-copy">Desarrollado por Juan Villanueva · Todos los derechos reservados</div>
+    <img src="jvs-logo.png" class="footer-logo" alt="JVS" onerror="this.style.display='none'">
+    <div class="footer-text">
+      <strong>JVS — Juan Villanueva Sistemas</strong><br>
+      Desarrollo de software a medida · Soluciones digitales para tu negocio<br>
+      Sistema desarrollado especialmente para Sabores de Misiones
     </div>
   </div>
   <div class="footer-right">
-    <div class="footer-site">jv-system.github.io/Sabores-de-misiones</div>
-    <div class="footer-date">Manual versión 1.0 · Mayo 2026</div>
+    Manual v2.0<br>
+    Mayo 2026<br>
+    Todos los derechos reservados
   </div>
 </footer>
 
