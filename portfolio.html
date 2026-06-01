@@ -83,6 +83,46 @@
     }
     .nav-cta:hover { opacity: .88; }
 
+    /* ── BARRA INFERIOR MOBILE ── */
+    .nav-bottom {
+      display: none;
+      position: fixed; top: auto; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(7,16,29,0.96);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255,140,0,0.15);
+      padding: .5rem 0 calc(.5rem + env(safe-area-inset-bottom));
+    }
+    .nav-bottom-inner {
+      display: flex; justify-content: space-around; align-items: center;
+    }
+    .nav-bottom-item {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      color: rgba(255,255,255,0.45); text-decoration: none;
+      font-size: .62rem; font-weight: 700; letter-spacing: .04em;
+      text-transform: uppercase; padding: .3rem .5rem;
+      transition: color .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-bottom-item .nb-icon { font-size: 1.25rem; line-height: 1; }
+    .nav-bottom-item:hover,
+    .nav-bottom-item.active { color: var(--accent); }
+    .nav-bottom-cta {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #07101d !important; border-radius: 10px;
+      padding: .4rem .85rem !important;
+      font-weight: 900 !important;
+      box-shadow: 0 4px 14px rgba(255,140,0,0.35);
+    }
+    .nav-bottom-cta .nb-icon { font-size: 1.1rem; }
+
+    @media (max-width: 768px) {
+      .nav-bottom { display: block; }
+      /* Espacio para que el contenido no quede tapado por la barra */
+      body { padding-bottom: 72px; }
+      /* Ocultar el WhatsApp float en mobile (está en la barra) */
+      .wa-float { display: none; }
+    }
+
     /* Hamburger */
     .nav-burger {
       display: none; flex-direction: column; gap: 5px;
@@ -897,15 +937,30 @@
 
     /* ── MOBILE EXTRA ── */
     @media (max-width: 768px) {
+      /* Tipografía base mobile */
+      html { font-size: 15px; }
+
       /* Hero */
       .hero { padding: 5rem 1.25rem 3rem; }
+      .hero h1 { font-size: clamp(2rem, 8vw, 3rem); }
+      .hero p  { font-size: .95rem; }
       .logo-atom { width: 110px; height: 110px; }
       .hero-logo { width: 110px; height: 110px; border-radius: 20px; }
       .o1 { width: 160px; height: 55px; margin-top: -27px; margin-left: -80px; }
       .o2 { width: 175px; height: 62px; margin-top: -31px; margin-left: -87px; }
       .o3 { width: 148px; height: 48px; margin-top: -24px; margin-left: -74px; }
       .hero-btns { flex-direction: column; align-items: center; }
-      .btn-primary, .btn-outline { width: 100%; max-width: 300px; text-align: center; }
+      .btn-primary, .btn-outline { width: 100%; max-width: 300px; text-align: center; font-size: 1rem; }
+
+      /* Headings de sección */
+      .section-header h2 { font-size: clamp(1.5rem, 6vw, 2.2rem); }
+      .section-header p  { font-size: .88rem; }
+
+      /* Sobre mí */
+      .sobre-text h2 { font-size: clamp(1.4rem, 5.5vw, 2rem); }
+      .sobre-text p  { font-size: .9rem; }
+      .sobre-row-text strong { font-size: .88rem; }
+      .sobre-row-text span   { font-size: .75rem; }
 
       /* Stats */
       .stats { gap: 1.5rem; padding: 2rem 1.25rem; }
@@ -1587,6 +1642,17 @@
 
 <!-- WhatsApp flotante -->
 <a href="https://wa.me/543434728484?text=Hola%20Juan,%20vi%20tu%20portfolio%20y%20me%20interesa%20un%20sistema%20para%20mi%20negocio." target="_blank" class="wa-float" title="Escribir por WhatsApp">💬</a>
+
+<!-- BARRA INFERIOR MÓVIL -->
+<nav class="nav-bottom" aria-label="Navegación móvil">
+  <div class="nav-bottom-inner">
+    <a href="#sobre"    class="nav-bottom-item"><span class="nb-icon">👤</span>Sobre mí</a>
+    <a href="#sistemas" class="nav-bottom-item"><span class="nb-icon">💻</span>Sistemas</a>
+    <a href="#bi"       class="nav-bottom-item"><span class="nb-icon">📊</span>Dashboards</a>
+    <a href="#proceso"  class="nav-bottom-item"><span class="nb-icon">⚙️</span>Proceso</a>
+    <a href="https://wa.me/543434728484?text=Hola%20Juan,%20vi%20tu%20portfolio%20y%20me%20interesa%20un%20sistema%20para%20mi%20negocio." target="_blank" class="nav-bottom-item nav-bottom-cta"><span class="nb-icon">💬</span>Contacto</a>
+  </div>
+</nav>
 
 <script>
 // ── FONDO: CODE RAIN + DATA NODES ──
