@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>Dashboard Power BI — JV Systems</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f0;width:1440px;overflow-x:hidden}
+
+/* ── TOP BAR ── */
+.topbar{background:#0c1020;padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid rgba(245,158,11,.2);position:sticky;top:0;z-index:100}
+.tb-logo{font-size:.9rem;font-weight:900;letter-spacing:.06em;color:#fff}.tb-logo span{color:#f59e0b}
+.tb-tabs{display:flex;gap:.3rem;margin-left:1.5rem}
+.tb-tab{font-size:.75rem;font-weight:600;padding:.38rem 1.1rem;border-radius:7px;border:1px solid transparent;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.45)}
+.tb-tab:hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.05)}
+.tb-tab.active{background:rgba(245,158,11,.18);border-color:rgba(245,158,11,.4);color:#f59e0b;font-weight:700}
+.tb-right{display:flex;align-items:center;gap:.75rem}
+.tb-sel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(255,255,255,.65);font-size:.72rem;padding:.3rem .8rem;outline:none;cursor:pointer}
+.tb-dot{width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 6px #34d399;animation:pulse 2s infinite}
+.tb-live{font-size:.65rem;color:rgba(255,255,255,.35)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── VIEWS ── */
+.view{display:none;animation:fadeIn .35s ease}.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── GRID ── */
+.grid{display:grid;gap:.7rem;padding:.8rem 1rem}
+.g-full{grid-column:1/-1}
+
+/* ── KPI ROW ── */
+.kpi-row{display:grid;gap:.65rem}
+.kpi{background:#1a2035;border-radius:10px;padding:.9rem 1.1rem;border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.kpi::after{content:'';position:absolute;top:0;right:0;width:3px;height:100%;border-radius:0 10px 10px 0}
+.kpi-lbl{font-size:.62rem;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;font-weight:600}
+.kpi-val{font-size:1.6rem;font-weight:900;line-height:1;letter-spacing:-.02em}
+.kpi-sub{font-size:.63rem;margin-top:.3rem;display:flex;align-items:center;gap:.35rem}
+.up{color:#34d399}.down{color:#f87171}.neu{color:rgba(255,255,255,.3)}
+.kpi-mini{height:28px;margin-top:.5rem;display:flex;align-items:flex-end;gap:2px}
+.km-bar{flex:1;border-radius:2px 2px 0 0;transition:height .6s ease;min-height:3px}
+
+/* ── PANEL ── */
+.panel{background:#1a2035;border-radius:12px;border:1px solid rgba(255,255,255,.06);overflow:hidden}
+.ph{padding:.7rem 1rem .55rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05)}
+.pt{font-size:.78rem;font-weight:700}.ps{font-size:.62rem;color:rgba(255,255,255,.3);margin-top:.1rem}
+.pb{padding:.8rem 1rem}
+.pills{display:flex;gap:.3rem}
+.pill{font-size:.6rem;padding:.18rem .55rem;border-radius:99px;cursor:pointer;border:1px solid transparent;transition:all .15s}
+.pill.on{background:rgba(245,158,11,.18);border-color:rgba(245,158,11,.35);color:#f59e0b;font-weight:700}
+.pill.off{background:rgba(255,255,255,.05);color:rgba(255,255,255,.35)}
+
+/* ── BAR CHART ── */
+.bar-chart{display:flex;align-items:flex-end;gap:5px;height:160px;padding:0 .25rem}
+.bc-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.bc-bar{width:100%;border-radius:4px 4px 0 0;transition:height .8s cubic-bezier(.4,0,.2,1);min-height:3px;position:relative;cursor:pointer}
+.bc-bar:hover{filter:brightness(1.2)}
+.bc-bar .tip{display:none;position:absolute;top:-28px;left:50%;transform:translateX(-50%);background:#0c1020;border:1px solid rgba(245,158,11,.4);border-radius:5px;padding:.15rem .4rem;font-size:.6rem;white-space:nowrap;color:#f59e0b;pointer-events:none}
+.bc-bar:hover .tip{display:block}
+.bc-lbl{font-size:.58rem;color:rgba(255,255,255,.3);margin-top:3px;text-align:center}
+
+/* ── LINE CHART ── */
+.line-wrap{position:relative;height:160px;overflow:hidden}
+.line-wrap svg{width:100%;height:100%}
+
+/* ── DONUT ── */
+.donut-wrap{display:flex;align-items:center;gap:1.25rem}
+.donut-svg{flex-shrink:0}
+.donut-legs{display:flex;flex-direction:column;gap:.45rem;flex:1}
+.dl{display:flex;align-items:center;gap:.5rem;font-size:.68rem}
+.dl-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.dl-val{margin-left:auto;font-weight:700}
+.dl-bar{height:3px;border-radius:2px;margin-top:2px;background:rgba(255,255,255,.08)}
+.dl-fill{height:100%;border-radius:2px;transition:width 1s ease}
+
+/* ── GAUGE ── */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:.4rem}
+.gauge-svg{width:140px;height:80px}
+.gauge-val{font-size:1.4rem;font-weight:900;margin-top:-.5rem}
+.gauge-lbl{font-size:.62rem;color:rgba(255,255,255,.35)}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:.6rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;padding:.35rem .6rem;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-weight:600}
+.tbl td{font-size:.7rem;padding:.42rem .6rem;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
+.tbl tr:hover td{background:rgba(255,255,255,.03)}
+.tag{display:inline-block;padding:.1rem .45rem;border-radius:4px;font-size:.58rem;font-weight:700}
+.ta{background:rgba(52,211,153,.15);color:#34d399}
+.tb2{background:rgba(245,158,11,.15);color:#f59e0b}
+.tc{background:rgba(248,113,113,.15);color:#f87171}
+.td2{background:rgba(96,165,250,.15);color:#60a5fa}
+.avb{height:4px;border-radius:2px;background:rgba(255,255,255,.07);margin-top:2px}
+.avb-f{height:100%;border-radius:2px;transition:width 1.2s ease}
+
+/* ── SPARKLINE ── */
+.spark{display:flex;align-items:flex-end;gap:1.5px;height:22px}
+.sk{border-radius:1px;flex:1;transition:height .6s ease}
+
+/* ── MAP ── */
+.map-wrap{position:relative;height:340px;background:#0f1825;overflow:hidden}
+.map-legend{position:absolute;bottom:.75rem;left:.75rem;background:rgba(12,16,32,.88);border-radius:8px;padding:.5rem .75rem;border:1px solid rgba(255,255,255,.07)}
+.ml-title{font-size:.6rem;font-weight:700;color:#f59e0b;margin-bottom:.3rem}
+.ml-row{display:flex;align-items:center;gap:.4rem;font-size:.6rem;color:rgba(255,255,255,.5);margin-bottom:.2rem}
+.ml-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── HEAT ── */
+.heat-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.heat-cell{aspect-ratio:1;border-radius:3px;cursor:pointer;transition:transform .15s}
+.heat-cell:hover{transform:scale(1.3)}
+
+/* ── PROD CARDS ── */
+.prod-grid{display:grid;gap:.5rem}
+.prod-card{background:rgba(255,255,255,.04);border-radius:9px;padding:.65rem .75rem;border:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:.75rem;transition:all .2s;cursor:pointer}
+.prod-card:hover{border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.05)}
+.prod-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.prod-info{flex:1;min-width:0}
+.prod-name{font-size:.72rem;font-weight:700}
+.prod-bar-wrap{height:4px;background:rgba(255,255,255,.07);border-radius:2px;margin-top:.3rem}
+.prod-bar-f{height:100%;border-radius:2px;transition:width 1s ease}
+.prod-val{font-size:.9rem;font-weight:800;flex-shrink:0}
+.prod-pct{font-size:.58rem;margin-top:.1rem;text-align:right}
+
+/* ── FOOTER ── */
+.dash-footer{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:.4rem .5rem;font-size:.6rem;color:rgba(255,255,255,.2);border-top:1px solid rgba(255,255,255,.05)}
+.dash-footer span{color:rgba(245,158,11,.5)}
+
+/* ── ANIMATED NUMBER ── */
+.anim-num{display:inline-block}
+
+/* ── AVATARS ── */
+.avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;flex-shrink:0;border:2px solid rgba(255,255,255,.12)}
+.avatar-sm{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;flex-shrink:0}
+
+/* ── VENDEDOR CARDS ── */
+.vend-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+.vend-card{background:rgba(255,255,255,.04);border-radius:10px;padding:.75rem;border:1px solid rgba(255,255,255,.06);transition:all .2s;cursor:pointer;position:relative;overflow:hidden}
+.vend-card:hover{border-color:rgba(245,158,11,.3);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.vend-card.top{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.06)}
+.vend-badge{position:absolute;top:.5rem;right:.5rem;font-size:.6rem;padding:.1rem .4rem;border-radius:99px;font-weight:700}
+.vend-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.65rem}
+.vend-name{font-size:.78rem;font-weight:700}
+.vend-role{font-size:.62rem;color:rgba(255,255,255,.4)}
+.vend-stats{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin-bottom:.5rem}
+.vs-item{background:rgba(255,255,255,.04);border-radius:6px;padding:.3rem .4rem}
+.vs-lbl{font-size:.55rem;color:rgba(255,255,255,.35);margin-bottom:.1rem}
+.vs-val{font-size:.82rem;font-weight:800}
+.vend-progress{height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:.4rem}
+.vend-prog-fill{height:100%;border-radius:2px;transition:width 1s ease}
+
+/* ── PREMIOS ── */
+.premios-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.premio-card{background:rgba(255,255,255,.04);border-radius:10px;padding:.65rem .75rem;border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:.65rem}
+.premio-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.premio-name{font-size:.75rem;font-weight:800;margin-bottom:.15rem}
+.premio-desc{font-size:.62rem;color:rgba(255,255,255,.4)}
+.premio-winner{font-size:.68rem;font-weight:700;margin-top:.2rem}
+
+/* ── FLOTA ── */
+.flota-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem}
+.vehiculo-card{background:rgba(255,255,255,.04);border-radius:10px;border:1px solid rgba(255,255,255,.07);overflow:hidden;transition:all .2s;cursor:pointer}
+.vehiculo-card:hover{border-color:rgba(245,158,11,.3);transform:translateY(-2px)}
+.vehiculo-img{height:90px;display:flex;align-items:center;justify-content:center;position:relative}
+.vehiculo-info{padding:.55rem .65rem}
+.vehiculo-id{font-size:.72rem;font-weight:800;margin-bottom:.1rem}
+.vehiculo-tipo{font-size:.6rem;color:rgba(255,255,255,.4)}
+.vehiculo-stats{display:flex;gap:.5rem;margin-top:.4rem;font-size:.6rem}
+.vstat{display:flex;flex-direction:column;align-items:center;gap:.1rem;flex:1;background:rgba(255,255,255,.04);border-radius:5px;padding:.25rem}
+.vstat-v{font-weight:700;font-size:.68rem}
+.vstat-l{color:rgba(255,255,255,.3);font-size:.55rem}
+.veh-status{position:absolute;top:.4rem;right:.4rem;font-size:.58rem;padding:.15rem .45rem;border-radius:99px;font-weight:700}
+
+/* ── SECTOR CHART ── */
+.sector-row{display:flex;align-items:center;gap:.65rem;padding:.32rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.sector-row:last-child{border-bottom:none}
+.sector-name{width:90px;font-size:.7rem;font-weight:700;flex-shrink:0}
+.sector-bar-wrap{flex:1;height:18px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;position:relative;display:flex}
+.sector-bar-m{height:100%;border-radius:4px 0 0 4px;transition:width 1s ease;position:relative}
+.sector-bar-f{height:100%;border-radius:0 4px 4px 0;transition:width 1s ease}
+.sector-total{width:28px;font-size:.72rem;font-weight:800;text-align:right;flex-shrink:0}
+.sector-mf{width:55px;font-size:.58rem;color:rgba(255,255,255,.35);flex-shrink:0;text-align:right}
+
+/* ── ROTACIÓN ── */
+.rot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+.rot-card{background:rgba(255,255,255,.04);border-radius:10px;padding:.7rem .8rem;border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.rot-card:hover{border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.04)}
+.rot-area{font-size:.72rem;font-weight:800;margin-bottom:.15rem}
+.rot-pct{font-size:1.3rem;font-weight:900;line-height:1.1;margin-bottom:.35rem}
+.rot-motivos{display:flex;flex-direction:column;gap:.22rem}
+.rot-mot-row{display:flex;align-items:center;gap:.4rem;font-size:.62rem}
+.rot-mot-lbl{flex:1;color:rgba(255,255,255,.5)}
+.rot-mot-val{font-weight:700;width:20px;text-align:right}
+.rot-mot-bar{height:3px;border-radius:2px;margin-top:1px;background:rgba(255,255,255,.07)}
+.rot-mot-fill{height:100%;border-radius:2px;transition:width 1s ease}
+.rot-trend{font-size:.6rem;margin-top:.4rem;padding-top:.35rem;border-top:1px solid rgba(255,255,255,.05)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:rgba(255,255,255,.04)}
+::-webkit-scrollbar-thumb{background:rgba(245,158,11,.3);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div style="display:flex;align-items:center">
+    <div class="tb-logo">JV <span>SYSTEMS</span></div>
+    <div class="tb-tabs">
+      <div class="tb-tab" onclick="showView('resumen')">📊 Resumen</div>
+      <div class="tb-tab active" onclick="showView('ventas')">💰 Ventas</div>
+      <div class="tb-tab" onclick="showView('logistica')">🚚 Logística</div>
+      <div class="tb-tab" onclick="showView('rrhh')">👥 RRHH</div>
+      <div class="tb-tab" onclick="showView('finanzas')">📈 Finanzas</div>
+    </div>
+  </div>
+  <div class="tb-right">
+    <select class="tb-sel"><option>Enero – Junio 2026</option><option>2025 completo</option><option>Último trimestre</option></select>
+    <select class="tb-sel"><option>Todas las sucursales</option><option>Buenos Aires</option><option>Córdoba</option></select>
+    <div class="tb-dot"></div>
+    <div class="tb-live">En vivo · actualizado 09:14</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- VIEW 1: RESUMEN EJECUTIVO -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="view" id="view-resumen">
+<div class="grid" style="grid-template-columns:repeat(6,1fr)">
+
+  <!-- KPIs -->
+  <div class="kpi g-full" style="grid-column:span 6;padding:0">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:.65rem">
+      <div class="kpi" style="--c:#34d399"><div class="kpi-lbl">Ventas totales</div><div class="kpi-val anim-num" style="color:#34d399" data-target="4820000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="up">▲ 18.4%</span><span class="neu">vs año anterior</span></div><div class="kpi-mini" id="km1"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Tickets emitidos</div><div class="kpi-val anim-num" style="color:#60a5fa" data-target="12340" data-prefix="" data-suffix="">0</div><div class="kpi-sub"><span class="up">▲ 9.1%</span><span class="neu">últimos 30 días</span></div><div class="kpi-mini" id="km2"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Ticket promedio</div><div class="kpi-val anim-num" style="color:#f59e0b" data-target="390" data-prefix="$" data-suffix="">$0</div><div class="kpi-sub"><span class="up">▲ 5.3%</span><span class="neu">sem. anterior</span></div><div class="kpi-mini" id="km3"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Clientes activos</div><div class="kpi-val anim-num" style="color:#a78bfa" data-target="2180" data-prefix="" data-suffix="">0</div><div class="kpi-sub"><span class="up">▲ 12.7%</span><span class="neu">este mes</span></div><div class="kpi-mini" id="km4"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Costo operativo</div><div class="kpi-val anim-num" style="color:#f87171" data-target="1140000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="down">▼ 3.2%</span><span class="neu">bajo presup.</span></div><div class="kpi-mini" id="km5"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Margen neto</div><div class="kpi-val anim-num" style="color:#34d399" data-target="34.2" data-prefix="" data-suffix="%">0%</div><div class="kpi-sub"><span class="up">▲ 2.1pp</span><span class="neu">meta: 30%</span></div><div class="kpi-mini" id="km6"></div></div>
+    </div>
+  </div>
+
+  <!-- Mapa -->
+  <div class="panel" style="grid-column:span 3;grid-row:span 2">
+    <div class="ph"><div><div class="pt">📍 Puntos de venta por región</div><div class="ps">847 puntos activos en Argentina</div></div><div class="pills"><div class="pill on">Ventas</div><div class="pill off">Densidad</div></div></div>
+    <div class="map-wrap">
+      <svg viewBox="0 0 500 340" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bg"><stop offset="0%" stop-color="#1a2a45"/><stop offset="100%" stop-color="#0a1020"/></radialGradient>
+          <radialGradient id="gBA" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(245,158,11,.3)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+          <radialGradient id="gCBA" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(52,211,153,.2)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="500" height="340" fill="url(#bg)"/>
+        <!-- Argentina contorno detallado -->
+        <!-- Costa Atlántica E, Andes O, Norte ancho, Patagonia angosta, Tierra del Fuego -->
+        <path d="
+          M230,8 L238,9 L248,11 L258,14 L268,18 L276,24 L282,30
+          L286,40 L288,52 L284,62 L280,70
+          L284,76 L290,80 L298,84 L302,90 L300,98 L296,106
+          L298,114 L304,122 L308,132 L310,145 L308,158 L306,170
+          L310,182 L314,194 L316,208 L314,222 L310,236
+          L308,248 L306,260 L302,272 L296,282 L288,292
+          L280,302 L272,310 L264,318 L256,324 L248,328
+          L242,330 L236,328 L230,322 L224,314 L218,304
+          L210,292 L202,280 L196,268 L192,256
+          L188,244 L186,232 L185,218 L184,204
+          L180,192 L174,182 L168,172 L164,162 L162,150
+          L162,138 L164,126 L166,114 L168,102
+          L166,90 L162,80 L158,70 L156,60 L158,50
+          L162,40 L168,32 L174,24 L180,18 L186,13 L194,10 L204,8 Z
+        " fill="#1a2d4a" stroke="#2a4a7a" stroke-width="1.2" stroke-linejoin="round"/>
+
+        <!-- Provincia Buenos Aires más definida (zona costera) -->
+        <path d="M220,200 L240,198 L258,202 L270,212 L278,226 L280,242 L274,258 L264,270 L252,278 L240,282 L228,278 L218,268 L210,254 L206,238 L208,222 L214,210 Z"
+              fill="rgba(245,158,11,.06)" stroke="rgba(245,158,11,.12)" stroke-width=".5"/>
+        <!-- Patagonia -->
+        <path d="M162,250 L310,250 L308,260 L304,272 L298,282 L290,292 L280,302 L270,310 L258,318 L248,324 L236,328 L224,322 L212,312 L200,298 L192,284 L186,268 L184,254 L162,250 Z"
+              fill="rgba(96,165,250,.04)"/>
+
+        <!-- Heat zonas -->
+        <ellipse cx="235" cy="240" rx="52" ry="36" fill="url(#gBA)" opacity=".75"/>
+        <ellipse cx="212" cy="158" rx="28" ry="20" fill="url(#gCBA)" opacity=".65"/>
+
+        <!-- Líneas de latitud sutiles -->
+        <line x1="158" y1="100" x2="312" y2="100" stroke="rgba(255,255,255,.03)" stroke-width=".5"/>
+        <line x1="160" y1="170" x2="314" y2="170" stroke="rgba(255,255,255,.03)" stroke-width=".5"/>
+        <line x1="162" y1="240" x2="312" y2="240" stroke="rgba(255,255,255,.03)" stroke-width=".5"/>
+
+        <!-- Buenos Aires -->
+        <circle cx="234" cy="238" r="13" fill="rgba(245,158,11,.12)" filter="url(#glow)"/>
+        <circle cx="234" cy="238" r="6.5" fill="#f59e0b" opacity=".95"/>
+        <text x="250" y="235" font-size="7.5" fill="white" font-weight="700">Buenos Aires</text>
+        <text x="250" y="246" font-size="6" fill="#f59e0b">$2.1M · 312 puntos</text>
+
+        <!-- Córdoba -->
+        <circle cx="212" cy="158" r="8.5" fill="rgba(52,211,153,.2)" filter="url(#glow)"/>
+        <circle cx="212" cy="158" r="4.5" fill="#34d399"/>
+        <text x="224" y="157" font-size="7" fill="white" font-weight="700">Córdoba</text>
+        <text x="224" y="167" font-size="5.5" fill="#34d399">$890K · 148 pts</text>
+
+        <!-- Rosario -->
+        <circle cx="224" cy="198" r="6" fill="rgba(96,165,250,.2)" filter="url(#glow)"/>
+        <circle cx="224" cy="198" r="3.5" fill="#60a5fa"/>
+        <text x="232" y="197" font-size="6.5" fill="white">Rosario</text>
+        <text x="232" y="207" font-size="5.5" fill="#60a5fa">$640K · 97 pts</text>
+
+        <!-- Mendoza -->
+        <circle cx="174" cy="210" r="5" fill="rgba(167,139,250,.2)"/>
+        <circle cx="174" cy="210" r="3" fill="#a78bfa"/>
+        <text x="130" y="209" font-size="6.5" fill="white" font-weight="600">Mendoza</text>
+        <text x="130" y="219" font-size="5.5" fill="#a78bfa">$310K</text>
+
+        <!-- Tucumán -->
+        <circle cx="234" cy="110" r="4.5" fill="rgba(251,191,36,.3)" filter="url(#glow)"/>
+        <circle cx="234" cy="110" r="2.5" fill="#fbbf24"/>
+        <text x="241" y="113" font-size="6.5" fill="white">Tucumán</text>
+
+        <!-- Salta -->
+        <circle cx="222" cy="76" r="4" fill="rgba(52,211,153,.3)"/>
+        <circle cx="222" cy="76" r="2.5" fill="#34d399"/>
+        <text x="229" y="79" font-size="6" fill="white">Salta</text>
+
+        <!-- Mar del Plata -->
+        <circle cx="255" cy="268" r="3.5" fill="rgba(96,165,250,.3)"/>
+        <circle cx="255" cy="268" r="2" fill="#60a5fa"/>
+        <text x="260" y="271" font-size="5.5" fill="white">Mar del Plata</text>
+
+        <!-- Neuquén -->
+        <circle cx="186" cy="282" r="3" fill="rgba(167,139,250,.3)"/>
+        <circle cx="186" cy="282" r="1.8" fill="#a78bfa"/>
+        <text x="168" y="285" font-size="5.5" fill="rgba(255,255,255,.6)">Neuquén</text>
+
+        <!-- Scatter puntos de venta -->
+        <circle cx="198" cy="90" r="1.8" fill="rgba(245,158,11,.55)"/>
+        <circle cx="240" cy="95" r="1.5" fill="rgba(52,211,153,.5)"/>
+        <circle cx="248" cy="118" r="1.8" fill="rgba(96,165,250,.5)"/>
+        <circle cx="260" cy="165" r="2" fill="rgba(96,165,250,.4)"/>
+        <circle cx="226" cy="178" r="1.8" fill="rgba(245,158,11,.5)"/>
+        <circle cx="244" cy="192" r="2" fill="rgba(245,158,11,.6)"/>
+        <circle cx="220" cy="218" r="2.2" fill="rgba(245,158,11,.65)"/>
+        <circle cx="250" cy="228" r="1.8" fill="rgba(245,158,11,.5)"/>
+        <circle cx="268" cy="244" r="1.5" fill="rgba(245,158,11,.4)"/>
+        <circle cx="198" cy="248" r="1.8" fill="rgba(52,211,153,.45)"/>
+        <circle cx="176" cy="235" r="1.5" fill="rgba(167,139,250,.4)"/>
+        <circle cx="195" cy="175" r="1.5" fill="rgba(52,211,153,.4)"/>
+        <circle cx="210" cy="300" r="1.5" fill="rgba(96,165,250,.3)"/>
+        <circle cx="226" cy="310" r="1.5" fill="rgba(96,165,250,.3)"/>
+      </svg>
+      <div class="map-legend">
+        <div class="ml-title">COBERTURA</div>
+        <div class="ml-row"><div class="ml-dot" style="background:#f59e0b"></div>+$1M en ventas</div>
+        <div class="ml-row"><div class="ml-dot" style="background:#34d399"></div>$500K – $1M</div>
+        <div class="ml-row"><div class="ml-dot" style="background:#60a5fa"></div>$100K – $500K</div>
+        <div class="ml-row"><div class="ml-dot" style="background:#a78bfa"></div>&lt; $100K</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ventas por mes -->
+  <div class="panel" style="grid-column:span 3">
+    <div class="ph"><div><div class="pt">📊 Ventas mensuales vs presupuesto</div><div class="ps">Ene–Jun 2026</div></div><div class="pills"><div class="pill on">Barras</div><div class="pill off">Línea</div></div></div>
+    <div class="pb"><div class="bar-chart" id="bc-ventas-mes"></div>
+    <div style="display:flex;gap:.75rem;margin-top:.4rem;font-size:.62rem;color:rgba(255,255,255,.4)">
+      <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:#f59e0b;border-radius:2px"></span>Ventas</span>
+      <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:rgba(96,165,250,.4);border-radius:2px"></span>Presupuesto</span>
+    </div></div>
+  </div>
+
+  <!-- Donut categorías -->
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">🗂 Ventas por categoría</div></div></div>
+    <div class="pb"><div class="donut-wrap" id="donut-cat"></div></div>
+  </div>
+
+  <!-- Top productos -->
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">🛒 Top productos</div><div class="ps">Por unidades vendidas</div></div></div>
+    <div class="pb" id="top-prods"></div>
+  </div>
+
+  <!-- Tabla clientes -->
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">👥 Top clientes</div><div class="ps">Acumulado 2026</div></div></div>
+    <div class="pb" style="padding:.4rem .75rem">
+      <table class="tbl">
+        <thead><tr><th>Cliente</th><th>Seg.</th><th>$</th><th>Avance</th></tr></thead>
+        <tbody id="tabla-clientes"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="dash-footer"><div>Dashboard generado por <span>JV Systems</span> · Power BI Integration</div><div>Actualización automática cada 15 min</div><div>© 2026 <span>JV Systems</span></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- VIEW 2: VENTAS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="view active" id="view-ventas">
+<div class="grid" style="grid-template-columns:repeat(4,1fr)">
+  <div class="kpi g-full" style="grid-column:span 4;padding:0">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem">
+      <div class="kpi"><div class="kpi-lbl">Ingresos brutos</div><div class="kpi-val anim-num" style="color:#34d399" data-target="5960000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="up">▲ 21%</span><span class="neu">vs sem. pasada</span></div><div class="kpi-mini" id="km-v1"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Nuevas órdenes</div><div class="kpi-val anim-num" style="color:#60a5fa" data-target="3840">0</div><div class="kpi-sub"><span class="up">▲ 14%</span><span class="neu">esta semana</span></div><div class="kpi-mini" id="km-v2"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Conversión</div><div class="kpi-val anim-num" style="color:#f59e0b" data-target="68.4" data-prefix="" data-suffix="%">0%</div><div class="kpi-sub"><span class="up">▲ 3.2pp</span><span class="neu">tasa de cierre</span></div><div class="kpi-mini" id="km-v3"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Devoluciones</div><div class="kpi-val anim-num" style="color:#f87171" data-target="1.8" data-prefix="" data-suffix="%">0%</div><div class="kpi-sub"><span class="down">▼ 0.4pp</span><span class="neu">meta: &lt;2%</span></div><div class="kpi-mini" id="km-v4"></div></div>
+    </div>
+  </div>
+
+  <!-- Tendencia diaria -->
+  <div class="panel" style="grid-column:span 3">
+    <div class="ph"><div><div class="pt">📈 Tendencia de ventas diarias (últimos 30 días)</div></div><div class="pills"><div class="pill on">Área</div><div class="pill off">Barras</div></div></div>
+    <div class="pb"><div class="line-wrap" id="line-daily"></div></div>
+  </div>
+
+  <!-- Gauge conversión -->
+  <div class="panel" style="grid-column:span 1">
+    <div class="ph"><div><div class="pt">🎯 Tasa de conversión</div></div></div>
+    <div class="pb" style="display:flex;flex-direction:column;align-items:center;gap:.75rem">
+      <div class="gauge-wrap">
+        <svg class="gauge-svg" viewBox="0 0 140 80" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="gaugeG" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f87171"/><stop offset="50%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#34d399"/></linearGradient></defs>
+          <path d="M15,70 A55,55 0 0,1 125,70" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="12" stroke-linecap="round"/>
+          <path d="M15,70 A55,55 0 0,1 125,70" fill="none" stroke="url(#gaugeG)" stroke-width="12" stroke-linecap="round" stroke-dasharray="173" stroke-dashoffset="55" id="gauge-arc"/>
+          <text x="70" y="65" text-anchor="middle" font-size="18" font-weight="900" fill="#34d399">68%</text>
+        </svg>
+        <div class="gauge-lbl">Meta: 65%</div>
+      </div>
+      <div style="width:100%;font-size:.65rem;display:flex;flex-direction:column;gap:.4rem">
+        <div style="display:flex;justify-content:space-between"><span style="color:rgba(255,255,255,.45)">Cotizaciones</span><span style="font-weight:700">5.620</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:rgba(255,255,255,.45)">Cerradas</span><span style="font-weight:700;color:#34d399">3.840</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:rgba(255,255,255,.45)">Perdidas</span><span style="font-weight:700;color:#f87171">1.780</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ventas por canal -->
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">📱 Ventas por canal</div><div class="ps">Online vs presencial</div></div></div>
+    <div class="pb"><div class="bar-chart" id="bc-canal"></div></div>
+  </div>
+
+  <!-- Tabla productos detalle -->
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">📦 Detalle de productos</div></div></div>
+    <div class="pb" style="padding:.4rem .75rem">
+      <table class="tbl">
+        <thead><tr><th>Producto</th><th>Unids</th><th>Ingresos</th><th>Margen</th><th>Tend.</th></tr></thead>
+        <tbody id="tabla-prods-v"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mapa calor horario -->
+  <div class="panel g-full" style="grid-column:span 4">
+    <div class="ph"><div><div class="pt">🕐 Mapa de calor — actividad por día y hora</div><div class="ps">Últimos 30 días · Cantidad de transacciones</div></div></div>
+    <div class="pb" id="heat-map-wrap"></div>
+  </div>
+
+  <div class="dash-footer"><div>Dashboard de Ventas · <span>JV Systems</span></div><div>© 2026 <span>JV Systems</span></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- VIEW 3: LOGÍSTICA -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="view" id="view-logistica">
+<div class="grid" style="grid-template-columns:repeat(4,1fr)">
+  <div style="grid-column:span 4;display:grid;grid-template-columns:repeat(5,1fr);gap:.65rem">
+    <div class="kpi"><div class="kpi-lbl">Entregas totales</div><div class="kpi-val anim-num" style="color:#34d399" data-target="8420">0</div><div class="kpi-sub"><span class="up">▲ 12%</span><span class="neu">este mes</span></div></div>
+    <div class="kpi"><div class="kpi-lbl">En tránsito ahora</div><div class="kpi-val anim-num" style="color:#f59e0b" data-target="312">0</div><div class="kpi-sub"><span class="neu">en este momento</span></div></div>
+    <div class="kpi"><div class="kpi-lbl">A tiempo</div><div class="kpi-val anim-num" style="color:#34d399" data-target="94.8" data-prefix="" data-suffix="%">0%</div><div class="kpi-sub"><span class="up">▲ 1.2pp</span></div></div>
+    <div class="kpi"><div class="kpi-lbl">Tiempo promedio</div><div class="kpi-val" style="color:#60a5fa">2.4<span style="font-size:.8rem"> días</span></div><div class="kpi-sub"><span class="up">▼ 0.3d mejora</span></div></div>
+    <div class="kpi"><div class="kpi-lbl">Incidencias</div><div class="kpi-val anim-num" style="color:#f87171" data-target="47">0</div><div class="kpi-sub"><span class="down">▼ 18%</span><span class="neu">vs anterior</span></div></div>
+  </div>
+
+  <!-- FLOTA DE VEHÍCULOS -->
+  <div class="panel" style="grid-column:span 4">
+    <div class="ph"><div><div class="pt">🚛 Flota de vehículos — estado en tiempo real</div><div class="ps">107 vehículos registrados · 89 activos hoy</div></div><div class="pills"><div class="pill on">Todos</div><div class="pill off">En ruta</div><div class="pill off">Disponibles</div></div></div>
+    <div class="pb" id="flota-panel" style="padding:.6rem .75rem"></div>
+  </div>
+
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">📊 Entregas por zona</div></div></div>
+    <div class="pb"><div class="bar-chart" id="bc-zonas"></div></div>
+  </div>
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">🚚 Distribución por tipo de entrega</div></div></div>
+    <div class="pb" id="donut-log"></div>
+  </div>
+
+  <div class="panel" style="grid-column:span 4">
+    <div class="ph"><div><div class="pt">📋 Órdenes de entrega — últimas 48hs</div></div></div>
+    <div class="pb" style="padding:.4rem .75rem">
+      <table class="tbl">
+        <thead><tr><th>Vehículo</th><th>Orden</th><th>Destino</th><th>Tipo</th><th>Conductor</th><th>Salida</th><th>ETA</th><th>KM</th><th>Estado</th></tr></thead>
+        <tbody id="tabla-log"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">📈 Entregas diarias (14 días)</div></div></div>
+    <div class="pb"><div class="line-wrap" id="line-log"></div></div>
+  </div>
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">⛽ Consumo combustible por tipo</div></div></div>
+    <div class="pb"><div class="bar-chart" id="bc-flota"></div></div>
+  </div>
+
+  <div class="dash-footer"><div>Dashboard de Logística · <span>JV Systems</span></div><div>© 2026 <span>JV Systems</span></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- VIEW 4: RRHH -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="view" id="view-rrhh">
+<div class="grid" style="grid-template-columns:repeat(6,1fr)">
+
+  <!-- KPIs -->
+  <div style="grid-column:span 6;display:grid;grid-template-columns:repeat(6,1fr);gap:.65rem">
+    <div class="kpi"><div class="kpi-lbl">Total empleados</div><div class="kpi-val anim-num" style="color:#60a5fa" data-target="248">0</div><div class="kpi-sub"><span class="up">+12 este trim.</span></div><div class="kpi-mini" id="km-r1"></div></div>
+    <div class="kpi"><div class="kpi-lbl">👨 Hombres</div><div class="kpi-val anim-num" style="color:#60a5fa" data-target="158">0</div><div class="kpi-sub"><span style="color:rgba(255,255,255,.35)">63.7% del total</span></div></div>
+    <div class="kpi"><div class="kpi-lbl">👩 Mujeres</div><div class="kpi-val anim-num" style="color:#f472b6" data-target="90">0</div><div class="kpi-sub"><span style="color:rgba(255,255,255,.35)">36.3% del total</span></div></div>
+    <div class="kpi"><div class="kpi-lbl">Horas este mes</div><div class="kpi-val anim-num" style="color:#f59e0b" data-target="41280">0</div><div class="kpi-sub"><span class="up">+4.2%</span></div><div class="kpi-mini" id="km-r2"></div></div>
+    <div class="kpi"><div class="kpi-lbl">Ausentismo</div><div class="kpi-val anim-num" style="color:#34d399" data-target="2.1" data-prefix="" data-suffix="%">0%</div><div class="kpi-sub"><span class="up">▼ meta &lt;3%</span></div></div>
+    <div class="kpi" style="border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06)"><div class="kpi-lbl">⭐ Empleado del mes</div><div class="kpi-val" style="color:#f59e0b;font-size:1rem;font-weight:800">Bonafini C.</div><div class="kpi-sub"><span style="color:rgba(255,255,255,.35)">Operaciones · 186h</span></div></div>
+  </div>
+
+  <!-- Tarjetas equipo de ventas -->
+  <div class="panel" style="grid-column:span 4">
+    <div class="ph"><div><div class="pt">👤 Equipo comercial — rendimiento del mes</div><div class="ps">Ranking por ventas cerradas y objetivos cumplidos</div></div></div>
+    <div class="pb" id="equipo-vendedores"></div>
+  </div>
+
+  <!-- Género + distribución -->
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">⚧ Composición por género y edad</div></div></div>
+    <div class="pb" id="donut-genero"></div>
+  </div>
+
+  <!-- Premios -->
+  <div class="panel" style="grid-column:span 3">
+    <div class="ph"><div><div class="pt">🏆 Premios y reconocimientos 2026</div><div class="ps">Programa de incentivos trimestral · Q2 activo</div></div></div>
+    <div class="pb" id="premios-panel"></div>
+  </div>
+
+  <!-- Empleados por sector -->
+  <div class="panel" style="grid-column:span 3">
+    <div class="ph"><div><div class="pt">🏢 Empleados por sector</div><div class="ps">Total por área con distribución M/F</div></div></div>
+    <div class="pb" id="sector-chart" style="padding:.5rem .75rem"></div>
+  </div>
+
+  <!-- Rotación de personal -->
+  <div class="panel" style="grid-column:span 6">
+    <div class="ph">
+      <div><div class="pt">🔄 Rotación de personal — por área y motivo</div><div class="ps">Últimos 12 meses · 34 bajas registradas</div></div>
+      <div class="pills"><div class="pill on">Porcentaje</div><div class="pill off">Absoluto</div></div>
+    </div>
+    <div class="pb" id="rotacion-panel" style="padding:.6rem .75rem"></div>
+  </div>
+
+  <!-- Tabla completa -->
+  <div class="panel" style="grid-column:span 6">
+    <div class="ph"><div><div class="pt">📋 Registro de jornadas — todos los empleados</div></div></div>
+    <div class="pb" style="padding:.4rem .75rem">
+      <table class="tbl">
+        <thead><tr><th></th><th>Empleado</th><th>Sector</th><th>Contrato</th><th>Ingreso</th><th>Hs normales</th><th>Hs 50%</th><th>Hs 100%</th><th>Total</th><th>Estado hoy</th></tr></thead>
+        <tbody id="tabla-rrhh"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel" style="grid-column:span 3">
+    <div class="ph"><div><div class="pt">📊 Horas extra por semana</div></div></div>
+    <div class="pb"><div class="bar-chart" id="bc-extra"></div></div>
+  </div>
+  <div class="panel" style="grid-column:span 3">
+    <div class="ph"><div><div class="pt">📅 Ausentismo mensual</div></div></div>
+    <div class="pb"><div class="line-wrap" id="line-aus"></div></div>
+  </div>
+
+  <div class="dash-footer"><div>Dashboard RRHH · <span>JV Systems</span></div><div>© 2026 <span>JV Systems</span></div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- VIEW 5: FINANZAS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="view" id="view-finanzas">
+<div class="grid" style="grid-template-columns:repeat(4,1fr)">
+  <div class="kpi g-full" style="grid-column:span 4;padding:0">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem">
+      <div class="kpi"><div class="kpi-lbl">Ingresos netos</div><div class="kpi-val anim-num" style="color:#34d399" data-target="4820000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="up">▲ 18%</span></div><div class="kpi-mini" id="km-f1"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Egresos</div><div class="kpi-val anim-num" style="color:#f87171" data-target="3160000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="down">▼ 3%</span></div><div class="kpi-mini" id="km-f2"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Ganancia neta</div><div class="kpi-val anim-num" style="color:#34d399" data-target="1650000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="up">▲ 34%</span><span class="neu">vs año ant.</span></div><div class="kpi-mini" id="km-f3"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Flujo de caja</div><div class="kpi-val anim-num" style="color:#60a5fa" data-target="920000" data-prefix="$" data-suffix="K" data-div="1000">$0</div><div class="kpi-sub"><span class="up">Positivo</span></div><div class="kpi-mini" id="km-f4"></div></div>
+    </div>
+  </div>
+
+  <div class="panel" style="grid-column:span 3">
+    <div class="ph"><div><div class="pt">💹 Ingresos vs Egresos — flujo mensual</div></div></div>
+    <div class="pb"><div class="bar-chart" id="bc-flujo"></div>
+    <div style="display:flex;gap:.75rem;margin-top:.4rem;font-size:.62rem;color:rgba(255,255,255,.4)">
+      <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:#34d399;border-radius:2px"></span>Ingresos</span>
+      <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:#f87171;border-radius:2px"></span>Egresos</span>
+      <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:#60a5fa;border-radius:2px"></span>Ganancia</span>
+    </div></div>
+  </div>
+
+  <div class="panel" style="grid-column:span 1">
+    <div class="ph"><div><div class="pt">🎯 Distribución gastos</div></div></div>
+    <div class="pb" id="donut-gastos"></div>
+  </div>
+
+  <div class="panel g-full" style="grid-column:span 4">
+    <div class="ph"><div><div class="pt">📋 Movimientos recientes</div></div></div>
+    <div class="pb" style="padding:.4rem .75rem">
+      <table class="tbl">
+        <thead><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Categoría</th><th>Monto</th><th>Saldo</th></tr></thead>
+        <tbody id="tabla-fin"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">📊 Cuentas corrientes activas</div></div></div>
+    <div class="pb"><div class="bar-chart" id="bc-cuentas"></div></div>
+  </div>
+
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">📈 Ganancia acumulada</div></div></div>
+    <div class="pb"><div class="line-wrap" id="line-gan"></div></div>
+  </div>
+
+  <div class="dash-footer"><div>Dashboard Financiero · <span>JV Systems</span></div><div>© 2026 <span>JV Systems</span></div></div>
+</div>
+</div>
+
+<script>
+// ── UTILS ──
+const colors = {amber:'#f59e0b',green:'#34d399',blue:'#60a5fa',purple:'#a78bfa',red:'#f87171',teal:'#2dd4bf',pink:'#f472b6'};
+
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function fmt(n){return n>=1000000?'$'+(n/1000000).toFixed(1)+'M':n>=1000?n>=10000?n.toLocaleString():'$'+(n/1000).toFixed(0)+'K':'$'+n;}
+
+// ── VIEW SWITCH ──
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tb-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  setTimeout(()=>buildView(id),50);
+}
+
+// ── ANIMATED NUMBERS ──
+function animNum(el){
+  const target=parseFloat(el.dataset.target);
+  const prefix=el.dataset.prefix||'';
+  const suffix=el.dataset.suffix||'';
+  const div=parseFloat(el.dataset.div)||1;
+  let start=null,duration=1200;
+  function step(ts){
+    if(!start)start=ts;
+    const p=Math.min((ts-start)/duration,1);
+    const ease=p<.5?2*p*p:(1-((-2*p+2)**2)/2);
+    const val=(target/div)*ease;
+    el.textContent=prefix+(div>1?val.toFixed(1):Number.isInteger(target)?Math.round(val).toLocaleString():val.toFixed(1))+suffix;
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ── MINI SPARKLINES FOR KPIs ──
+function buildMini(id,color,vals){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML='';
+  vals.forEach(h=>{
+    const b=document.createElement('div');
+    b.className='km-bar';
+    b.style.cssText=`height:${h}%;background:${color};opacity:.7;flex:1;border-radius:2px 2px 0 0;transition:height .6s`;
+    el.appendChild(b);
+  });
+}
+
+// ── BAR CHART ──
+function buildBarChart(id,labels,datasets,maxH=160){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML='';el.style.height=maxH+'px';
+  const max=Math.max(...datasets.flatMap(d=>d.data));
+  labels.forEach((lbl,i)=>{
+    const col=document.createElement('div');col.className='bc-col';
+    datasets.forEach(ds=>{
+      const pct=(ds.data[i]/max)*90;
+      const b=document.createElement('div');b.className='bc-bar';
+      b.style.cssText=`height:0;background:${ds.color};transition:height .8s cubic-bezier(.4,0,.2,1) ${i*.06}s`;
+      const tip=document.createElement('div');tip.className='tip';tip.textContent=ds.prefix+(ds.data[i]).toLocaleString();b.appendChild(tip);
+      col.appendChild(b);
+      setTimeout(()=>{b.style.height=pct+'%'},80);
+    });
+    const l=document.createElement('div');l.className='bc-lbl';l.textContent=lbl;
+    col.appendChild(l);el.appendChild(col);
+  });
+}
+
+// ── LINE CHART (SVG) ──
+function buildLine(id,datasets,labels){
+  const el=document.getElementById(id);if(!el)return;
+  const W=el.offsetWidth||600,H=150;
+  const max=Math.max(...datasets.flatMap(d=>d.data))*1.1;
+  const min=Math.min(...datasets.flatMap(d=>d.data))*.9;
+  function px(i,n){return 10+(W-20)*i/(n-1);}
+  function py(v){return H-10-(v-min)/(max-min)*(H-20);}
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  svg+=`<defs>`;
+  datasets.forEach((ds,di)=>{
+    svg+=`<linearGradient id="lg${id}${di}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${ds.color}" stop-opacity=".35"/><stop offset="100%" stop-color="${ds.color}" stop-opacity="0"/></linearGradient>`;
+  });
+  svg+=`</defs>`;
+  // Grid
+  [.25,.5,.75].forEach(f=>{const y=10+(H-20)*f;svg+=`<line x1="10" y1="${y}" x2="${W-10}" y2="${y}" stroke="rgba(255,255,255,.06)" stroke-width=".5"/>`;});
+  datasets.forEach((ds,di)=>{
+    const n=ds.data.length;
+    let path=`M${px(0,n)},${py(ds.data[0])}`;
+    for(let i=1;i<n;i++){
+      const cx1=px(i-.5,n),cx2=px(i-.5,n);
+      path+=` C${cx1},${py(ds.data[i-1])} ${cx2},${py(ds.data[i])} ${px(i,n)},${py(ds.data[i])}`;
+    }
+    const areaPath=path+` L${px(n-1,n)},${H-10} L${px(0,n)},${H-10} Z`;
+    svg+=`<path d="${areaPath}" fill="url(#lg${id}${di})" opacity=".6"/>`;
+    svg+=`<path d="${path}" fill="none" stroke="${ds.color}" stroke-width="2" stroke-linecap="round"/>`;
+    ds.data.forEach((v,i)=>{if(i%Math.ceil(n/8)===0)svg+=`<circle cx="${px(i,n)}" cy="${py(v)}" r="3" fill="${ds.color}"/>`});
+  });
+  svg+=`</svg>`;el.innerHTML=svg;
+}
+
+// ── DONUT ──
+function buildDonut(id,items){
+  const el=document.getElementById(id);if(!el)return;
+  const total=items.reduce((a,b)=>a+b.val,0);
+  const R=42,cx=55,cy=55,circ=2*Math.PI*R;
+  let offset=0,paths='';
+  items.forEach(item=>{
+    const pct=item.val/total;
+    const dash=circ*pct;
+    const gap=circ-dash;
+    paths+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${item.color}" stroke-width="14" stroke-dasharray="${dash} ${gap}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="round" style="transition:stroke-dasharray .8s ease"/>`;
+    offset+=dash+1;
+  });
+  let legs='';
+  items.forEach(item=>{
+    const pct=Math.round(item.val/total*100);
+    legs+=`<div class="dl"><div class="dl-dot" style="background:${item.color}"></div><span>${item.label}</span><span class="dl-val">${pct}%</span></div><div class="dl-bar"><div class="dl-fill" style="width:0%;background:${item.color}" data-w="${pct}%"></div></div>`;
+  });
+  el.innerHTML=`<div class="donut-wrap"><svg class="donut-svg" viewBox="0 0 110 110" width="110" height="110" xmlns="http://www.w3.org/2000/svg"><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="14"/>${paths}<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="11" font-weight="800" fill="white">${items[0].label}</text></svg><div class="donut-legs">${legs}</div></div>`;
+  setTimeout(()=>el.querySelectorAll('.dl-fill').forEach(f=>{f.style.width=f.dataset.w;}),100);
+}
+
+// ── HEAT MAP ──
+function buildHeat(id){
+  const el=document.getElementById(id);if(!el)return;
+  const days=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const hours=['0h','3h','6h','9h','12h','15h','18h','21h'];
+  // Leyenda
+  let html=`
+  <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:.65rem;flex-wrap:wrap">
+    <span style="font-size:.62rem;color:rgba(255,255,255,.4);font-weight:600">INTENSIDAD DE TRANSACCIONES:</span>
+    <span style="display:flex;align-items:center;gap:.3rem;font-size:.62rem;color:rgba(255,255,255,.45)"><span style="width:12px;height:12px;border-radius:3px;background:rgba(96,165,250,.2);display:inline-block"></span>Sin actividad</span>
+    <span style="display:flex;align-items:center;gap:.3rem;font-size:.62rem;color:rgba(255,255,255,.45)"><span style="width:12px;height:12px;border-radius:3px;background:#60a5fa;opacity:.6;display:inline-block"></span>Baja</span>
+    <span style="display:flex;align-items:center;gap:.3rem;font-size:.62rem;color:rgba(255,255,255,.45)"><span style="width:12px;height:12px;border-radius:3px;background:#34d399;display:inline-block"></span>Media</span>
+    <span style="display:flex;align-items:center;gap:.3rem;font-size:.62rem;color:rgba(255,255,255,.45)"><span style="width:12px;height:12px;border-radius:3px;background:#f59e0b;display:inline-block"></span>Alta actividad</span>
+    <span style="margin-left:auto;font-size:.58rem;color:rgba(255,255,255,.25)">Pico horario: Mar–Vie · 9h–18h</span>
+  </div>`;
+  html+=`<div style="display:flex;gap:4px;overflow-x:auto">`;
+  html+=`<div style="display:flex;flex-direction:column;gap:2px;justify-content:space-around;margin-top:18px">`;
+  hours.forEach(h=>{html+=`<div style="font-size:.55rem;color:rgba(255,255,255,.3);text-align:right;padding-right:4px">${h}</div>`;});
+  html+=`</div><div style="flex:1"><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px">`;
+  days.forEach(d=>{html+=`<div style="font-size:.58rem;color:rgba(255,255,255,.35);text-align:center">${d}</div>`;});
+  html+=`</div><div style="display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(8,1fr);gap:3px">`;
+  for(let h=0;h<8;h++){for(let d=0;d<7;d++){
+    const peak=(d<5&&h>=3&&h<=6)?1:(d<5&&h>=2&&h<=5)?.7:(d>=5&&h>=2&&h<=5)?.5:.1;
+    const v=Math.random()*peak;
+    const alpha=0.1+v*.85;
+    const color=v>.7?colors.amber:v>.4?colors.green:colors.blue;
+    const txCount=Math.round(v*180);
+    html+=`<div title="${days[d]} ${hours[h]} — ${txCount} transacciones" style="background:${color};opacity:${alpha};border-radius:3px;height:20px;cursor:pointer;transition:transform .15s" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform=''"></div>`;
+  }}
+  html+=`</div></div></div>`;
+  el.innerHTML=html;
+}
+
+// ── TABLE BUILDERS ──
+function buildTablaClientes(){
+  const data=[
+    ['Supermercado Don Pedro','a','$284K',95],['Distribuidora Norte','a','$236K',83],
+    ['Kiosco Los Andes','b','$141K',70],['Almacén El Cruce','b','$104K',58],
+    ['Mini Market Belgrano','c','$56K',37],['Tienda Pampeana','b','$89K',62],
+  ];
+  const el=document.getElementById('tabla-clientes');if(!el)return;
+  el.innerHTML=data.map(([n,s,m,p])=>`<tr><td><strong>${n}</strong></td><td><span class="tag t${s}">${s.toUpperCase()}</span></td><td style="font-weight:700;color:${s==='a'?colors.green:s==='b'?colors.amber:colors.red}">${m}</td><td style="width:80px"><div class="avb"><div class="avb-f" style="width:0%" data-w="${p}%" style2="background:linear-gradient(90deg,${colors.amber},${colors.green})"></div></div></td></tr>`).join('');
+  setTimeout(()=>document.querySelectorAll('.avb-f').forEach(f=>{f.style.width=f.dataset.w;f.style.background=`linear-gradient(90deg,${colors.amber},${colors.green})`;}),100);
+}
+
+function buildTablaProdsV(){
+  const data=[
+    ['☕ Café Premium','8.420','$504K','28%',colors.green,82],['🥤 Yerba Mate','6.890','$310K','22%',colors.green,71],
+    ['🍫 Chocolate','5.120','$256K','18%',colors.red,60],['🧃 Jugos','4.780','$191K','19%',colors.green,55],
+    ['🍪 Galletitas','4.240','$169K','20%',colors.green,50],['🧀 Lácteos','3.910','$156K','25%',colors.green,45],
+  ];
+  const el=document.getElementById('tabla-prods-v');if(!el)return;
+  el.innerHTML=data.map(([n,u,m,mg,mc,sp])=>`<tr><td><strong>${n}</strong></td><td>${u}</td><td style="font-weight:700">${m}</td><td style="color:${mc};font-weight:700">${mg}</td><td><div style="display:flex;align-items:flex-end;gap:1px;height:18px">${[rand(30,90),rand(40,95),rand(35,90),rand(45,95),rand(50,100)].map(h=>`<div style="flex:1;height:${h}%;background:${colors.amber};opacity:.7;border-radius:1px;transition:height .6s"></div>`).join('')}</div></td></tr>`).join('');
+}
+
+// SVGs vehículos
+function svgCamion(color='#f59e0b',w=120,h=72){
+  return `<svg viewBox="0 0 120 72" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="20" width="75" height="38" rx="4" fill="${color}" opacity=".9"/>
+    <rect x="77" y="28" width="38" height="30" rx="3" fill="${color}" opacity=".7"/>
+    <rect x="78" y="30" width="20" height="16" rx="2" fill="rgba(150,220,255,.5)"/>
+    <circle cx="22" cy="62" r="8" fill="#1a2035" stroke="${color}" stroke-width="2"/>
+    <circle cx="22" cy="62" r="4" fill="${color}" opacity=".6"/>
+    <circle cx="88" cy="62" r="8" fill="#1a2035" stroke="${color}" stroke-width="2"/>
+    <circle cx="88" cy="62" r="4" fill="${color}" opacity=".6"/>
+    <rect x="2" y="20" width="75" height="5" rx="2" fill="rgba(255,255,255,.15)"/>
+    <rect x="5" y="25" width="3" height="30" fill="rgba(255,255,255,.1)"/>
+    <rect x="10" y="23" width="62" height="2" fill="rgba(255,255,255,.1)"/>
+  </svg>`;
+}
+function svgFurgon(color='#60a5fa',w=110,h=68){
+  return `<svg viewBox="0 0 110 68" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="18" width="106" height="38" rx="6" fill="${color}" opacity=".85"/>
+    <rect x="4" y="20" width="45" height="20" rx="3" fill="rgba(150,220,255,.45)"/>
+    <rect x="52" y="20" width="54" height="20" rx="3" fill="rgba(255,255,255,.08)"/>
+    <circle cx="20" cy="60" r="7" fill="#1a2035" stroke="${color}" stroke-width="2"/>
+    <circle cx="20" cy="60" r="3.5" fill="${color}" opacity=".6"/>
+    <circle cx="88" cy="60" r="7" fill="#1a2035" stroke="${color}" stroke-width="2"/>
+    <circle cx="88" cy="60" r="3.5" fill="${color}" opacity=".6"/>
+    <path d="M2,18 Q10,8 30,10 L50,18" fill="${color}" opacity=".6"/>
+    <rect x="2" y="18" width="106" height="4" rx="2" fill="rgba(255,255,255,.2)"/>
+  </svg>`;
+}
+function svgMoto(color='#34d399',w=80,h=60){
+  return `<svg viewBox="0 0 80 60" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="20" cy="45" rx="13" ry="13" fill="none" stroke="${color}" stroke-width="3"/>
+    <ellipse cx="60" cy="45" rx="13" ry="13" fill="none" stroke="${color}" stroke-width="3"/>
+    <path d="M20,45 L38,20 L55,20 L60,45" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round"/>
+    <rect x="33" y="15" width="22" height="12" rx="4" fill="${color}" opacity=".7"/>
+    <path d="M38,20 L42,10 L50,10 L55,20" fill="${color}" opacity=".5"/>
+    <circle cx="20" cy="45" r="5" fill="${color}" opacity=".5"/>
+    <circle cx="60" cy="45" r="5" fill="${color}" opacity=".5"/>
+  </svg>`;
+}
+function svgPickup(color='#a78bfa',w=115,h=68){
+  return `<svg viewBox="0 0 115 68" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="25" width="111" height="33" rx="5" fill="${color}" opacity=".8"/>
+    <path d="M10,25 Q20,10 45,10 L75,10 Q85,10 90,25" fill="${color}" opacity=".9"/>
+    <rect x="12" y="13" width="35" height="14" rx="3" fill="rgba(150,220,255,.45)"/>
+    <rect x="50" y="13" width="36" height="14" rx="3" fill="rgba(150,220,255,.3)"/>
+    <rect x="88" y="25" width="25" height="33" rx="3" fill="${color}" opacity=".5"/>
+    <circle cx="24" cy="61" r="7" fill="#1a2035" stroke="${color}" stroke-width="2"/>
+    <circle cx="24" cy="61" r="3.5" fill="${color}" opacity=".6"/>
+    <circle cx="90" cy="61" r="7" fill="#1a2035" stroke="${color}" stroke-width="2"/>
+    <circle cx="90" cy="61" r="3.5" fill="${color}" opacity=".6"/>
+    <rect x="2" y="25" width="86" height="4" rx="2" fill="rgba(255,255,255,.2)"/>
+  </svg>`;
+}
+
+// Imagen real o fallback SVG
+function vehImg(tipo,svgFn,color,vid){
+  const map={camion:'screenshots/vehiculo-camion.png',auto:'screenshots/vehiculo-auto.png',moto:'screenshots/vehiculo-moto.png'};
+  const src=map[tipo];
+  return `<img id="vi-${vid}" src="${src}" style="max-height:82px;max-width:92%;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))"
+    onload="document.getElementById('vs-${vid}').style.display='none'"
+    onerror="this.style.display='none';document.getElementById('vs-${vid}').style.display='flex'" />
+  <div id="vs-${vid}" style="display:flex;align-items:center;justify-content:center;width:100%;height:82px">${svgFn(color)}</div>`;
+}
+
+function buildFlota(){
+  const el=document.getElementById('flota-panel');if(!el)return;
+  const vehiculos=[
+    {id:'CAM-001',tipo:'camion',label:'Camión 12T',svg:svgCamion,color:'#f59e0b',est:'En ruta',estC:colors.amber,cond:'García R.',dest:'Córdoba',km:'1.240',cap:'12 ton',año:'2022'},
+    {id:'CAM-002',tipo:'camion',label:'Camión 12T',svg:svgCamion,color:'#34d399',est:'Disponible',estC:colors.green,cond:'López M.',dest:'—',km:'980',cap:'12 ton',año:'2021'},
+    {id:'CAM-003',tipo:'camion',label:'Camión 8T',svg:svgCamion,color:'#60a5fa',est:'En ruta',estC:colors.amber,cond:'Martínez J.',dest:'Rosario',km:'2.100',cap:'8 ton',año:'2023'},
+    {id:'AUTO-001',tipo:'auto',label:'Auto Utilitario',svg:svgPickup,color:'#a78bfa',est:'En ruta',estC:colors.amber,cond:'Rodríguez A.',dest:'Buenos Aires',km:'450',cap:'300 kg',año:'2023'},
+    {id:'AUTO-002',tipo:'auto',label:'Auto Utilitario',svg:svgPickup,color:'#f472b6',est:'Disponible',estC:colors.green,cond:'Pérez C.',dest:'—',km:'280',cap:'300 kg',año:'2024'},
+    {id:'AUTO-003',tipo:'auto',label:'Auto Utilitario',svg:svgPickup,color:'#2dd4bf',est:'Mantenimiento',estC:colors.red,cond:'—',dest:'—',km:'0',cap:'300 kg',año:'2022'},
+    {id:'MTO-001',tipo:'moto',label:'Moto Delivery',svg:svgMoto,color:'#34d399',est:'En ruta',estC:colors.amber,cond:'Sánchez P.',dest:'CABA',km:'120',cap:'50 kg',año:'2024'},
+    {id:'MTO-002',tipo:'moto',label:'Moto Delivery',svg:svgMoto,color:'#f59e0b',est:'Disponible',estC:colors.green,cond:'Torres V.',dest:'—',km:'95',cap:'50 kg',año:'2024'},
+    {id:'MTO-003',tipo:'moto',label:'Moto Delivery',svg:svgMoto,color:'#60a5fa',est:'En ruta',estC:colors.amber,cond:'Juárez N.',dest:'Palermo',km:'88',cap:'50 kg',año:'2024'},
+    {id:'CAM-004',tipo:'camion',label:'Camión Ref.',svg:svgCamion,color:'#2dd4bf',est:'En ruta',estC:colors.amber,cond:'Bonafini C.',dest:'Salta',km:'3.400',cap:'8 ton',año:'2023'},
+    {id:'AUTO-004',tipo:'auto',label:'Auto Utilitario',svg:svgPickup,color:'#fbbf24',est:'Disponible',estC:colors.green,cond:'Galotto A.',dest:'—',km:'310',cap:'300 kg',año:'2023'},
+    {id:'MTO-004',tipo:'moto',label:'Moto Delivery',svg:svgMoto,color:'#a78bfa',est:'Disponible',estC:colors.green,cond:'Pereyra S.',dest:'—',km:'0',cap:'50 kg',año:'2025'},
+  ];
+  el.innerHTML=`<div class="flota-grid">${vehiculos.map(v=>`
+    <div class="vehiculo-card">
+      <div class="vehiculo-img" style="background:#f0f2f5;padding:.5rem 0;display:flex;align-items:center;justify-content:center">
+        ${vehImg(v.tipo,v.svg,v.color,v.id)}
+        <div class="veh-status" style="background:${v.estC}22;color:${v.estC}">${v.est}</div>
+      </div>
+      <div class="vehiculo-info">
+        <div class="vehiculo-id">${v.id}</div>
+        <div class="vehiculo-tipo">${v.label} · ${v.año}</div>
+        <div style="font-size:.62rem;color:rgba(255,255,255,.45);margin-top:.2rem">🧑‍✈️ ${v.cond}</div>
+        ${v.dest!=='—'?`<div style="font-size:.6rem;color:${colors.amber};margin-top:.1rem">📍 ${v.dest}</div>`:''}
+        <div class="vehiculo-stats">
+          <div class="vstat"><div class="vstat-v">${v.km}</div><div class="vstat-l">km hoy</div></div>
+          <div class="vstat"><div class="vstat-v">${v.cap}</div><div class="vstat-l">capacidad</div></div>
+        </div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function buildTablaLog(){
+  const vehiculos=['CAM-001','FUR-002','CAM-003','PIC-001','CAM-004','FUR-001','MTO-001','CAM-002'];
+  const data=[
+    ['Buenos Aires','Express','García R.','08:30','10:15',colors.green,'Entregado',312],
+    ['Córdoba','Estándar','López M.','07:00','12:30',colors.amber,'En tránsito',698],
+    ['Rosario','Express','Martínez J.','06:45','09:00',colors.green,'Entregado',285],
+    ['Mendoza','Económico','Rodríguez A.','05:00','18:00',colors.blue,'En tránsito',1042],
+    ['Mar del Plata','Estándar','Pérez C.','09:15','14:45',colors.red,'Demora',402],
+    ['Tucumán','Express','Sánchez P.','08:00','11:30',colors.amber,'En camino',1280],
+    ['CABA Centro','Urbano','Torres P.','07:30','08:45',colors.green,'Entregado',18],
+    ['La Plata','Estándar','Gómez R.','10:00','12:00',colors.amber,'En camino',60],
+  ];
+  const el=document.getElementById('tabla-log');if(!el)return;
+  el.innerHTML=data.map(([dest,tipo,cond,sal,eta,c,est,km],i)=>`<tr>
+    <td><span style="font-size:.7rem;font-weight:800;color:${colors.blue}">${vehiculos[i]||'FUR-00'+i}</span></td>
+    <td><strong>#88${21-i}</strong></td>
+    <td>${dest}</td><td>${tipo}</td><td>${cond}</td>
+    <td style="color:rgba(255,255,255,.5)">${sal}</td>
+    <td style="color:rgba(255,255,255,.5)">${eta}</td>
+    <td style="color:rgba(255,255,255,.4)">${km} km</td>
+    <td><span class="tag" style="background:${c}22;color:${c}">${est}</span></td>
+  </tr>`).join('');
+}
+
+function avatarSVG(initials,bg,size=44){
+  return `<div class="avatar" style="background:${bg};width:${size}px;height:${size}px;font-size:${size*.35}px">${initials}</div>`;
+}
+
+function buildEquipoVendedores(){
+  const el=document.getElementById('equipo-vendedores');if(!el)return;
+  const vendedores=[
+    {nom:'Carlos Méndez',ini:'CM',bg:'#1e40af',rol:'Ventas Senior',ventas:142,meta:130,ingr:'$284K',conv:'78%',top:true},
+    {nom:'Laura Sánchez',ini:'LS',bg:'#7c3aed',rol:'Ejecutiva de Cuentas',ventas:118,meta:120,ingr:'$236K',conv:'71%',top:false},
+    {nom:'Martín Rodríguez',ini:'MR',bg:'#065f46',rol:'Ventas Regional',ventas:94,meta:100,ingr:'$188K',conv:'65%',top:false},
+    {nom:'Ana Gómez',ini:'AG',bg:'#92400e',rol:'Inside Sales',ventas:87,meta:90,ingr:'$174K',conv:'62%',top:false},
+    {nom:'Diego Ferreyra',ini:'DF',bg:'#1e3a5f',rol:'Ventas Senior',ventas:81,meta:90,ingr:'$162K',conv:'59%',top:false},
+    {nom:'Valeria Torres',ini:'VT',bg:'#7f1d1d',rol:'Key Account',ventas:76,meta:80,ingr:'$152K',conv:'68%',top:false},
+    {nom:'Pablo Juárez',ini:'PJ',bg:'#134e4a',rol:'Ejecutivo',ventas:68,meta:80,ingr:'$136K',conv:'55%',top:false},
+    {nom:'Sofía Pereyra',ini:'SP',bg:'#4c1d95',rol:'Inside Sales',ventas:54,meta:70,ingr:'$108K',conv:'52%',top:false},
+  ];
+  el.innerHTML=`<div class="vend-grid">${vendedores.map(v=>{
+    const pct=Math.min(Math.round(v.ventas/v.meta*100),100);
+    const color=pct>=100?colors.green:pct>=80?colors.amber:colors.red;
+    return `<div class="vend-card${v.top?' top':''}">
+      ${v.top?`<div class="vend-badge" style="background:rgba(245,158,11,.25);color:#f59e0b">⭐ #1 del mes</div>`:''}
+      <div class="vend-header">
+        ${avatarSVG(v.ini,v.bg,40)}
+        <div><div class="vend-name">${v.nom}</div><div class="vend-role">${v.rol}</div></div>
+      </div>
+      <div class="vend-stats">
+        <div class="vs-item"><div class="vs-lbl">Ventas</div><div class="vs-val" style="color:${colors.amber}">${v.ventas}</div></div>
+        <div class="vs-item"><div class="vs-lbl">Ingresos</div><div class="vs-val" style="color:${colors.green}">${v.ingr}</div></div>
+        <div class="vs-item"><div class="vs-lbl">Meta</div><div class="vs-val" style="color:rgba(255,255,255,.6)">${v.meta}</div></div>
+        <div class="vs-item"><div class="vs-lbl">Conversión</div><div class="vs-val" style="color:${colors.blue}">${v.conv}</div></div>
+      </div>
+      <div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:.25rem">${pct}% de meta alcanzada</div>
+      <div class="vend-progress"><div class="vend-prog-fill" style="width:0%;background:${color}" data-w="${pct}%"></div></div>
+    </div>`;
+  }).join('')}</div>`;
+  setTimeout(()=>el.querySelectorAll('.vend-prog-fill').forEach(f=>{f.style.width=f.dataset.w;}),100);
+}
+
+function buildPremios(){
+  const el=document.getElementById('premios-panel');if(!el)return;
+  const premios=[
+    {ic:'🏆',color:'#92400e',nom:'Vendedor del Trimestre',desc:'Mayor volumen de ventas Q2',ganador:'Carlos Méndez',extra:'142 ventas · $284K'},
+    {ic:'🎯',color:'#1e3a5f',nom:'100% de Objetivo',desc:'Cumplimiento total de metas',ganador:'Laura Sánchez',extra:'118/120 cierres'},
+    {ic:'⭐',color:'#4c1d95',nom:'Mejor Atención al Cliente',desc:'NPS más alto del período',ganador:'Ana Gómez',extra:'NPS 94/100'},
+    {ic:'🚀',color:'#065f46',nom:'Mayor Crecimiento',desc:'Crecimiento vs. trimestre anterior',ganador:'Diego Ferreyra',extra:'+38% vs Q1'},
+    {ic:'🤝',color:'#7f1d1d',nom:'Mejor Trabajo en Equipo',desc:'Votado por sus compañeros',ganador:'Valeria Torres',extra:'96% satisfacción'},
+    {ic:'💡',color:'#134e4a',nom:'Innovación en Ventas',desc:'Mejor propuesta de mejora',ganador:'Pablo Juárez',extra:'3 procesos mejorados'},
+  ];
+  el.innerHTML=`<div class="premios-grid">${premios.map(p=>`
+    <div class="premio-card">
+      <div class="premio-icon" style="background:${p.color}44">${p.ic}</div>
+      <div>
+        <div class="premio-name">${p.nom}</div>
+        <div class="premio-desc">${p.desc}</div>
+        <div class="premio-winner" style="color:${colors.amber}">🏅 ${p.ganador} <span style="color:rgba(255,255,255,.3);font-weight:400">· ${p.extra}</span></div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function buildTablaRRHH(){
+  const empleados=[
+    {nom:'Bonafini César',ini:'BC',bg:'#1e40af',sec:'Operaciones',cont:'Efectivo',ing:'Mar 2021',g:'M'},
+    {nom:'Delgado Santiago',ini:'DS',bg:'#065f46',sec:'Logística',cont:'Efectivo',ing:'Jun 2020',g:'M'},
+    {nom:'Frattoni Elías',ini:'FE',bg:'#7c3aed',sec:'Producción',cont:'Efectivo',ing:'Ene 2022',g:'M'},
+    {nom:'Galotto Agustín',ini:'GA',bg:'#92400e',sec:'Ventas',cont:'Efectivo',ing:'Sep 2021',g:'M'},
+    {nom:'Juárez Nahuel',ini:'JN',bg:'#134e4a',sec:'Administración',cont:'Efectivo',ing:'Feb 2023',g:'M'},
+    {nom:'Vázquez Franco',ini:'VF',bg:'#7f1d1d',sec:'Logística',cont:'Efectivo',ing:'Nov 2020',g:'M'},
+    {nom:'García María',ini:'GM',bg:'#4c1d95',sec:'RRHH',cont:'Efectivo',ing:'Ago 2019',g:'F'},
+    {nom:'Aguiar Nicolás',ini:'AN',bg:'#1e3a5f',sec:'Operaciones',cont:'Temporal',ing:'Mar 2024',g:'M'},
+    {nom:'Torres Valeria',ini:'TV',bg:'#7c2d12',sec:'Ventas',cont:'Efectivo',ing:'Jul 2022',g:'F'},
+    {nom:'Pereyra Sofía',ini:'PS',bg:'#3b0764',sec:'Marketing',cont:'Part-time',ing:'Ene 2025',g:'F'},
+  ];
+  const ots=['OT-1631','OT-1800','OT-1705','OT-1644','OT-1900'];
+  const estados=[
+    {t:'✅ Presente',c:colors.green},{t:'✅ Presente',c:colors.green},{t:'✅ Presente',c:colors.green},
+    {t:'✅ Presente',c:colors.green},{t:'⚠️ Sin salida',c:colors.amber},{t:'✅ Presente',c:colors.green},
+    {t:'❌ Ausente',c:colors.red},{t:'✅ Presente',c:colors.green},{t:'✅ Presente',c:colors.green},{t:'✅ Presente',c:colors.green},
+  ];
+  const el=document.getElementById('tabla-rrhh');if(!el)return;
+  el.innerHTML=empleados.map((e,i)=>{
+    const norm=rand(140,180),e50=rand(5,20),e100=rand(0,10),tot=norm+e50+e100;
+    const est=estados[i];
+    return `<tr>
+      <td>${avatarSVG(e.ini,e.bg,28)}</td>
+      <td><strong>${e.nom}</strong><span style="font-size:.58rem;color:rgba(255,255,255,.3);margin-left:.35rem">${e.g==='M'?'👨':'👩'}</span></td>
+      <td style="color:rgba(255,255,255,.5)">${e.sec}</td>
+      <td><span class="tag" style="background:rgba(96,165,250,.12);color:#60a5fa">${e.cont}</span></td>
+      <td style="color:rgba(255,255,255,.4)">${e.ing}</td>
+      <td style="font-weight:700">${norm}h</td>
+      <td style="color:${colors.amber};font-weight:700">${e50}h</td>
+      <td style="color:${colors.red};font-weight:700">${e100}h</td>
+      <td style="font-weight:800;color:${colors.green}">${tot}h</td>
+      <td><span style="font-size:.65rem;font-weight:700;color:${est.c}">${est.t}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function buildTablaFin(){
+  const data=[
+    ['01/06','Venta mayorista Sup. Don Pedro','Ingreso','Ventas','+$84.200',colors.green,'$1.240.800'],
+    ['01/06','Pago proveedor Lácteos SA','Egreso','Compras','-$32.400',colors.red,'$1.156.400'],
+    ['31/05','Cobro factura #4421','Ingreso','Cobranzas','+$56.100',colors.green,'$1.188.800'],
+    ['31/05','Alquiler depósito central','Egreso','Operativo','-$45.000',colors.red,'$1.132.700'],
+    ['30/05','Venta cliente Kiosco Los Andes','Ingreso','Ventas','+$28.900',colors.green,'$1.177.700'],
+    ['30/05','Salarios quincena','Egreso','RRHH','-$168.000',colors.red,'$1.148.800'],
+  ];
+  const el=document.getElementById('tabla-fin');if(!el)return;
+  el.innerHTML=data.map(([f,c,t,cat,m,col,s])=>`<tr><td style="color:rgba(255,255,255,.4)">${f}</td><td>${c}</td><td><span class="tag" style="background:${col}22;color:${col}">${t}</span></td><td style="color:rgba(255,255,255,.45)">${cat}</td><td style="font-weight:800;color:${col}">${m}</td><td style="color:rgba(255,255,255,.5)">${s}</td></tr>`).join('');
+}
+
+// ── BUILD EACH VIEW ──
+function buildSectorChart(){
+  const el=document.getElementById('sector-chart');if(!el)return;
+  const sectores=[
+    {nom:'Operaciones',tot:62,m:44,f:18,col:'#3b82f6'},
+    {nom:'Logística',tot:45,m:38,f:7,col:'#f59e0b'},
+    {nom:'Ventas',tot:38,m:20,f:18,col:'#34d399'},
+    {nom:'Producción',tot:34,m:28,f:6,col:'#a78bfa'},
+    {nom:'Administración',tot:28,m:12,f:16,col:'#f472b6'},
+    {nom:'RRHH',tot:18,m:5,f:13,col:'#2dd4bf'},
+    {nom:'TI',tot:14,m:11,f:3,col:'#60a5fa'},
+    {nom:'Marketing',tot:9,m:4,f:5,col:'#fbbf24'},
+  ];
+  const max=sectores[0].tot;
+  el.innerHTML=`
+    <div style="display:flex;gap:.4rem;font-size:.58rem;color:rgba(255,255,255,.35);margin-bottom:.4rem;padding-left:94px">
+      <span style="display:flex;align-items:center;gap:.25rem"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#60a5fa"></span>Hombres</span>
+      <span style="display:flex;align-items:center;gap:.25rem;margin-left:.5rem"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#f472b6"></span>Mujeres</span>
+    </div>
+    ${sectores.map(s=>`
+    <div class="sector-row">
+      <div class="sector-name">${s.nom}</div>
+      <div class="sector-bar-wrap">
+        <div class="sector-bar-m" style="width:0%;background:#3b82f6" data-w="${s.m/max*100}%"></div>
+        <div class="sector-bar-f" style="width:0%;background:#f472b6" data-w="${s.f/max*100}%"></div>
+      </div>
+      <div class="sector-total" style="color:rgba(255,255,255,.8)">${s.tot}</div>
+      <div class="sector-mf">${s.m}M · ${s.f}F</div>
+    </div>`).join('')}`;
+  setTimeout(()=>{
+    el.querySelectorAll('.sector-bar-m,.sector-bar-f').forEach(b=>{b.style.width=b.dataset.w;});
+  },80);
+}
+
+function buildRotacion(){
+  const el=document.getElementById('rotacion-panel');if(!el)return;
+  const motivos=[
+    {lbl:'Renuncia voluntaria',col:'#f59e0b'},
+    {lbl:'Despido',col:'#f87171'},
+    {lbl:'Fin de contrato',col:'#60a5fa'},
+    {lbl:'Jubilación',col:'#34d399'},
+    {lbl:'Otro',col:'#a78bfa'},
+  ];
+  const areas=[
+    {area:'Operaciones',pct:8.2,trend:'down',vals:[5,1,1,1,0],tot:62,bajas:5,color:'#3b82f6'},
+    {area:'Logística',pct:13.3,trend:'up',vals:[3,2,1,0,0],tot:45,bajas:6,color:'#f59e0b'},
+    {area:'Ventas',pct:15.8,trend:'up',vals:[4,2,0,0,0],tot:38,bajas:6,color:'#34d399'},
+    {area:'Producción',pct:5.9,trend:'down',vals:[1,0,1,0,0],tot:34,bajas:2,color:'#a78bfa'},
+    {area:'Administración',pct:7.1,trend:'neutral',vals:[1,0,1,0,0],tot:28,bajas:2,color:'#f472b6'},
+    {area:'RRHH',pct:5.6,trend:'down',vals:[1,0,0,0,0],tot:18,bajas:1,color:'#2dd4bf'},
+    {area:'TI',pct:21.4,trend:'up',vals:[2,0,1,0,0],tot:14,bajas:3,color:'#60a5fa'},
+    {area:'Marketing',pct:11.1,trend:'up',vals:[1,0,0,0,0],tot:9,bajas:1,color:'#fbbf24'},
+  ];
+  const trendIcon={up:'<span style="color:#f87171">▲</span>',down:'<span style="color:#34d399">▼</span>',neutral:'<span style="color:#94a3b8">→</span>'};
+  const maxBajas=Math.max(...areas.map(a=>a.bajas));
+  el.innerHTML=`<div class="rot-grid">${areas.map(a=>`
+    <div class="rot-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem">
+        <div class="rot-area" style="color:${a.color}">${a.area}</div>
+        <span style="font-size:.62rem;color:rgba(255,255,255,.3)">${a.bajas}/${a.tot} emp.</span>
+      </div>
+      <div class="rot-pct" style="color:${a.pct>15?'#f87171':a.pct>10?'#f59e0b':'#34d399'}">${a.pct}%</div>
+      <div style="height:4px;background:rgba(255,255,255,.07);border-radius:2px;margin-bottom:.5rem">
+        <div style="height:100%;border-radius:2px;width:0%;background:${a.pct>15?'#f87171':a.pct>10?'#f59e0b':'#34d399'};transition:width 1s ease" data-w="${a.pct/25*100}%"></div>
+      </div>
+      <div class="rot-motivos">
+        ${motivos.map((m,i)=>a.vals[i]>0?`
+          <div class="rot-mot-row">
+            <span style="width:7px;height:7px;border-radius:2px;background:${m.col};flex-shrink:0;display:inline-block"></span>
+            <span class="rot-mot-lbl">${m.lbl}</span>
+            <span class="rot-mot-val" style="color:${m.col}">${a.vals[i]}</span>
+          </div>
+          <div class="rot-mot-bar"><div class="rot-mot-fill" style="width:0%;background:${m.col}" data-w="${a.vals[i]/maxBajas*100}%"></div></div>
+        `:'').join('')}
+      </div>
+      <div class="rot-trend">${trendIcon[a.trend]} <span style="font-size:.6rem;color:rgba(255,255,255,.35)">vs año anterior</span></div>
+    </div>`).join('')}</div>`;
+  setTimeout(()=>{
+    el.querySelectorAll('[data-w]').forEach(b=>{b.style.width=b.dataset.w;});
+  },100);
+}
+
+// ── LÍNEA CON FECHAS REALES ÚLTIMOS 30 DÍAS ──
+function buildLineWithDates(id){
+  const el=document.getElementById(id);if(!el)return;
+  // Generar últimos 30 días desde hoy
+  const today=new Date();
+  const days=[];
+  const vals=[];
+  const vals2=[];
+  for(let i=29;i>=0;i--){
+    const d=new Date(today);d.setDate(today.getDate()-i);
+    const dd=String(d.getDate()).padStart(2,'0');
+    const mm=String(d.getMonth()+1).padStart(2,'0');
+    days.push(`${dd}/${mm}`);
+    // Serie 1: ventas reales con variación realista (fines de semana más bajos)
+    const dow=d.getDay();
+    const base=dow===0||dow===6?180:320;
+    const trend=i<10?1.15:i<20?1.05:1; // tendencia alcista reciente
+    vals.push(Math.round((base+Math.sin(i*.6)*60+rand(-30,40))*trend));
+    vals2.push(Math.round((base*.85+Math.sin(i*.4)*40+rand(-20,25))*trend));
+  }
+  const W=el.offsetWidth||700,H=150;
+  const allVals=[...vals,...vals2];
+  const maxV=Math.max(...allVals);
+  const minV=Math.min(...allVals)*0.9;
+  const n=days.length;
+  function px(i){return 42+(W-52)*i/(n-1);}
+  function py(v){return H-28-(v-minV)/(maxV-minV)*(H-42);}
+  let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" xmlns="http://www.w3.org/2000/svg">`;
+  svg+=`<defs>
+    <linearGradient id="lgv1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${colors.amber}" stop-opacity=".35"/><stop offset="100%" stop-color="${colors.amber}" stop-opacity="0"/></linearGradient>
+    <linearGradient id="lgv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${colors.blue}" stop-opacity=".25"/><stop offset="100%" stop-color="${colors.blue}" stop-opacity="0"/></linearGradient>
+  </defs>`;
+  // Eje Y — max y min
+  svg+=`<text x="38" y="${py(maxV)+4}" text-anchor="end" font-size="7.5" fill="rgba(255,255,255,.35)">$${maxV}</text>`;
+  svg+=`<text x="38" y="${py(minV)+4}" text-anchor="end" font-size="7.5" fill="rgba(255,255,255,.25)">$${Math.round(minV)}</text>`;
+  // Línea horizontal Y max
+  svg+=`<line x1="42" y1="${py(maxV)}" x2="${W-10}" y2="${py(maxV)}" stroke="rgba(255,255,255,.06)" stroke-width=".5" stroke-dasharray="3,3"/>`;
+  // Eje X — mostrar cada 5 días
+  days.forEach((d,i)=>{
+    if(i===0||i===4||i===9||i===14||i===19||i===24||i===29){
+      svg+=`<text x="${px(i)}" y="${H-10}" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.3)">${d}</text>`;
+      svg+=`<line x1="${px(i)}" y1="${py(maxV)-4}" x2="${px(i)}" y2="${H-18}" stroke="rgba(255,255,255,.04)" stroke-width=".5"/>`;
+    }
+  });
+  // Área + línea serie 2
+  let path2=`M${px(0)},${py(vals2[0])}`;
+  for(let i=1;i<n;i++) path2+=` L${px(i)},${py(vals2[i])}`;
+  svg+=`<path d="${path2} L${px(n-1)},${H-18} L${px(0)},${H-18} Z" fill="url(#lgv2)"/>`;
+  svg+=`<path d="${path2}" fill="none" stroke="${colors.blue}" stroke-width="1.5" stroke-linecap="round"/>`;
+  // Área + línea serie 1
+  let path1=`M${px(0)},${py(vals[0])}`;
+  for(let i=1;i<n;i++) path1+=` L${px(i)},${py(vals[i])}`;
+  svg+=`<path d="${path1} L${px(n-1)},${H-18} L${px(0)},${H-18} Z" fill="url(#lgv1)"/>`;
+  svg+=`<path d="${path1}" fill="none" stroke="${colors.amber}" stroke-width="2" stroke-linecap="round"/>`;
+  // Punto hoy (último)
+  svg+=`<circle cx="${px(29)}" cy="${py(vals[29])}" r="4" fill="${colors.amber}" stroke="#13182a" stroke-width="1.5"/>`;
+  svg+=`<text x="${px(29)}" y="${py(vals[29])-8}" text-anchor="middle" font-size="7.5" fill="${colors.amber}" font-weight="700">$${vals[29]}</text>`;
+  svg+=`</svg>`;
+  el.innerHTML=svg;
+  // Leyenda
+  el.insertAdjacentHTML('afterend',`<div style="display:flex;gap:.75rem;margin-top:.35rem;font-size:.62rem;color:rgba(255,255,255,.4)">
+    <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:3px;background:${colors.amber};border-radius:2px"></span>Ventas reales</span>
+    <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:3px;background:${colors.blue};border-radius:2px"></span>Objetivo diario</span>
+    <span style="margin-left:auto;color:rgba(255,255,255,.25)">${days[0]} → ${days[29]}</span>
+  </div>`);
+}
+
+// ── VENTAS POR CANAL — BARRAS HORIZONTALES CON LEYENDA ──
+function buildBarChartCanal(id){
+  const el=document.getElementById(id);if(!el)return;
+  const canales=[
+    {lbl:'Presencial',val:2840,color:colors.amber,icon:'🏪'},
+    {lbl:'Online (web)',val:1620,color:colors.blue,icon:'🌐'},
+    {lbl:'WhatsApp',val:1240,color:'#34d399',icon:'💬'},
+    {lbl:'App móvil',val:980,color:colors.green,icon:'📱'},
+    {lbl:'Teléfono',val:380,color:colors.purple,icon:'📞'},
+    {lbl:'Otro',val:95,color:colors.red,icon:'📋'},
+  ];
+  const max=canales[0].val;
+  const total=canales.reduce((a,c)=>a+c.val,0);
+  el.style.height='auto';
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem">
+      <span style="font-size:.62rem;color:rgba(255,255,255,.35)">Total: <strong style="color:white">${total.toLocaleString()}</strong> transacciones</span>
+      <span style="font-size:.6rem;color:rgba(255,255,255,.25)">Período actual</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.5rem">
+      ${canales.map(c=>{
+        const pct=Math.round(c.val/total*100);
+        const barW=Math.round(c.val/max*100);
+        return `<div style="display:flex;align-items:center;gap:.6rem">
+          <div style="width:80px;font-size:.68rem;font-weight:600;color:rgba(255,255,255,.7);text-align:right;flex-shrink:0">${c.icon} ${c.lbl}</div>
+          <div style="flex:1;height:22px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;position:relative">
+            <div style="height:100%;width:0%;background:${c.color};border-radius:4px;transition:width .9s cubic-bezier(.4,0,.2,1);opacity:.85" data-w="${barW}%"></div>
+          </div>
+          <div style="width:52px;text-align:right;flex-shrink:0">
+            <span style="font-size:.75rem;font-weight:800;color:${c.color}">${c.val>=1000?(c.val/1000).toFixed(1)+'K':c.val}</span>
+            <span style="font-size:.6rem;color:rgba(255,255,255,.3);display:block">${pct}%</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="margin-top:.75rem;padding-top:.6rem;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:1rem;flex-wrap:wrap">
+      ${canales.map(c=>`<span style="display:flex;align-items:center;gap:.3rem;font-size:.6rem;color:rgba(255,255,255,.45)"><span style="width:8px;height:8px;border-radius:2px;background:${c.color};display:inline-block"></span>${c.lbl}</span>`).join('')}
+    </div>`;
+  setTimeout(()=>el.querySelectorAll('[data-w]').forEach(b=>{b.style.width=b.dataset.w;}),80);
+}
+
+function buildView(id){
+  document.querySelectorAll('.anim-num').forEach(el=>{
+    const v=el.closest('.view');
+    if(v&&v.id==='view-'+id)animNum(el);
+  });
+  if(id==='resumen'){
+    buildMini('km1',colors.green,[40,55,45,70,60,85,78]);
+    buildMini('km2',colors.blue,[55,60,50,65,70,72,62]);
+    buildMini('km3',colors.amber,[50,52,48,56,60,58,55]);
+    buildMini('km4',colors.purple,[45,48,52,58,62,68,70]);
+    buildMini('km5',colors.red,[60,55,58,50,48,44,42]);
+    buildMini('km6',colors.green,[28,30,29,31,32,33,34]);
+    buildBarChart('bc-ventas-mes',['Ene','Feb','Mar','Abr','May','Jun'],[
+      {data:[680,720,790,840,920,980],color:colors.amber,prefix:'$'},
+      {data:[720,700,780,800,880,940],color:'rgba(96,165,250,.4)',prefix:'$'},
+    ]);
+    buildDonut('donut-cat',[
+      {label:'Bebidas',val:38,color:colors.amber},{label:'Alimentos',val:20,color:colors.blue},
+      {label:'Frescos',val:15,color:colors.green},{label:'Limpieza',val:10,color:colors.purple},
+      {label:'Otros',val:17,color:colors.red},
+    ]);
+    const pp=document.getElementById('top-prods');
+    if(pp){
+      const prods=[['☕','Café Premium','8.420','$504K',82,colors.amber],['🥤','Yerba Mate','6.890','$310K',71,colors.green],['🍫','Chocolate','5.120','$256K',60,colors.blue],['🧃','Jugos','4.780','$191K',55,colors.purple]];
+      pp.innerHTML=`<div class="prod-grid">${prods.map(([ic,n,u,m,p,c])=>`<div class="prod-card"><div class="prod-icon" style="background:${c}22">${ic}</div><div class="prod-info"><div class="prod-name">${n}</div><div class="prod-bar-wrap"><div class="prod-bar-f" style="width:0%;background:${c}" data-w="${p}%"></div></div></div><div><div class="prod-val" style="color:${c}">${u}</div><div class="prod-pct" style="color:rgba(255,255,255,.35)">${m}</div></div></div>`).join('')}</div>`;
+      setTimeout(()=>pp.querySelectorAll('.prod-bar-f').forEach(f=>{f.style.width=f.dataset.w;}),100);
+    }
+    buildTablaClientes();
+  }
+  if(id==='ventas'){
+    buildMini('km-v1',colors.green,[50,60,70,75,80,88,95]);
+    buildMini('km-v2',colors.blue,[45,55,65,70,75,80,85]);
+    buildMini('km-v3',colors.amber,[60,62,64,65,67,68,68]);
+    buildMini('km-v4',colors.red,[30,28,25,24,22,20,18]);
+    buildLineWithDates('line-daily');
+    buildBarChartCanal('bc-canal');
+    buildHeat('heat-map-wrap');
+    buildTablaProdsV();
+  }
+  if(id==='logistica'){
+    buildBarChart('bc-zonas',['Buenos Aires','Córdoba','Rosario','Mendoza','Tucumán','Salta','Mar del Plata'],[
+      {data:[3120,1480,970,540,380,290,240],color:colors.blue,prefix:''},
+      {data:[2900,1400,920,510,360,270,210],color:'rgba(52,211,153,.35)',prefix:''},
+    ]);
+    buildDonut('donut-log',[
+      {label:'Express',val:35,color:colors.amber},{label:'Estándar',val:45,color:colors.blue},
+      {label:'Económico',val:20,color:colors.green},
+    ]);
+    buildTablaLog();
+    buildFlota();
+    buildBarChart('bc-zonas',['Buenos Aires','Córdoba','Rosario','Mendoza','Tucumán','Salta','Mar del Plata'],[
+      {data:[3120,1480,970,540,380,290,240],color:colors.blue,prefix:''},
+      {data:[2900,1400,920,510,360,270,210],color:'rgba(52,211,153,.35)',prefix:''},
+    ]);
+    buildDonut('donut-log',[
+      {label:'Express',val:35,color:colors.amber},{label:'Estándar',val:45,color:colors.blue},
+      {label:'Económico',val:15,color:colors.green},{label:'Urbano',val:5,color:colors.purple},
+    ]);
+    buildLine('line-log',[
+      {data:Array.from({length:14},()=>rand(480,680)),color:colors.green},
+    ]);
+    buildBarChart('bc-flota',['Camiones','Furgones','Motos','Pickups'],[
+      {data:[820,420,95,340],color:colors.amber,prefix:'L '},
+    ]);
+  }
+  if(id==='rrhh'){
+    buildMini('km-r1',colors.blue,[40,45,50,58,62,68,72]);
+    buildMini('km-r2',colors.amber,[60,65,68,70,72,74,75]);
+    buildEquipoVendedores();
+    buildPremios();
+    buildDonut('donut-genero',[
+      {label:'Hombres',val:158,color:colors.blue},{label:'Mujeres',val:90,color:'#f472b6'},
+    ]);
+    buildSectorChart();
+    buildRotacion();
+    buildTablaRRHH();
+    buildBarChart('bc-extra',['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8'],[
+      {data:[280,320,290,380,340,420,380,440],color:colors.red,prefix:''},
+    ]);
+    buildLine('line-aus',[
+      {data:[4.2,3.8,3.5,3.1,2.8,2.5,2.3,2.1,2.0,2.2,2.1,2.1],color:colors.red},
+    ]);
+  }
+  if(id==='finanzas'){
+    buildMini('km-f1',colors.green,[55,65,70,75,82,88,95]);
+    buildMini('km-f2',colors.red,[70,68,65,62,60,58,55]);
+    buildMini('km-f3',colors.green,[20,30,35,42,50,58,65]);
+    buildMini('km-f4',colors.blue,[60,65,70,68,72,78,85]);
+    buildBarChart('bc-flujo',['Ene','Feb','Mar','Abr','May','Jun'],[
+      {data:[680,720,790,840,920,980],color:colors.green,prefix:'$'},
+      {data:[480,510,540,570,590,620],color:colors.red,prefix:'$'},
+      {data:[200,210,250,270,330,360],color:'rgba(96,165,250,.5)',prefix:'$'},
+    ]);
+    buildDonut('donut-gastos',[
+      {label:'RRHH',val:40,color:colors.blue},{label:'Operativo',val:25,color:colors.amber},
+      {label:'Logística',val:20,color:colors.purple},{label:'Marketing',val:10,color:colors.green},
+      {label:'Otros',val:5,color:colors.red},
+    ]);
+    buildTablaFin();
+    buildBarChart('bc-cuentas',['Sup. Don Pedro','Dist. Norte','Lácteos SA','Proveedor X','Cliente Y'],[
+      {data:[284,236,189,142,98],color:colors.green,prefix:'$'},
+      {data:[-120,-80,-220,-50,-30],color:colors.red,prefix:'$'},
+    ]);
+    buildLine('line-gan',[
+      {data:[200,380,520,720,940,1200,1380,1580,1760,1890,2100,2400],color:colors.green},
+    ]);
+  }
+}
+
+// ── INIT ──
+window.addEventListener('load',()=>{
+  buildView('ventas');
+});
+</script>
+</body>
+</html>
