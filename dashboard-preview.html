@@ -1336,7 +1336,15 @@ setTimeout(initMap, 300);
 }
 .map-tooltip strong { color: #f59e0b; }
 .map-tooltip::before { display: none !important; }
-.leaflet-container { background: #0a1020 !important; }
+.leaflet-container { background: #060e1a !important; }
+.leaflet-tile-pane {
+  filter: hue-rotate(190deg) saturate(0.6) brightness(0.55) sepia(0.3);
+}
+#leaflet-map::after {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; z-index: 500;
+  background: rgba(6, 14, 30, 0.38);
+}
 </style>
 
 </body>
