@@ -158,7 +158,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
 .premio-winner{font-size:.68rem;font-weight:700;margin-top:.2rem}
 
 /* ── FLOTA ── */
-.flota-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem}
+.flota-split{display:flex;gap:.75rem;height:100%}
+.flota-list{flex:0 0 58%;overflow-y:auto;max-height:460px;scrollbar-width:thin;scrollbar-color:rgba(245,158,11,.3) transparent}
+.flota-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem}
+.flota-map-wrap{flex:1;min-height:420px;border-radius:10px;overflow:hidden;position:relative}
+#flota-map{width:100%;height:100%;min-height:420px}
+.veh-marker{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.veh-marker-icon{font-size:1.5rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+.veh-marker-label{background:rgba(10,16,32,.85);color:#fff;font-size:.58rem;font-weight:700;padding:1px 5px;border-radius:4px;margin-top:1px;white-space:nowrap;border:1px solid rgba(255,255,255,.15)}
 .vehiculo-card{background:rgba(255,255,255,.04);border-radius:10px;border:1px solid rgba(255,255,255,.07);overflow:hidden;transition:all .2s;cursor:pointer}
 .vehiculo-card:hover{border-color:rgba(245,158,11,.3);transform:translateY(-2px)}
 .vehiculo-img{height:90px;display:flex;align-items:center;justify-content:center;position:relative}
@@ -377,7 +384,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
   <!-- FLOTA DE VEHÍCULOS -->
   <div class="panel" style="grid-column:span 4">
     <div class="ph"><div><div class="pt">🚛 Flota de vehículos — estado en tiempo real</div><div class="ps">107 vehículos registrados · 89 activos hoy</div></div><div class="pills"><div class="pill on">Todos</div><div class="pill off">En ruta</div><div class="pill off">Disponibles</div></div></div>
-    <div class="pb" id="flota-panel" style="padding:.6rem .75rem"></div>
+    <div class="pb" style="padding:.6rem .75rem">
+      <div class="flota-split">
+        <div class="flota-list" id="flota-panel"></div>
+        <div class="flota-map-wrap">
+          <div id="flota-map"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="panel" style="grid-column:span 2">
@@ -793,6 +807,7 @@ function buildFlota(){
     {id:'AUTO-004',tipo:'auto',label:'Auto Utilitario',svg:svgPickup,color:'#fbbf24',est:'Disponible',estC:colors.green,cond:'Galotto A.',dest:'—',km:'310',cap:'300 kg',año:'2023'},
     {id:'MTO-004',tipo:'moto',label:'Moto Delivery',svg:svgMoto,color:'#a78bfa',est:'Disponible',estC:colors.green,cond:'Pereyra S.',dest:'—',km:'0',cap:'50 kg',año:'2025'},
   ];
+  buildFlotaMap(vehiculos);
   el.innerHTML=`<div class="flota-grid">${vehiculos.map(v=>`
     <div class="vehiculo-card">
       <div class="vehiculo-img" style="background:#f0f2f5;padding:.5rem 0;display:flex;align-items:center;justify-content:center">
@@ -810,6 +825,56 @@ function buildFlota(){
         </div>
       </div>
     </div>`).join('')}</div>`;
+}
+
+let flotaMap = null;
+function buildFlotaMap(vehiculos) {
+  const el = document.getElementById('flota-map');
+  if (!el) return;
+
+  if (flotaMap) { flotaMap.remove(); flotaMap = null; }
+
+  flotaMap = L.map('flota-map', {
+    center: [-33, -63], zoom: 4.2, zoomSnap: 0.1,
+    zoomControl: true, attributionControl: false,
+    scrollWheelZoom: true, dragging: true
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(flotaMap);
+
+  // Coordenadas de ciudades
+  const coords = {
+    'Córdoba':       [-31.42, -64.18],
+    'Rosario':       [-32.94, -60.65],
+    'Buenos Aires':  [-34.61, -58.42],
+    'CABA':          [-34.60, -58.38],
+    'Palermo':       [-34.58, -58.43],
+    'Salta':         [-24.79, -65.41],
+    'Mendoza':       [-32.89, -68.85],
+    'Tucumán':       [-26.82, -65.22],
+    'Santa Fe':      [-31.63, -60.70],
+    'Neuquén':       [-38.95, -68.06],
+  };
+
+  const icons = { camion: '🚛', auto: '🚗', moto: '🏍️' };
+  const colorEst = { 'En ruta': '#f59e0b', 'Disponible': '#34d399', 'Mantenimiento': '#f87171' };
+
+  vehiculos.filter(v => v.dest && v.dest !== '—' && coords[v.dest]).forEach(v => {
+    const [lat, lon] = coords[v.dest];
+    const color = colorEst[v.est] || '#60a5fa';
+    const icon = L.divIcon({
+      html: `<div class="veh-marker">
+        <div class="veh-marker-icon" style="text-shadow:0 0 8px ${color}">${icons[v.tipo]}</div>
+        <div class="veh-marker-label" style="border-color:${color}55;color:${color}">${v.id}</div>
+      </div>`,
+      className: '', iconSize: [60, 40], iconAnchor: [30, 35]
+    });
+    L.marker([lat, lon], { icon })
+      .addTo(flotaMap)
+      .bindPopup(`<b style="color:${color}">${v.id}</b><br>${v.label}<br>🧑‍✈️ ${v.cond}<br>📍 ${v.dest}<br>🛣️ ${v.km} km hoy`, { className: 'map-tooltip' });
+  });
+
+  setTimeout(() => flotaMap.invalidateSize(), 150);
 }
 
 function buildTablaLog(){
