@@ -203,6 +203,41 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
 .rot-mot-fill{height:100%;border-radius:2px;transition:width 1s ease}
 .rot-trend{font-size:.6rem;margin-top:.4rem;padding-top:.35rem;border-top:1px solid rgba(255,255,255,.05)}
 
+/* ── FINANZAS ── */
+.fin-insight{display:flex;align-items:center;gap:.75rem;background:rgba(255,255,255,.03);border:1px solid rgba(var(--ic-rgb,255,255,255),.12);border-left:3px solid var(--ic,#34d399);border-radius:10px;padding:.65rem .9rem}
+.fin-insight[style*="34d399"]{--ic-rgb:52,211,153}.fin-insight[style*="f59e0b"]{--ic-rgb:245,158,11}.fin-insight[style*="60a5fa"]{--ic-rgb:96,165,250}.fin-insight[style*="a78bfa"]{--ic-rgb:167,139,250}
+.fi-icon{font-size:1.5rem;flex-shrink:0}
+.fi-body{display:flex;flex-direction:column;gap:.15rem}
+.fi-title{font-size:.68rem;color:rgba(255,255,255,.45);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.fi-val{font-size:.88rem;font-weight:800} .fi-val span{font-size:.7rem;color:rgba(255,255,255,.4);font-weight:400;margin-left:.3rem}
+.fin-filter{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);font-size:.68rem;font-weight:700;padding:.3rem .75rem;border-radius:99px;cursor:pointer;transition:all .15s;font-family:inherit}
+.fin-filter.active{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.4);color:#f59e0b}
+.fin-filter:hover{border-color:rgba(255,255,255,.25);color:white}
+.fin-search{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:white;font-size:.72rem;padding:.3rem .75rem;border-radius:99px;outline:none;width:140px;font-family:inherit}
+.fin-search::placeholder{color:rgba(255,255,255,.3)}
+.fin-search:focus{border-color:rgba(245,158,11,.4)}
+/* Forecast */
+.forecast-item{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.forecast-item:last-child{border-bottom:none}
+.forecast-mes{font-size:.75rem;font-weight:700;color:rgba(255,255,255,.6)}
+.forecast-val{font-size:.85rem;font-weight:800;color:#34d399}
+.forecast-bar-wrap{flex:1;margin:0 .75rem;height:4px;background:rgba(255,255,255,.07);border-radius:2px}
+.forecast-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,#34d399,#60a5fa);transition:width 1s ease}
+.forecast-conf{font-size:.6rem;color:rgba(255,255,255,.3)}
+/* Health score */
+.health-wrap{display:flex;flex-direction:column;align-items:center;gap:.75rem;padding:.25rem 0}
+.health-score-ring{position:relative;width:110px;height:110px}
+.health-score-ring svg{transform:rotate(-90deg)}
+.health-score-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.health-score-num strong{font-size:1.6rem;font-weight:900;color:#34d399;line-height:1}
+.health-score-num span{font-size:.6rem;color:rgba(255,255,255,.4);margin-top:1px}
+.health-ratios{width:100%;display:flex;flex-direction:column;gap:.4rem}
+.health-ratio{display:flex;align-items:center;gap:.5rem;font-size:.7rem}
+.health-ratio-lbl{color:rgba(255,255,255,.5);flex:1}
+.health-ratio-bar{flex:2;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.health-ratio-fill{height:100%;border-radius:2px;transition:width 1s ease}
+.health-ratio-val{font-weight:700;min-width:28px;text-align:right}
+
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:rgba(255,255,255,.04)}
@@ -505,17 +540,43 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
 <!-- ═══════════════════════════════════════════════════════ -->
 <div class="view" id="view-finanzas">
 <div class="grid" style="grid-template-columns:repeat(4,1fr)">
+
+  <!-- ── KPIs ── -->
   <div class="kpi g-full" style="grid-column:span 4;padding:0">
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem">
-      <div class="kpi"><div class="kpi-lbl">Ingresos netos</div><div class="kpi-val anim-num" style="color:#34d399" data-target="4820000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="up">▲ 18%</span></div><div class="kpi-mini" id="km-f1"></div></div>
-      <div class="kpi"><div class="kpi-lbl">Egresos</div><div class="kpi-val anim-num" style="color:#f87171" data-target="3160000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="down">▼ 3%</span></div><div class="kpi-mini" id="km-f2"></div></div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:.65rem">
+      <div class="kpi"><div class="kpi-lbl">Ingresos netos</div><div class="kpi-val anim-num" style="color:#34d399" data-target="4820000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="up">▲ 18%</span><span class="neu">vs año ant.</span></div><div class="kpi-mini" id="km-f1"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Egresos</div><div class="kpi-val anim-num" style="color:#f87171" data-target="3160000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="down">▼ 3%</span><span class="neu">bajo presup.</span></div><div class="kpi-mini" id="km-f2"></div></div>
       <div class="kpi"><div class="kpi-lbl">Ganancia neta</div><div class="kpi-val anim-num" style="color:#34d399" data-target="1650000" data-prefix="$" data-suffix="M" data-div="1000000">$0</div><div class="kpi-sub"><span class="up">▲ 34%</span><span class="neu">vs año ant.</span></div><div class="kpi-mini" id="km-f3"></div></div>
-      <div class="kpi"><div class="kpi-lbl">Flujo de caja</div><div class="kpi-val anim-num" style="color:#60a5fa" data-target="920000" data-prefix="$" data-suffix="K" data-div="1000">$0</div><div class="kpi-sub"><span class="up">Positivo</span></div><div class="kpi-mini" id="km-f4"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Flujo de caja</div><div class="kpi-val anim-num" style="color:#60a5fa" data-target="920000" data-prefix="$" data-suffix="K" data-div="1000">$0</div><div class="kpi-sub"><span class="up">● Positivo</span></div><div class="kpi-mini" id="km-f4"></div></div>
+      <div class="kpi"><div class="kpi-lbl">Margen neto</div><div class="kpi-val anim-num" style="color:#a78bfa" data-target="34.2" data-prefix="" data-suffix="%">0%</div><div class="kpi-sub"><span class="up">▲ 2.1pp</span><span class="neu">meta: 30%</span></div><div class="kpi-mini" id="km-f5"></div></div>
+      <div class="kpi"><div class="kpi-lbl">ROI</div><div class="kpi-val anim-num" style="color:#2dd4bf" data-target="52.2" data-prefix="" data-suffix="%">0%</div><div class="kpi-sub"><span class="up">▲ 8pp</span><span class="neu">vs semestre ant.</span></div><div class="kpi-mini" id="km-f6"></div></div>
     </div>
   </div>
 
-  <div class="panel" style="grid-column:span 3">
-    <div class="ph"><div><div class="pt">💹 Ingresos vs Egresos — flujo mensual</div></div></div>
+  <!-- ── INSIGHTS IA ── -->
+  <div style="grid-column:span 4;display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem">
+    <div class="fin-insight" style="--ic:#34d399">
+      <div class="fi-icon">🔮</div>
+      <div class="fi-body"><div class="fi-title">Proyección Julio</div><div class="fi-val" style="color:#34d399">+$1.05M <span>+7.1% vs Jun</span></div></div>
+    </div>
+    <div class="fin-insight" style="--ic:#f59e0b">
+      <div class="fi-icon">⚠️</div>
+      <div class="fi-body"><div class="fi-title">Alerta RRHH</div><div class="fi-val" style="color:#f59e0b">Egresos +8% <span>sobre presupuesto</span></div></div>
+    </div>
+    <div class="fin-insight" style="--ic:#60a5fa">
+      <div class="fi-icon">💡</div>
+      <div class="fi-body"><div class="fi-title">Flujo positivo</div><div class="fi-val" style="color:#60a5fa">4° mes consec. <span>liquidez saludable</span></div></div>
+    </div>
+    <div class="fin-insight" style="--ic:#a78bfa">
+      <div class="fi-icon">📈</div>
+      <div class="fi-body"><div class="fi-title">Margen histórico</div><div class="fi-val" style="color:#a78bfa">34.2% <span>máximo 18 meses</span></div></div>
+    </div>
+  </div>
+
+  <!-- ── FLUJO MENSUAL ── -->
+  <div class="panel" style="grid-column:span 2">
+    <div class="ph"><div><div class="pt">💹 Ingresos vs Egresos — flujo mensual</div></div>
+    <div class="pills"><div class="pill on">Mensual</div><div class="pill off">Trimestral</div></div></div>
     <div class="pb"><div class="bar-chart" id="bc-flujo"></div>
     <div style="display:flex;gap:.75rem;margin-top:.4rem;font-size:.62rem;color:rgba(255,255,255,.4)">
       <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:#34d399;border-radius:2px"></span>Ingresos</span>
@@ -524,13 +585,29 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
     </div></div>
   </div>
 
+  <!-- ── FORECAST ── -->
   <div class="panel" style="grid-column:span 1">
-    <div class="ph"><div><div class="pt">🎯 Distribución gastos</div></div></div>
-    <div class="pb" id="donut-gastos"></div>
+    <div class="ph"><div><div class="pt">🔮 Forecast Jul–Sep</div><div class="ps">Proyección basada en tendencia</div></div></div>
+    <div class="pb" id="forecast-panel"></div>
   </div>
 
+  <!-- ── SALUD FINANCIERA ── -->
+  <div class="panel" style="grid-column:span 1">
+    <div class="ph"><div><div class="pt">💪 Salud Financiera</div><div class="ps">Score global del período</div></div></div>
+    <div class="pb" id="salud-panel"></div>
+  </div>
+
+  <!-- ── MOVIMIENTOS CON FILTROS ── -->
   <div class="panel g-full" style="grid-column:span 4">
-    <div class="ph"><div><div class="pt">📋 Movimientos recientes</div></div></div>
+    <div class="ph">
+      <div><div class="pt">📋 Movimientos recientes</div></div>
+      <div style="display:flex;gap:.4rem;align-items:center">
+        <button class="fin-filter active" data-f="todos"  onclick="filterFin(this,'todos')">Todos</button>
+        <button class="fin-filter"        data-f="ing"    onclick="filterFin(this,'ing')">● Ingresos</button>
+        <button class="fin-filter"        data-f="egr"    onclick="filterFin(this,'egr')">● Egresos</button>
+        <input id="fin-search" class="fin-search" placeholder="🔍 buscar..." oninput="filterFin(null,'search')"/>
+      </div>
+    </div>
     <div class="pb" style="padding:.4rem .75rem">
       <table class="tbl">
         <thead><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Categoría</th><th>Monto</th><th>Saldo</th></tr></thead>
@@ -539,12 +616,20 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
     </div>
   </div>
 
+  <!-- ── CUENTAS CORRIENTES ── -->
   <div class="panel" style="grid-column:span 2">
     <div class="ph"><div><div class="pt">📊 Cuentas corrientes activas</div></div></div>
     <div class="pb"><div class="bar-chart" id="bc-cuentas"></div></div>
   </div>
 
-  <div class="panel" style="grid-column:span 2">
+  <!-- ── RENTABILIDAD ── -->
+  <div class="panel" style="grid-column:span 1">
+    <div class="ph"><div><div class="pt">🎯 Distribución de gastos</div></div></div>
+    <div class="pb" id="donut-gastos"></div>
+  </div>
+
+  <!-- ── GANANCIA ACUMULADA ── -->
+  <div class="panel" style="grid-column:span 1">
     <div class="ph"><div><div class="pt">📈 Ganancia acumulada</div></div></div>
     <div class="pb"><div class="line-wrap" id="line-gan"></div></div>
   </div>
@@ -1026,16 +1111,22 @@ function buildTablaRRHH(){
 }
 
 function buildTablaFin(){
-  const data=[
-    ['01/06','Venta mayorista Sup. Don Pedro','Ingreso','Ventas','+$84.200',colors.green,'$1.240.800'],
-    ['01/06','Pago proveedor Lácteos SA','Egreso','Compras','-$32.400',colors.red,'$1.156.400'],
-    ['31/05','Cobro factura #4421','Ingreso','Cobranzas','+$56.100',colors.green,'$1.188.800'],
-    ['31/05','Alquiler depósito central','Egreso','Operativo','-$45.000',colors.red,'$1.132.700'],
-    ['30/05','Venta cliente Kiosco Los Andes','Ingreso','Ventas','+$28.900',colors.green,'$1.177.700'],
-    ['30/05','Salarios quincena','Egreso','RRHH','-$168.000',colors.red,'$1.148.800'],
+  // [fecha, concepto, tipo, categoria, monto, saldo]
+  finMovAll=[
+    ['01/06','Venta mayorista Sup. Don Pedro','Ingreso','Ventas','84.200','1.240.800'],
+    ['01/06','Pago proveedor Lácteos SA','Egreso','Compras','32.400','1.156.400'],
+    ['31/05','Cobro factura #4421','Ingreso','Cobranzas','56.100','1.188.800'],
+    ['31/05','Alquiler depósito central','Egreso','Operativo','45.000','1.132.700'],
+    ['30/05','Venta cliente Kiosco Los Andes','Ingreso','Ventas','28.900','1.177.700'],
+    ['30/05','Salarios quincena','Egreso','RRHH','168.000','1.148.800'],
+    ['29/05','Cobro factura #4418','Ingreso','Cobranzas','42.600','1.317.800'],
+    ['28/05','Servicio internet y telefonía','Egreso','Operativo','8.400','1.275.200'],
+    ['28/05','Venta mayorista Dist. Norte','Ingreso','Ventas','96.000','1.283.600'],
+    ['27/05','Pago flete interurbano','Egreso','Logística','22.500','1.261.100'],
+    ['26/05','Cobro factura #4415','Ingreso','Cobranzas','33.800','1.283.600'],
+    ['25/05','Mantenimiento depósito','Egreso','Operativo','15.200','1.249.800'],
   ];
-  const el=document.getElementById('tabla-fin');if(!el)return;
-  el.innerHTML=data.map(([f,c,t,cat,m,col,s])=>`<tr><td style="color:rgba(255,255,255,.4)">${f}</td><td>${c}</td><td><span class="tag" style="background:${col}22;color:${col}">${t}</span></td><td style="color:rgba(255,255,255,.45)">${cat}</td><td style="font-weight:800;color:${col}">${m}</td><td style="color:rgba(255,255,255,.5)">${s}</td></tr>`).join('');
+  filterFin(null,'todos');
 }
 
 // ── BUILD EACH VIEW ──
@@ -1316,6 +1407,8 @@ function buildView(id){
     buildMini('km-f2',colors.red,[70,68,65,62,60,58,55]);
     buildMini('km-f3',colors.green,[20,30,35,42,50,58,65]);
     buildMini('km-f4',colors.blue,[60,65,70,68,72,78,85]);
+    buildMini('km-f5',colors.purple,[28,29,30,31,33,34,34.2]);
+    buildMini('km-f6',colors.teal,[40,42,44,46,48,50,52.2]);
     buildBarChart('bc-flujo',['Ene','Feb','Mar','Abr','May','Jun'],[
       {data:[680,720,790,840,920,980],color:colors.green,prefix:'$'},
       {data:[480,510,540,570,590,620],color:colors.red,prefix:'$'},
@@ -1334,6 +1427,8 @@ function buildView(id){
     buildLine('line-gan',[
       {data:[200,380,520,720,940,1200,1380,1580,1760,1890,2100,2400],color:colors.green},
     ]);
+    buildForecast();
+    buildHealthScore();
   }
 }
 
@@ -1507,6 +1602,105 @@ function initMap() {
     });
   });
 }
+// ── FORECAST ──
+function buildForecast(){
+  const el = document.getElementById('forecast-panel'); if(!el) return;
+  const items = [
+    { mes:'Julio',    val:'$1.05M', pct:82, conf:'87% confianza', delta:'+7.1%' },
+    { mes:'Agosto',   val:'$1.12M', pct:88, conf:'81% confianza', delta:'+6.7%' },
+    { mes:'Septiembre',val:'$1.18M', pct:93, conf:'74% confianza', delta:'+5.4%' },
+  ];
+  el.innerHTML = `
+    <div style="padding:.25rem 0">
+      ${items.map(i=>`
+        <div class="forecast-item">
+          <div class="forecast-mes">${i.mes}</div>
+          <div class="forecast-bar-wrap"><div class="forecast-bar" style="width:0%" data-w="${i.pct}%"></div></div>
+          <div style="text-align:right">
+            <div class="forecast-val">${i.val} <span style="color:#34d399;font-size:.65rem">${i.delta}</span></div>
+            <div class="forecast-conf">${i.conf}</div>
+          </div>
+        </div>`).join('')}
+      <div style="margin-top:.75rem;padding:.65rem;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.15);border-radius:8px;font-size:.72rem;color:rgba(255,255,255,.55);line-height:1.5">
+        <span style="color:#34d399;font-weight:700">IA:</span> Tendencia creciente sostenida. Se proyecta superar $1.2M en Septiembre si el margen se mantiene ≥ 32%.
+      </div>
+    </div>`;
+  // Animar barras
+  setTimeout(()=>{
+    el.querySelectorAll('.forecast-bar').forEach(b=>{
+      b.style.width = b.dataset.w;
+    });
+  }, 200);
+}
+
+// ── HEALTH SCORE ──
+function buildHealthScore(){
+  const el = document.getElementById('salud-panel'); if(!el) return;
+  const score = 82;
+  const r = 46, cx = 55, cy = 55, circ = 2*Math.PI*r;
+  const dash = (score/100)*circ;
+  const ratios = [
+    { lbl:'Liquidez',      val:88, color:'#34d399' },
+    { lbl:'Rentabilidad',  val:82, color:'#a78bfa' },
+    { lbl:'Eficiencia',    val:76, color:'#60a5fa' },
+    { lbl:'Crecimiento',   val:85, color:'#f59e0b' },
+  ];
+  el.innerHTML = `
+    <div class="health-wrap">
+      <div class="health-score-ring">
+        <svg width="110" height="110" viewBox="0 0 110 110">
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="10"/>
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="url(#hg)" stroke-width="10"
+            stroke-dasharray="${dash} ${circ}" stroke-linecap="round" id="health-arc"
+            style="transition:stroke-dasharray 1.2s ease"/>
+          <defs>
+            <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#34d399"/>
+              <stop offset="100%" stop-color="#60a5fa"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="health-score-num"><strong>${score}</strong><span>/100</span></div>
+      </div>
+      <div class="health-ratios">
+        ${ratios.map(r=>`
+          <div class="health-ratio">
+            <span class="health-ratio-lbl">${r.lbl}</span>
+            <div class="health-ratio-bar"><div class="health-ratio-fill" style="width:0%;background:${r.color}" data-w="${r.val}%"></div></div>
+            <span class="health-ratio-val" style="color:${r.color}">${r.val}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  setTimeout(()=>{
+    el.querySelectorAll('.health-ratio-fill').forEach(b => b.style.width = b.dataset.w);
+  }, 300);
+}
+
+// ── FILTRO TABLA FIN ──
+let finMovAll = [];
+function filterFin(btn, tipo) {
+  if(btn) {
+    document.querySelectorAll('.fin-filter').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const search = (document.getElementById('fin-search')?.value || '').toLowerCase();
+  const activeBtn = document.querySelector('.fin-filter.active');
+  const activeTipo = activeBtn ? activeBtn.dataset.f : 'todos';
+  const tbody = document.getElementById('tabla-fin'); if(!tbody) return;
+  const rows = finMovAll.filter(r => {
+    const matchTipo = activeTipo === 'todos' || (activeTipo === 'ing' && r[2] === 'Ingreso') || (activeTipo === 'egr' && r[2] === 'Egreso');
+    const matchSearch = !search || r.join(' ').toLowerCase().includes(search);
+    return matchTipo && matchSearch;
+  });
+  tbody.innerHTML = rows.map(r=>`<tr>
+    <td>${r[0]}</td><td>${r[1]}</td>
+    <td><span class="tag ${r[2]==='Ingreso'?'t-a':'t-c'}">${r[2]}</span></td>
+    <td>${r[3]}</td>
+    <td style="font-weight:700;color:${r[2]==='Ingreso'?'#34d399':'#f87171'}">${r[2]==='Ingreso'?'+':'-'}$${r[4]}</td>
+    <td style="color:rgba(255,255,255,.6)">$${r[5]}</td>
+  </tr>`).join('');
+}
+
 function clearMapFilter() {
   if (typeof selectedMarker !== 'undefined' && selectedMarker) {
     selectedMarker.setStyle({ weight: 1.5, color: selectedMarker._origColor });
