@@ -255,68 +255,77 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
           <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
 
+        <!-- ══ Posiciones calculadas con lat/lon reales ══
+             x = 128 + (73.5 - lon) * 10.4
+             y =  17 + (lat - 21.8) * 9.2          -->
+
         <!-- Halos de calor -->
-        <ellipse cx="261" cy="162" rx="46" ry="30" fill="url(#gBA)" opacity=".8"/>
-        <ellipse cx="217" cy="131" rx="24" ry="17" fill="url(#gCBA)" opacity=".7"/>
+        <ellipse cx="285" cy="134" rx="46" ry="30" fill="url(#gBA)" opacity=".75"/>
+        <ellipse cx="225" cy="105" rx="24" ry="17" fill="url(#gCBA)" opacity=".65"/>
 
-        <!-- Buenos Aires — Pcia BA, centro ~62% x, 47% y -->
-        <circle cx="261" cy="162" r="14" fill="rgba(245,158,11,.12)" filter="url(#glow)"/>
-        <circle cx="261" cy="162" r="6.5" fill="#f59e0b" opacity=".95"/>
-        <text x="274" y="159" font-size="7.5" fill="white" font-weight="700">Buenos Aires</text>
-        <text x="274" y="170" font-size="6"   fill="#f59e0b">$2.1M · 312 puntos</text>
+        <!-- Buenos Aires — 34.6°S 58.4°W → (285,134) -->
+        <circle cx="285" cy="134" r="14" fill="rgba(245,158,11,.12)" filter="url(#glow)"/>
+        <circle cx="285" cy="134" r="6.5" fill="#f59e0b" opacity=".95"/>
+        <text x="298" y="131" font-size="7.5" fill="white" font-weight="700">Buenos Aires</text>
+        <text x="298" y="142" font-size="6"   fill="#f59e0b">$2.1M · 312 puntos</text>
 
-        <!-- Córdoba — centro ~41% x, 38% y -->
-        <circle cx="217" cy="131" r="9" fill="rgba(52,211,153,.2)" filter="url(#glow)"/>
-        <circle cx="217" cy="131" r="4.5" fill="#34d399"/>
-        <text x="229" y="130" font-size="7"   fill="white" font-weight="700">Córdoba</text>
-        <text x="229" y="140" font-size="5.5" fill="#34d399">$890K · 148 pts</text>
+        <!-- Córdoba — 31.4°S 64.2°W → (225,105) -->
+        <circle cx="225" cy="105" r="9"   fill="rgba(52,211,153,.2)" filter="url(#glow)"/>
+        <circle cx="225" cy="105" r="4.5" fill="#34d399"/>
+        <text x="237" y="104" font-size="7"   fill="white" font-weight="700">Córdoba</text>
+        <text x="237" y="114" font-size="5.5" fill="#34d399">$890K · 148 pts</text>
 
-        <!-- Rosario — ~54% x, 41% y (Santa Fe / Entre Ríos) -->
-        <circle cx="247" cy="144" r="6"   fill="rgba(96,165,250,.2)" filter="url(#glow)"/>
-        <circle cx="247" cy="144" r="3.5" fill="#60a5fa"/>
-        <text x="255" y="143" font-size="6.5" fill="white">Rosario</text>
-        <text x="255" y="153" font-size="5.5" fill="#60a5fa">$640K · 97 pts</text>
+        <!-- Rosario — 32.9°S 60.7°W → (261,119) -->
+        <circle cx="261" cy="119" r="6"   fill="rgba(96,165,250,.2)" filter="url(#glow)"/>
+        <circle cx="261" cy="119" r="3.5" fill="#60a5fa"/>
+        <text x="268" y="118" font-size="6.5" fill="white">Rosario</text>
+        <text x="268" y="128" font-size="5.5" fill="#60a5fa">$640K · 97 pts</text>
 
-        <!-- Mendoza — ~17% x, 39% y -->
-        <circle cx="166" cy="138" r="5"   fill="rgba(167,139,250,.2)"/>
-        <circle cx="166" cy="138" r="3"   fill="#a78bfa"/>
-        <text x="122" y="137" font-size="6.5" fill="white" font-weight="600">Mendoza</text>
-        <text x="122" y="147" font-size="5.5" fill="#a78bfa">$310K</text>
+        <!-- Mendoza — 32.9°S 68.8°W → (177,119) -->
+        <circle cx="177" cy="119" r="5"   fill="rgba(167,139,250,.2)"/>
+        <circle cx="177" cy="119" r="3"   fill="#a78bfa"/>
+        <text x="133" y="118" font-size="6.5" fill="white" font-weight="600">Mendoza</text>
+        <text x="133" y="128" font-size="5.5" fill="#a78bfa">$310K</text>
 
-        <!-- Tucumán — ~38% x, 17% y -->
-        <circle cx="212" cy="69"  r="4.5" fill="rgba(251,191,36,.3)" filter="url(#glow)"/>
-        <circle cx="212" cy="69"  r="2.5" fill="#fbbf24"/>
-        <text x="219" y="72"  font-size="6.5" fill="white">Tucumán</text>
+        <!-- Tucumán — 26.8°S 65.2°W → (214,63) -->
+        <circle cx="214" cy="63"  r="4.5" fill="rgba(251,191,36,.3)" filter="url(#glow)"/>
+        <circle cx="214" cy="63"  r="2.5" fill="#fbbf24"/>
+        <text x="221" y="66"  font-size="6.5" fill="white">Tucumán</text>
 
-        <!-- Salta — ~29% x, 9% y -->
-        <circle cx="192" cy="45"  r="4"   fill="rgba(52,211,153,.3)"/>
-        <circle cx="192" cy="45"  r="2.5" fill="#34d399"/>
-        <text x="199" y="48"  font-size="6" fill="white">Salta</text>
+        <!-- Salta — 24.8°S 65.4°W → (212,45) -->
+        <circle cx="212" cy="45"  r="4"   fill="rgba(52,211,153,.3)"/>
+        <circle cx="212" cy="45"  r="2.5" fill="#34d399"/>
+        <text x="219" y="48"  font-size="6"   fill="white">Salta</text>
 
-        <!-- Mar del Plata — ~65% x, 55% y (costa) -->
-        <circle cx="272" cy="186" r="3.5" fill="rgba(96,165,250,.3)"/>
-        <circle cx="272" cy="186" r="2"   fill="#60a5fa"/>
-        <text x="253" y="196" font-size="5.5" fill="white">Mar del Plata</text>
+        <!-- Mar del Plata — 38.0°S 57.5°W → (294,166) -->
+        <circle cx="294" cy="166" r="3.5" fill="rgba(96,165,250,.3)"/>
+        <circle cx="294" cy="166" r="2"   fill="#60a5fa"/>
+        <text x="275" y="176" font-size="5.5" fill="white">Mar del Plata</text>
 
-        <!-- Neuquén — ~19% x, 63% y -->
-        <circle cx="170" cy="211" r="3"   fill="rgba(167,139,250,.3)"/>
-        <circle cx="170" cy="211" r="1.8" fill="#a78bfa"/>
-        <text x="151" y="214" font-size="5.5" fill="rgba(255,255,255,.7)">Neuquén</text>
+        <!-- Neuquén — 38.9°S 68.1°W → (185,175) -->
+        <circle cx="185" cy="175" r="3"   fill="rgba(167,139,250,.3)"/>
+        <circle cx="185" cy="175" r="1.8" fill="#a78bfa"/>
+        <text x="166" y="178" font-size="5.5" fill="rgba(255,255,255,.7)">Neuquén</text>
 
-        <!-- Scatter puntos menores -->
-        <circle cx="184" cy="60"  r="1.8" fill="rgba(245,158,11,.6)"/>
-        <circle cx="222" cy="55"  r="1.5" fill="rgba(52,211,153,.5)"/>
-        <circle cx="240" cy="98"  r="1.8" fill="rgba(96,165,250,.5)"/>
-        <circle cx="258" cy="120" r="2"   fill="rgba(96,165,250,.4)"/>
-        <circle cx="234" cy="148" r="1.8" fill="rgba(245,158,11,.5)"/>
-        <circle cx="254" cy="174" r="2"   fill="rgba(245,158,11,.6)"/>
-        <circle cx="240" cy="186" r="2.2" fill="rgba(245,158,11,.65)"/>
-        <circle cx="268" cy="200" r="1.8" fill="rgba(245,158,11,.5)"/>
-        <circle cx="188" cy="200" r="1.8" fill="rgba(52,211,153,.4)"/>
-        <circle cx="178" cy="176" r="1.5" fill="rgba(167,139,250,.4)"/>
-        <circle cx="196" cy="148" r="1.5" fill="rgba(52,211,153,.4)"/>
-        <circle cx="192" cy="250" r="1.5" fill="rgba(96,165,250,.3)"/>
-        <circle cx="202" cy="268" r="1.5" fill="rgba(96,165,250,.3)"/>
+        <!-- Scatter — otras ciudades calculadas geográficamente -->
+        <!-- Jujuy 24.2°S 65.3°W → (211,22) -->
+        <circle cx="211" cy="22"  r="1.8" fill="rgba(52,211,153,.5)"/>
+        <!-- Resistencia 27.5°S 59.0°W → (151+14.5*10.4,17+5.7*9.2)=(279,69) -->
+        <circle cx="279" cy="69"  r="1.8" fill="rgba(96,165,250,.5)"/>
+        <!-- Santa Fe 31.6°S 60.7°W → (261,107) -->
+        <circle cx="261" cy="107" r="1.8" fill="rgba(245,158,11,.55)"/>
+        <!-- San Juan 31.5°S 68.5°W → (180,106) -->
+        <circle cx="180" cy="106" r="1.5" fill="rgba(245,158,11,.5)"/>
+        <!-- San Luis 33.3°S 66.3°W → (199,105) — espera, 33.3: (33.3-21.8)*9.2=106 → y=123 -->
+        <circle cx="199" cy="123" r="1.5" fill="rgba(245,158,11,.5)"/>
+        <!-- La Plata 34.9°S 57.9°W → (289,120) -->
+        <circle cx="289" cy="120" r="1.8" fill="rgba(245,158,11,.6)"/>
+        <!-- Bahía Blanca 38.7°S 62.3°W → (243,155+... 38.7-21.8=16.9*9.2=156 → y=173 -->
+        <circle cx="243" cy="173" r="1.8" fill="rgba(245,158,11,.5)"/>
+        <!-- Rawson/Chubut 43.3°S 65.1°W → (215,215+... 43.3-21.8=21.5*9.2=198 → y=215 -->
+        <circle cx="215" cy="215" r="1.5" fill="rgba(96,165,250,.3)"/>
+        <!-- Río Gallegos 51.6°S 69.2°W → (183,275+... 51.6-21.8=29.8*9.2=274 → y=291 -->
+        <circle cx="183" cy="291" r="1.5" fill="rgba(96,165,250,.3)"/>
       </svg>
       <div class="map-legend">
         <div class="ml-title">COBERTURA</div>
