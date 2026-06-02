@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <title>Dashboard Power BI — JV Systems</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f0;width:1440px;overflow-x:hidden}
@@ -242,79 +244,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
   <!-- Mapa -->
   <div class="panel" style="grid-column:span 3;grid-row:span 2">
     <div class="ph"><div><div class="pt">📍 Puntos de venta por región</div><div class="ps">847 puntos activos en Argentina</div></div><div class="pills"><div class="pill on">Ventas</div><div class="pill off">Densidad</div></div></div>
-    <div class="map-wrap">
-      <!-- SVG overlay: solo puntos de ciudades sobre mapa.jpg
-           Imagen 340×340 centrada en 500×340 → offset X: 80px
-           Argentina en imagen: x 14-78%, y 5-96% del cuadrado
-           → en SVG: x=(80+14%*340)→128  a  (80+78%*340)→345   y=17 a 326
-           Cada ciudad: % dentro del área de Argentina -->
-      <svg viewBox="0 0 500 340" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0">
-        <defs>
-          <radialGradient id="gBA" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(245,158,11,.35)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
-          <radialGradient id="gCBA" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(52,211,153,.25)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
-          <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-
-        <!-- PROVINCIAS — centros geográficos reales
-             x = 128 + (73.5 - lon) * 10.4
-             y =  17 + (lat - 21.8) * 9.2           -->
-
-        <!-- Halos calor -->
-        <ellipse cx="268" cy="152" rx="50" ry="32" fill="url(#gBA)" opacity=".75"/>
-        <ellipse cx="227" cy="106" rx="24" ry="17" fill="url(#gCBA)" opacity=".65"/>
-
-        <!-- Buenos Aires prov. 36.5S 60W → (268,152) -->
-        <circle cx="268" cy="152" r="14" fill="rgba(245,158,11,.12)" filter="url(#glow)"/>
-        <circle cx="268" cy="152" r="6.5" fill="#f59e0b" opacity=".95"/>
-        <text x="281" y="149" font-size="7.5" fill="white" font-weight="700">Buenos Aires</text>
-        <text x="281" y="160" font-size="6"   fill="#f59e0b">$2.1M · 312 puntos</text>
-
-        <!-- Córdoba prov. 31.5S 64W → (227,106) -->
-        <circle cx="227" cy="106" r="9"   fill="rgba(52,211,153,.2)" filter="url(#glow)"/>
-        <circle cx="227" cy="106" r="4.5" fill="#34d399"/>
-        <text x="239" y="105" font-size="7"   fill="white" font-weight="700">Córdoba</text>
-        <text x="239" y="115" font-size="5.5" fill="#34d399">$890K · 148 pts</text>
-
-        <!-- Santa Fe prov. 31S 61W → (258,102) -->
-        <circle cx="258" cy="102" r="6"   fill="rgba(96,165,250,.2)" filter="url(#glow)"/>
-        <circle cx="258" cy="102" r="3.5" fill="#60a5fa"/>
-        <text x="265" y="101" font-size="6.5" fill="white">Santa Fe</text>
-        <text x="265" y="111" font-size="5.5" fill="#60a5fa">$640K · 97 pts</text>
-
-        <!-- Mendoza prov. 34.5S 68.5W → (180,134) -->
-        <circle cx="180" cy="134" r="5"   fill="rgba(167,139,250,.2)"/>
-        <circle cx="180" cy="134" r="3"   fill="#a78bfa"/>
-        <text x="136" y="133" font-size="6.5" fill="white" font-weight="600">Mendoza</text>
-        <text x="136" y="143" font-size="5.5" fill="#a78bfa">$310K</text>
-
-        <!-- Tucumán prov. 27S 65.5W → (211,65) -->
-        <circle cx="211" cy="65"  r="4.5" fill="rgba(251,191,36,.3)" filter="url(#glow)"/>
-        <circle cx="211" cy="65"  r="2.5" fill="#fbbf24"/>
-        <text x="218" y="68"  font-size="6.5" fill="white">Tucumán</text>
-
-        <!-- Salta prov. 24.5S 65W → (216,42) -->
-        <circle cx="216" cy="42"  r="4"   fill="rgba(52,211,153,.3)"/>
-        <circle cx="216" cy="42"  r="2.5" fill="#34d399"/>
-        <text x="223" y="45"  font-size="6"   fill="white">Salta</text>
-
-        <!-- Neuquén prov. 38.5S 69.5W → (170,171) -->
-        <circle cx="170" cy="171" r="4"   fill="rgba(167,139,250,.3)"/>
-        <circle cx="170" cy="171" r="2.2" fill="#a78bfa"/>
-        <text x="151" y="174" font-size="5.5" fill="rgba(255,255,255,.7)">Neuquén</text>
-
-        <!-- Scatter provincias menores -->
-        <circle cx="206" cy="17"  r="2"   fill="rgba(52,211,153,.5)"/>  <!-- Jujuy -->
-        <circle cx="258" cy="60"  r="2"   fill="rgba(96,165,250,.5)"/>  <!-- Chaco -->
-        <circle cx="311" cy="69"  r="1.8" fill="rgba(96,165,250,.4)"/>  <!-- Misiones -->
-        <circle cx="281" cy="79"  r="1.8" fill="rgba(96,165,250,.4)"/>  <!-- Corrientes -->
-        <circle cx="279" cy="111" r="2"   fill="rgba(245,158,11,.55)"/> <!-- Entre Ríos -->
-        <circle cx="180" cy="85"  r="1.5" fill="rgba(245,158,11,.5)"/>  <!-- San Juan -->
-        <circle cx="205" cy="125" r="1.5" fill="rgba(245,158,11,.5)"/>  <!-- San Luis -->
-        <circle cx="206" cy="157" r="2"   fill="rgba(245,158,11,.4)"/>  <!-- La Pampa -->
-        <circle cx="196" cy="189" r="2"   fill="rgba(96,165,250,.3)"/>  <!-- Río Negro -->
-        <circle cx="190" cy="221" r="1.8" fill="rgba(96,165,250,.3)"/>  <!-- Chubut -->
-        <circle cx="180" cy="276" r="1.5" fill="rgba(96,165,250,.25)"/> <!-- Santa Cruz -->
-      </svg>
+    <div class="map-wrap" style="background:none;position:relative">
+      <div id="leaflet-map" style="width:100%;height:100%"></div>
       <div class="map-legend">
         <div class="ml-title">COBERTURA</div>
         <div class="ml-row"><div class="ml-dot" style="background:#f59e0b"></div>+$1M en ventas</div>
@@ -621,6 +552,7 @@ function showView(id){
   document.getElementById('view-'+id).classList.add('active');
   event.currentTarget.classList.add('active');
   setTimeout(()=>buildView(id),50);
+  if(id==='resumen') setTimeout(()=>{ initMap(); if(leafletMap) leafletMap.invalidateSize(); }, 200);
 }
 
 // ── ANIMATED NUMBERS ──
@@ -1318,5 +1250,94 @@ window.addEventListener('load',()=>{
   buildView('ventas');
 });
 </script>
+
+<script>
+// ── MAPA LEAFLET ──
+let leafletMap = null;
+function initMap() {
+  const el = document.getElementById('leaflet-map');
+  if (!el || leafletMap) return;
+
+  el.style.height = '340px';
+
+  const map = L.map('leaflet-map', {
+    center: [-38, -63],
+    zoom: 4,
+    zoomControl: false,
+    attributionControl: false,
+    scrollWheelZoom: false,
+    dragging: false,
+    doubleClickZoom: false,
+    touchZoom: false
+  });
+  leafletMap = map;
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19
+  }).addTo(map);
+
+  // Provincias con datos
+  const provincias = [
+    { nombre: 'Buenos Aires', lat: -36.5, lon: -60.0, ventas: '$2.1M', pts: '312', color: '#f59e0b', r: 22, tier: 1 },
+    { nombre: 'Córdoba',      lat: -31.5, lon: -64.0, ventas: '$890K', pts: '148', color: '#34d399', r: 14, tier: 2 },
+    { nombre: 'Santa Fe',     lat: -31.0, lon: -61.0, ventas: '$640K', pts: '97',  color: '#60a5fa', r: 11, tier: 3 },
+    { nombre: 'Mendoza',      lat: -34.5, lon: -68.5, ventas: '$310K', pts: '54',  color: '#a78bfa', r: 9,  tier: 3 },
+    { nombre: 'Tucumán',      lat: -27.0, lon: -65.5, ventas: '$220K', pts: '38',  color: '#fbbf24', r: 7,  tier: 4 },
+    { nombre: 'Salta',        lat: -24.5, lon: -65.0, ventas: '$180K', pts: '29',  color: '#34d399', r: 6,  tier: 4 },
+    { nombre: 'Neuquén',      lat: -38.5, lon: -69.5, ventas: '$95K',  pts: '18',  color: '#a78bfa', r: 5,  tier: 4 },
+    { nombre: 'Entre Ríos',   lat: -32.0, lon: -59.0, ventas: '$140K', pts: '22',  color: '#f59e0b', r: 5,  tier: 4 },
+    { nombre: 'Misiones',     lat: -27.4, lon: -55.9, ventas: '$80K',  pts: '14',  color: '#60a5fa', r: 4,  tier: 4 },
+    { nombre: 'Chaco',        lat: -26.5, lon: -61.0, ventas: '$60K',  pts: '10',  color: '#60a5fa', r: 3,  tier: 4 },
+    { nombre: 'Corrientes',   lat: -28.5, lon: -58.8, ventas: '$55K',  pts: '9',   color: '#60a5fa', r: 3,  tier: 4 },
+    { nombre: 'Río Negro',    lat: -40.5, lon: -67.0, ventas: '$48K',  pts: '8',   color: '#60a5fa', r: 3,  tier: 4 },
+    { nombre: 'San Juan',     lat: -31.0, lon: -68.5, ventas: '$42K',  pts: '7',   color: '#f59e0b', r: 3,  tier: 4 },
+    { nombre: 'Jujuy',        lat: -23.5, lon: -65.7, ventas: '$38K',  pts: '6',   color: '#34d399', r: 3,  tier: 4 },
+    { nombre: 'La Pampa',     lat: -37.0, lon: -66.0, ventas: '$35K',  pts: '5',   color: '#f59e0b', r: 3,  tier: 4 },
+    { nombre: 'Chubut',       lat: -44.0, lon: -67.5, ventas: '$28K',  pts: '4',   color: '#60a5fa', r: 2,  tier: 4 },
+    { nombre: 'Santa Cruz',   lat: -50.0, lon: -68.5, ventas: '$18K',  pts: '3',   color: '#60a5fa', r: 2,  tier: 4 },
+  ];
+
+  setTimeout(() => map.invalidateSize(), 100);
+
+  provincias.forEach(p => {
+    const circle = L.circleMarker([p.lat, p.lon], {
+      radius: p.r,
+      fillColor: p.color,
+      color: p.color,
+      weight: 1.5,
+      opacity: 0.9,
+      fillOpacity: 0.75
+    }).addTo(map);
+
+    if (p.tier <= 3) {
+      circle.bindTooltip(
+        `<strong>${p.nombre}</strong><br>${p.ventas} · ${p.pts} puntos`,
+        { permanent: true, direction: 'right', offset: [p.r + 2, 0],
+          className: 'map-tooltip' }
+      ).openTooltip();
+    }
+  });
+}
+// Llamar al iniciar y cuando se muestre el tab resumen
+setTimeout(initMap, 300);
+</script>
+
+<style>
+.map-tooltip {
+  background: rgba(10,16,32,.88) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  border-radius: 6px !important;
+  color: #e2e8f0 !important;
+  font-size: 10px !important;
+  font-family: 'Segoe UI', system-ui, sans-serif !important;
+  padding: 3px 7px !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+}
+.map-tooltip strong { color: #f59e0b; }
+.map-tooltip::before { display: none !important; }
+.leaflet-container { background: #0a1020 !important; }
+</style>
+
 </body>
 </html>
