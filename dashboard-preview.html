@@ -576,13 +576,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
   <!-- ── FLUJO MENSUAL ── -->
   <div class="panel" style="grid-column:span 2">
     <div class="ph"><div><div class="pt">💹 Ingresos vs Egresos — flujo mensual</div></div>
-    <div class="pills"><div class="pill on">Mensual</div><div class="pill off">Trimestral</div></div></div>
-    <div class="pb"><div class="bar-chart" id="bc-flujo"></div>
-    <div style="display:flex;gap:.75rem;margin-top:.4rem;font-size:.62rem;color:rgba(255,255,255,.4)">
-      <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:#34d399;border-radius:2px"></span>Ingresos</span>
-      <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:#f87171;border-radius:2px"></span>Egresos</span>
-      <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:#60a5fa;border-radius:2px"></span>Ganancia</span>
+    <div class="pills" id="flujo-pills">
+      <div class="pill on"  onclick="setFlujoMode('mensual',this)">Mensual</div>
+      <div class="pill off" onclick="setFlujoMode('trimestral',this)">Trimestral</div>
     </div></div>
+    <div class="pb">
+      <div id="flujo-chart" style="width:100%;height:180px"></div>
+      <div style="display:flex;gap:.75rem;margin-top:.4rem;font-size:.62rem;color:rgba(255,255,255,.4)">
+        <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:#34d399;border-radius:2px;opacity:.8"></span>Ingresos</span>
+        <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:10px;background:#f87171;border-radius:2px;opacity:.8"></span>Egresos</span>
+        <span style="display:flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:10px;height:2px;background:#60a5fa;border-radius:2px"></span>Ganancia neta</span>
+      </div>
+    </div>
   </div>
 
   <!-- ── FORECAST ── -->
@@ -1409,11 +1414,8 @@ function buildView(id){
     buildMini('km-f4',colors.blue,[60,65,70,68,72,78,85]);
     buildMini('km-f5',colors.purple,[28,29,30,31,33,34,34.2]);
     buildMini('km-f6',colors.teal,[40,42,44,46,48,50,52.2]);
-    buildBarChart('bc-flujo',['Ene','Feb','Mar','Abr','May','Jun'],[
-      {data:[680,720,790,840,920,980],color:colors.green,prefix:'$'},
-      {data:[480,510,540,570,590,620],color:colors.red,prefix:'$'},
-      {data:[200,210,250,270,330,360],color:'rgba(96,165,250,.5)',prefix:'$'},
-    ]);
+    flujoMode = 'mensual';
+    setTimeout(() => buildFlujoChart('mensual'), 80);
     buildDonut('donut-gastos',[
       {label:'RRHH',val:40,color:colors.blue},{label:'Operativo',val:25,color:colors.amber},
       {label:'Logística',val:20,color:colors.purple},{label:'Marketing',val:10,color:colors.green},
@@ -1602,6 +1604,100 @@ function initMap() {
     });
   });
 }
+// ── FLUJO COMBO CHART ──
+const flujoData = {
+  mensual: {
+    labels:   ['Ene','Feb','Mar','Abr','May','Jun'],
+    ingresos: [680, 920, 750, 1100, 820, 1050],
+    egresos:  [520, 610, 490,  720, 530,  640],
+    ganancia: [160, 310, 260,  380, 290,  410],
+  },
+  trimestral: {
+    labels:   ['Q1 2025','Q2 2025','Q3 2025','Q4 2025','Q1 2026','Q2 2026'],
+    ingresos: [1950, 2430, 2100, 2780, 2350, 2870],
+    egresos:  [1420, 1680, 1510, 1920, 1600, 1840],
+    ganancia: [ 530,  750,  590,  860,  750, 1030],
+  }
+};
+let flujoMode = 'mensual';
+
+function buildFlujoChart(mode) {
+  const el = document.getElementById('flujo-chart'); if (!el) return;
+  const d = flujoData[mode];
+  const W = el.offsetWidth || 520, H = 180;
+  const maxV = Math.max(...d.ingresos, ...d.egresos) * 1.18;
+  const n = d.labels.length;
+  const padL = 50, padR = 12, padT = 14, padB = 24;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const barW = (plotW / n) * 0.36;
+  const gap  = (plotW / n) * 0.12;
+
+  function bx(i) { return padL + (plotW / n) * i + (plotW / n) * 0.08; }
+  function by(v) { return padT + plotH - (v / maxV) * plotH; }
+  function bh(v) { return (v / maxV) * plotH; }
+  function lx(i) { return padL + (plotW / n) * (i + 0.5); }
+
+  // Grid lines & labels
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+  <defs>
+    <linearGradient id="gIng" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#34d399" stop-opacity=".85"/>
+      <stop offset="100%" stop-color="#34d399" stop-opacity=".45"/>
+    </linearGradient>
+    <linearGradient id="gEgr" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f87171" stop-opacity=".85"/>
+      <stop offset="100%" stop-color="#f87171" stop-opacity=".45"/>
+    </linearGradient>
+    <filter id="lineglow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>`;
+
+  // Horizontal grid
+  [0.25, 0.5, 0.75, 1].forEach(f => {
+    const yy = padT + plotH * (1 - f);
+    const val = Math.round(maxV * f / 1000);
+    svg += `<line x1="${padL}" y1="${yy}" x2="${W - padR}" y2="${yy}" stroke="rgba(255,255,255,.06)" stroke-width=".8"/>`;
+    svg += `<text x="${padL - 4}" y="${yy + 3.5}" text-anchor="end" font-size="8" fill="rgba(255,255,255,.3)">$${val}K</text>`;
+  });
+
+  // Bars: Ingresos + Egresos side by side
+  d.labels.forEach((lbl, i) => {
+    const x0 = bx(i);
+    const hiIng = bh(d.ingresos[i]), hiEgr = bh(d.egresos[i]);
+    svg += `<rect x="${x0}" y="${by(d.ingresos[i])}" width="${barW}" height="${hiIng}" rx="2" fill="url(#gIng)">
+      <title>${lbl} Ingresos: $${d.ingresos[i]}K</title></rect>`;
+    svg += `<rect x="${x0 + barW + gap}" y="${by(d.egresos[i])}" width="${barW}" height="${hiEgr}" rx="2" fill="url(#gEgr)">
+      <title>${lbl} Egresos: $${d.egresos[i]}K</title></rect>`;
+    svg += `<text x="${lx(i)}" y="${H - 6}" text-anchor="middle" font-size="8.5" fill="rgba(255,255,255,.45)">${lbl}</text>`;
+  });
+
+  // Línea de ganancia
+  let linePath = '', areaPath = '';
+  d.ganancia.forEach((v, i) => {
+    const px = lx(i), py = by(v);
+    if (i === 0) { linePath += `M${px},${py}`; areaPath += `M${px},${padT + plotH} L${px},${py}`; }
+    else { linePath += ` L${px},${py}`; areaPath += ` L${px},${py}`; }
+    if (i === n - 1) areaPath += ` L${px},${padT + plotH} Z`;
+    // Dot
+    svg += `<circle cx="${px}" cy="${py}" r="3.5" fill="#60a5fa" filter="url(#lineglow)">
+      <title>${d.labels[i]} Ganancia: $${v}K</title></circle>`;
+    // Value label on top
+    svg += `<text x="${px}" y="${py - 6}" text-anchor="middle" font-size="7.5" fill="#60a5fa" font-weight="700">$${v}K</text>`;
+  });
+  svg += `<path d="${areaPath}" fill="rgba(96,165,250,.08)"/>`;
+  svg += `<path d="${linePath}" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" filter="url(#lineglow)"/>`;
+
+  svg += `</svg>`;
+  el.innerHTML = svg;
+}
+
+function setFlujoMode(mode, el) {
+  flujoMode = mode;
+  document.querySelectorAll('#flujo-pills .pill').forEach(p => {
+    p.className = 'pill ' + (p === el ? 'on' : 'off');
+  });
+  buildFlujoChart(mode);
+}
+
 // ── FORECAST ──
 function buildForecast(){
   const el = document.getElementById('forecast-panel'); if(!el) return;
