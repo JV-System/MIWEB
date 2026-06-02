@@ -1261,14 +1261,15 @@ function initMap() {
   el.style.height = '340px';
 
   const map = L.map('leaflet-map', {
-    center: [-40, -63],
-    zoom: 3,
-    zoomControl: false,
+    center: [-40, -64],
+    zoom: 3.8,
+    zoomSnap: 0.1,
+    zoomControl: true,
     attributionControl: false,
-    scrollWheelZoom: false,
-    dragging: false,
-    doubleClickZoom: false,
-    touchZoom: false
+    scrollWheelZoom: true,
+    dragging: true,
+    doubleClickZoom: true,
+    touchZoom: true
   });
   leafletMap = map;
 
@@ -1309,12 +1310,21 @@ function initMap() {
       fillOpacity: 0.75
     }).addTo(map);
 
-    if (p.tier <= 3) {
+    if (p.tier <= 2) {
       circle.bindTooltip(
         `<strong>${p.nombre}</strong><br>${p.ventas} · ${p.pts} puntos`,
-        { permanent: true, direction: 'right', offset: [p.r + 2, 0],
+        { permanent: true, direction: 'right', offset: [p.r + 3, 0],
           className: 'map-tooltip' }
       ).openTooltip();
+    } else if (p.tier === 3) {
+      circle.bindTooltip(
+        `<strong>${p.nombre}</strong><br>${p.ventas}`,
+        { permanent: false, direction: 'top', className: 'map-tooltip' }
+      );
+    } else {
+      circle.bindTooltip(`<strong>${p.nombre}</strong>`,
+        { permanent: false, direction: 'top', className: 'map-tooltip' }
+      );
     }
   });
 }
