@@ -166,6 +166,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
 .veh-marker{display:flex;flex-direction:column;align-items:center;cursor:pointer}
 .veh-marker-icon{font-size:1.5rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
 .veh-marker-label{background:rgba(10,16,32,.85);color:#fff;font-size:.58rem;font-weight:700;padding:1px 5px;border-radius:4px;margin-top:1px;white-space:nowrap;border:1px solid rgba(255,255,255,.15)}
+.vehiculo-card.map-selected{border-color:#f59e0b !important;box-shadow:0 0 0 2px rgba(245,158,11,.4) !important;background:rgba(245,158,11,.06) !important}
 .vehiculo-card{background:rgba(255,255,255,.04);border-radius:10px;border:1px solid rgba(255,255,255,.07);overflow:hidden;transition:all .2s;cursor:pointer}
 .vehiculo-card:hover{border-color:rgba(245,158,11,.3);transform:translateY(-2px)}
 .vehiculo-img{height:90px;display:flex;align-items:center;justify-content:center;position:relative}
@@ -809,8 +810,8 @@ function buildFlota(){
   ];
   buildFlotaMap(vehiculos);
   el.innerHTML=`<div class="flota-grid">${vehiculos.map(v=>`
-    <div class="vehiculo-card">
-      <div class="vehiculo-img" style="background:#f0f2f5;padding:.5rem 0;display:flex;align-items:center;justify-content:center">
+    <div class="vehiculo-card" id="vc-${v.id}" onclick="focusVehicle('${v.id}')" style="cursor:pointer;transition:border-color .2s,box-shadow .2s,background .2s">
+      <div class="vehiculo-img" style="background:rgba(255,255,255,0.04);padding:.5rem 0;display:flex;align-items:center;justify-content:center">
         ${vehImg(v.tipo,v.svg,v.color,v.id)}
         <div class="veh-status" style="background:${v.estC}22;color:${v.estC}">${v.est}</div>
       </div>
@@ -828,11 +829,14 @@ function buildFlota(){
 }
 
 let flotaMap = null;
+const flotaMarkers = {}; // id → marker
+
 function buildFlotaMap(vehiculos) {
   const el = document.getElementById('flota-map');
   if (!el) return;
 
   if (flotaMap) { flotaMap.remove(); flotaMap = null; }
+  Object.keys(flotaMarkers).forEach(k => delete flotaMarkers[k]);
 
   flotaMap = L.map('flota-map', {
     center: [-33, -63], zoom: 4.2, zoomSnap: 0.1,
@@ -842,39 +846,62 @@ function buildFlotaMap(vehiculos) {
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(flotaMap);
 
-  // Coordenadas de ciudades
   const coords = {
-    'Córdoba':       [-31.42, -64.18],
-    'Rosario':       [-32.94, -60.65],
-    'Buenos Aires':  [-34.61, -58.42],
-    'CABA':          [-34.60, -58.38],
-    'Palermo':       [-34.58, -58.43],
-    'Salta':         [-24.79, -65.41],
-    'Mendoza':       [-32.89, -68.85],
-    'Tucumán':       [-26.82, -65.22],
-    'Santa Fe':      [-31.63, -60.70],
-    'Neuquén':       [-38.95, -68.06],
+    'Córdoba':      [-31.42, -64.18], 'Rosario':      [-32.94, -60.65],
+    'Buenos Aires': [-34.61, -58.42], 'CABA':         [-34.60, -58.38],
+    'Palermo':      [-34.58, -58.43], 'Salta':        [-24.79, -65.41],
+    'Mendoza':      [-32.89, -68.85], 'Tucumán':      [-26.82, -65.22],
+    'Santa Fe':     [-31.63, -60.70], 'Neuquén':      [-38.95, -68.06],
   };
 
-  const icons = { camion: '🚛', auto: '🚗', moto: '🏍️' };
-  const colorEst = { 'En ruta': '#f59e0b', 'Disponible': '#34d399', 'Mantenimiento': '#f87171' };
+  const icons   = { camion:'🚛', auto:'🚗', moto:'🏍️' };
+  const colorEst = { 'En ruta':'#f59e0b', 'Disponible':'#34d399', 'Mantenimiento':'#f87171' };
 
   vehiculos.filter(v => v.dest && v.dest !== '—' && coords[v.dest]).forEach(v => {
     const [lat, lon] = coords[v.dest];
     const color = colorEst[v.est] || '#60a5fa';
+
     const icon = L.divIcon({
-      html: `<div class="veh-marker">
-        <div class="veh-marker-icon" style="text-shadow:0 0 8px ${color}">${icons[v.tipo]}</div>
-        <div class="veh-marker-label" style="border-color:${color}55;color:${color}">${v.id}</div>
+      html: `<div class="veh-marker" id="mi-${v.id}">
+        <div class="veh-marker-icon" style="text-shadow:0 0 10px ${color}">${icons[v.tipo]}</div>
+        <div class="veh-marker-label" style="border-color:${color}88;color:${color}">${v.id}</div>
       </div>`,
-      className: '', iconSize: [60, 40], iconAnchor: [30, 35]
+      className: '', iconSize: [64, 44], iconAnchor: [32, 38]
     });
-    L.marker([lat, lon], { icon })
-      .addTo(flotaMap)
-      .bindPopup(`<b style="color:${color}">${v.id}</b><br>${v.label}<br>🧑‍✈️ ${v.cond}<br>📍 ${v.dest}<br>🛣️ ${v.km} km hoy`, { className: 'map-tooltip' });
+
+    const marker = L.marker([lat, lon], { icon }).addTo(flotaMap);
+    marker.bindPopup(
+      `<b style="color:${color}">${v.id}</b> · ${v.label}<br>🧑‍✈️ ${v.cond} &nbsp; 📍 ${v.dest}<br>🛣️ ${v.km} km hoy`,
+      { className: 'map-tooltip', maxWidth: 200 }
+    );
+
+    // Click en marker → resalta card
+    marker.on('click', () => highlightCard(v.id));
+
+    flotaMarkers[v.id] = marker;
   });
 
   setTimeout(() => flotaMap.invalidateSize(), 150);
+}
+
+function highlightCard(id) {
+  // Quitar highlight previo
+  document.querySelectorAll('.vehiculo-card.map-selected').forEach(c => c.classList.remove('map-selected'));
+  const card = document.getElementById('vc-' + id);
+  if (card) {
+    card.classList.add('map-selected');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function focusVehicle(id) {
+  const marker = flotaMarkers[id];
+  if (marker && flotaMap) {
+    flotaMap.setView(marker.getLatLng(), 6, { animate: true });
+    setTimeout(() => marker.openPopup(), 400);
+  }
+  // También resaltar card
+  highlightCard(id);
 }
 
 function buildTablaLog(){
