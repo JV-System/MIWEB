@@ -251,106 +251,108 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#13182a;color:#e2e8f
           <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
         <rect width="500" height="340" fill="url(#bg)"/>
-        <!-- ═══ ARGENTINA — path basado en coordenadas geográficas reales ═══ -->
-        <!--  Escala: 8.5px/grado long, 9.5px/grado lat
-              Origen: 73°W=148px, 22°S=10px  -->
+        <!-- ═══ ARGENTINA — trazado fiel al mapa de provincias ═══ -->
 
-        <!-- Tierra del Fuego -->
-        <path d="M188,298 L218,296 L226,306 L218,320 L202,318 L192,308 Z"
+        <!-- Tierra del Fuego (isla) -->
+        <path d="M186,318 L208,316 L216,325 L210,333 L196,331 L186,323 Z"
               fill="#1a2d4a" stroke="#2a4a7a" stroke-width="1"/>
 
-        <!-- Continente -->
+        <!-- Continente principal
+             Inicio NW (Jujuy), borde N va E, Misiones al NE,
+             costa E recta hasta BA, Patagonia diagonal SW, Andes suben -->
         <path d="
-          M186,10
-          L210,10 L234,10 L258,10 L280,10
-          L300,33 L313,62
-          L294,68
-          L278,76  L280,96  L283,116
-          L285,133 L285,148 L282,162
-          L262,175 L242,184 L222,196
-          L208,212 L206,230 L204,250
-          L196,268 L188,285
-          L178,282 L160,265
-          L150,248 L152,220 L155,192
-          L160,163 L165,133 L170,105
-          L177,76  L182,47  L186,10 Z
+          M173,8
+          L200,8  L226,8  L252,8  L273,8
+          L288,22 L300,38 L307,56
+          L298,66 L284,74
+          L287,90 L291,110 L294,130
+          L297,150 L297,170
+          L288,186 L276,202 L263,217
+          L250,232 L236,247 L222,262
+          L208,276 L198,288 L190,300
+          L184,308
+          L178,302 L170,285 L162,266
+          L158,246 L156,226 L155,206
+          L155,185 L156,164 L157,142
+          L159,120 L162,98  L165,76
+          L168,54  L171,32  L173,8 Z
         " fill="#1a2d4a" stroke="#2a4a7a" stroke-width="1.4" stroke-linejoin="round"/>
 
-        <!-- Tono Buenos Aires -->
-        <path d="M236,136 L256,134 L272,140 L282,152 L284,167 L278,183 L265,191 L250,194 L234,189 L222,178 L218,163 L222,149 Z"
+        <!-- Zona Buenos Aires (highlight) -->
+        <path d="M240,140 L260,138 L276,146 L285,158 L288,174 L283,190 L270,198 L254,200 L238,194 L226,183 L222,167 L226,152 Z"
               fill="rgba(245,158,11,.06)" stroke="rgba(245,158,11,.1)" stroke-width=".5"/>
-        <!-- Tono Patagonia -->
-        <path d="M153,190 L285,190 L280,207 L270,222 L256,236 L240,249 L222,262 L205,274 L194,285 L185,284 L175,270 L163,252 L153,228 L151,207 L153,190 Z"
+        <!-- Patagonia tono -->
+        <path d="M155,200 L297,200 L288,216 L276,232 L262,247 L248,262 L233,276 L218,289 L205,300 L194,308 L184,308 L172,291 L162,272 L157,252 L155,228 L155,200 Z"
               fill="rgba(96,165,250,.04)"/>
 
         <!-- Heat zonas -->
-        <ellipse cx="244" cy="218" rx="48" ry="32" fill="url(#gBA)" opacity=".75"/>
-        <ellipse cx="210" cy="152" rx="26" ry="18" fill="url(#gCBA)" opacity=".65"/>
+        <ellipse cx="258" cy="168" rx="44" ry="28" fill="url(#gBA)" opacity=".75"/>
+        <ellipse cx="218" cy="128" rx="22" ry="16" fill="url(#gCBA)" opacity=".65"/>
 
         <!-- Líneas de latitud -->
-        <line x1="155" y1="90"  x2="305" y2="90"  stroke="rgba(255,255,255,.03)" stroke-width=".5"/>
-        <line x1="153" y1="160" x2="303" y2="160" stroke="rgba(255,255,255,.03)" stroke-width=".5"/>
-        <line x1="152" y1="230" x2="296" y2="230" stroke="rgba(255,255,255,.03)" stroke-width=".5"/>
+        <line x1="158" y1="80"  x2="296" y2="80"  stroke="rgba(255,255,255,.03)" stroke-width=".5"/>
+        <line x1="156" y1="150" x2="298" y2="150" stroke="rgba(255,255,255,.03)" stroke-width=".5"/>
+        <line x1="155" y1="220" x2="290" y2="220" stroke="rgba(255,255,255,.03)" stroke-width=".5"/>
 
         <!-- Buenos Aires -->
-        <circle cx="244" cy="216" r="13" fill="rgba(245,158,11,.12)" filter="url(#glow)"/>
-        <circle cx="244" cy="216" r="6.5" fill="#f59e0b" opacity=".95"/>
-        <text x="257" y="213" font-size="7.5" fill="white" font-weight="700">Buenos Aires</text>
-        <text x="257" y="224" font-size="6"   fill="#f59e0b">$2.1M · 312 puntos</text>
+        <circle cx="258" cy="166" r="13" fill="rgba(245,158,11,.12)" filter="url(#glow)"/>
+        <circle cx="258" cy="166" r="6.5" fill="#f59e0b" opacity=".95"/>
+        <text x="270" y="163" font-size="7.5" fill="white" font-weight="700">Buenos Aires</text>
+        <text x="270" y="174" font-size="6"   fill="#f59e0b">$2.1M · 312 puntos</text>
 
         <!-- Córdoba -->
-        <circle cx="210" cy="152" r="8.5" fill="rgba(52,211,153,.2)" filter="url(#glow)"/>
-        <circle cx="210" cy="152" r="4.5" fill="#34d399"/>
-        <text x="222" y="151" font-size="7"   fill="white" font-weight="700">Córdoba</text>
-        <text x="222" y="161" font-size="5.5" fill="#34d399">$890K · 148 pts</text>
+        <circle cx="218" cy="126" r="8.5" fill="rgba(52,211,153,.2)" filter="url(#glow)"/>
+        <circle cx="218" cy="126" r="4.5" fill="#34d399"/>
+        <text x="230" y="125" font-size="7"   fill="white" font-weight="700">Córdoba</text>
+        <text x="230" y="135" font-size="5.5" fill="#34d399">$890K · 148 pts</text>
 
         <!-- Rosario -->
-        <circle cx="232" cy="185" r="6"   fill="rgba(96,165,250,.2)" filter="url(#glow)"/>
-        <circle cx="232" cy="185" r="3.5" fill="#60a5fa"/>
-        <text x="240" y="184" font-size="6.5" fill="white">Rosario</text>
-        <text x="240" y="194" font-size="5.5" fill="#60a5fa">$640K · 97 pts</text>
+        <circle cx="244" cy="150" r="6"   fill="rgba(96,165,250,.2)" filter="url(#glow)"/>
+        <circle cx="244" cy="150" r="3.5" fill="#60a5fa"/>
+        <text x="252" y="149" font-size="6.5" fill="white">Rosario</text>
+        <text x="252" y="159" font-size="5.5" fill="#60a5fa">$640K · 97 pts</text>
 
         <!-- Mendoza -->
-        <circle cx="164" cy="192" r="5"   fill="rgba(167,139,250,.2)"/>
-        <circle cx="164" cy="192" r="3"   fill="#a78bfa"/>
-        <text x="120" y="191" font-size="6.5" fill="white" font-weight="600">Mendoza</text>
-        <text x="120" y="201" font-size="5.5" fill="#a78bfa">$310K</text>
+        <circle cx="170" cy="160" r="5"   fill="rgba(167,139,250,.2)"/>
+        <circle cx="170" cy="160" r="3"   fill="#a78bfa"/>
+        <text x="126" y="159" font-size="6.5" fill="white" font-weight="600">Mendoza</text>
+        <text x="126" y="169" font-size="5.5" fill="#a78bfa">$310K</text>
 
         <!-- Tucumán -->
-        <circle cx="224" cy="100" r="4.5" fill="rgba(251,191,36,.3)" filter="url(#glow)"/>
-        <circle cx="224" cy="100" r="2.5" fill="#fbbf24"/>
-        <text x="231" y="103" font-size="6.5" fill="white">Tucumán</text>
+        <circle cx="220" cy="80"  r="4.5" fill="rgba(251,191,36,.3)" filter="url(#glow)"/>
+        <circle cx="220" cy="80"  r="2.5" fill="#fbbf24"/>
+        <text x="227" y="83"  font-size="6.5" fill="white">Tucumán</text>
 
         <!-- Salta -->
-        <circle cx="208" cy="62"  r="4"   fill="rgba(52,211,153,.3)"/>
-        <circle cx="208" cy="62"  r="2.5" fill="#34d399"/>
-        <text x="215" y="65"  font-size="6"   fill="white">Salta</text>
+        <circle cx="204" cy="46"  r="4"   fill="rgba(52,211,153,.3)"/>
+        <circle cx="204" cy="46"  r="2.5" fill="#34d399"/>
+        <text x="211" y="49"  font-size="6"   fill="white">Salta</text>
 
         <!-- Mar del Plata -->
-        <circle cx="275" cy="252" r="3.5" fill="rgba(96,165,250,.3)"/>
-        <circle cx="275" cy="252" r="2"   fill="#60a5fa"/>
-        <text x="280" y="255" font-size="5.5" fill="white">Mar del Plata</text>
+        <circle cx="283" cy="218" r="3.5" fill="rgba(96,165,250,.3)"/>
+        <circle cx="283" cy="218" r="2"   fill="#60a5fa"/>
+        <text x="264" y="228" font-size="5.5" fill="white">Mar del Plata</text>
 
         <!-- Neuquén -->
-        <circle cx="162" cy="264" r="3"   fill="rgba(167,139,250,.3)"/>
-        <circle cx="162" cy="264" r="1.8" fill="#a78bfa"/>
-        <text x="143" y="267" font-size="5.5" fill="rgba(255,255,255,.6)">Neuquén</text>
+        <circle cx="164" cy="230" r="3"   fill="rgba(167,139,250,.3)"/>
+        <circle cx="164" cy="230" r="1.8" fill="#a78bfa"/>
+        <text x="145" y="233" font-size="5.5" fill="rgba(255,255,255,.6)">Neuquén</text>
 
         <!-- Scatter puntos de venta -->
-        <circle cx="194" cy="80"  r="1.8" fill="rgba(245,158,11,.55)"/>
-        <circle cx="230" cy="84"  r="1.5" fill="rgba(52,211,153,.5)"/>
-        <circle cx="244" cy="114" r="1.8" fill="rgba(96,165,250,.5)"/>
-        <circle cx="254" cy="158" r="2"   fill="rgba(96,165,250,.4)"/>
-        <circle cx="226" cy="168" r="1.8" fill="rgba(245,158,11,.5)"/>
-        <circle cx="240" cy="196" r="2"   fill="rgba(245,158,11,.6)"/>
-        <circle cx="228" cy="210" r="2.2" fill="rgba(245,158,11,.65)"/>
-        <circle cx="258" cy="226" r="1.8" fill="rgba(245,158,11,.5)"/>
-        <circle cx="268" cy="240" r="1.5" fill="rgba(245,158,11,.4)"/>
-        <circle cx="190" cy="236" r="1.8" fill="rgba(52,211,153,.45)"/>
-        <circle cx="168" cy="222" r="1.5" fill="rgba(167,139,250,.4)"/>
-        <circle cx="190" cy="168" r="1.5" fill="rgba(52,211,153,.4)"/>
-        <circle cx="198" cy="290" r="1.5" fill="rgba(96,165,250,.3)"/>
-        <circle cx="212" cy="304" r="1.5" fill="rgba(96,165,250,.3)"/>
+        <circle cx="192" cy="62"  r="1.8" fill="rgba(245,158,11,.55)"/>
+        <circle cx="228" cy="60"  r="1.5" fill="rgba(52,211,153,.5)"/>
+        <circle cx="244" cy="96"  r="1.8" fill="rgba(96,165,250,.5)"/>
+        <circle cx="262" cy="134" r="2"   fill="rgba(96,165,250,.4)"/>
+        <circle cx="232" cy="140" r="1.8" fill="rgba(245,158,11,.5)"/>
+        <circle cx="252" cy="176" r="2"   fill="rgba(245,158,11,.6)"/>
+        <circle cx="238" cy="186" r="2.2" fill="rgba(245,158,11,.65)"/>
+        <circle cx="268" cy="196" r="1.8" fill="rgba(245,158,11,.5)"/>
+        <circle cx="274" cy="210" r="1.5" fill="rgba(245,158,11,.4)"/>
+        <circle cx="196" cy="206" r="1.8" fill="rgba(52,211,153,.45)"/>
+        <circle cx="172" cy="192" r="1.5" fill="rgba(167,139,250,.4)"/>
+        <circle cx="198" cy="144" r="1.5" fill="rgba(52,211,153,.4)"/>
+        <circle cx="196" cy="260" r="1.5" fill="rgba(96,165,250,.3)"/>
+        <circle cx="208" cy="272" r="1.5" fill="rgba(96,165,250,.3)"/>
       </svg>
       <div class="map-legend">
         <div class="ml-title">COBERTURA</div>
